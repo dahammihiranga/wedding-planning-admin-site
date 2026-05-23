@@ -252,7 +252,7 @@ export default function Dashboard() {
     country: "Local",
   });
 
-  const API_URL = "/api/inquiries"
+  const API_URL = "/api"
 
   useEffect(() => {
     setMounted(true);
