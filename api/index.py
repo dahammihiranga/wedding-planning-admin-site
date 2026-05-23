@@ -43,7 +43,7 @@ class InquiryResponse(InquiryBase):
     id: int
     pending_payment: float
 
-@app.get("/api/inquiries", response_model=List[InquiryResponse])
+@app.get("/inquiries", response_model=List[InquiryResponse])
 async def get_inquiries(tab: str = "all"):
     if tab == "completed":
         result = await client.execute("SELECT * FROM inquiries WHERE status = 'Completed' ORDER BY updated_at ASC")
@@ -53,7 +53,7 @@ async def get_inquiries(tab: str = "all"):
     # Convert rows to a list of dictionaries
     return [row._asdict() for row in result.rows]
 
-@app.post("/api/inquiries", response_model=InquiryResponse, status_code=status.HTTP_201_CREATED)
+@app.post("/inquiries", response_model=InquiryResponse, status_code=status.HTTP_201_CREATED)
 async def create_inquiry(inquiry: InquiryBase):
     agreed = inquiry.agreed_price or 0.0
     advance = inquiry.advance_paid or 0.0
@@ -78,7 +78,7 @@ async def create_inquiry(inquiry: InquiryBase):
     
     return {**inquiry.model_dump(), "id": new_id, "pending_payment": pending}
 
-@app.put("/api/inquiries/{inquiry_id}", response_model=InquiryResponse)
+@app.put("/inquiries/{inquiry_id}", response_model=InquiryResponse)
 async def update_inquiry(inquiry_id: int, inquiry: InquiryBase):
     agreed = inquiry.agreed_price or 0.0
     advance = inquiry.advance_paid or 0.0
@@ -101,7 +101,7 @@ async def update_inquiry(inquiry_id: int, inquiry: InquiryBase):
         
     return {**inquiry.model_dump(), "id": inquiry_id, "pending_payment": pending}
 
-@app.delete("/api/inquiries/{inquiry_id}")
+@app.delete("/inquiries/{inquiry_id}")
 async def delete_inquiry(inquiry_id: int):
     res = await client.execute("DELETE FROM inquiries WHERE id = ?", (inquiry_id,))
     if res.affected_rows == 0:
