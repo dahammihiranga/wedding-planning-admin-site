@@ -286,6 +286,7 @@ export default function Dashboard() {
   const [isServiceDropdownOpen, setIsServiceDropdownOpen] = useState(false);
   const [isFilterServiceDropdownOpen, setIsFilterServiceDropdownOpen] =
   useState(false);
+  const [currentSLTime, setCurrentSLTime] = useState("");
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -338,6 +339,32 @@ const [filters, setFilters] = useState({
       setDeletedRecords(JSON.parse(savedTrash));
     }
   }, []);
+
+  useEffect(() => {
+  const updateSLTime = () => {
+    const now = new Date();
+
+    const sriLankaTime = now.toLocaleString("en-LK", {
+      timeZone: "Asia/Colombo",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      weekday: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    });
+
+    setCurrentSLTime(sriLankaTime);
+  };
+
+  updateSLTime();
+
+  const interval = setInterval(updateSLTime, 1000);
+
+  return () => clearInterval(interval);
+}, []);
 
   const saveTrashToStorage = (updatedTrash) => {
     setDeletedRecords(updatedTrash);
@@ -729,6 +756,15 @@ const clearSearchAndFilters = () => {
           : "RECYCLE TRACK STORAGE"}
     </p>
   </div>
+</div>
+<div className="bg-white/30 backdrop-blur-md border border-white/30 rounded-2xl px-4 py-2 shadow-lg text-right">
+  <p className="text-[10px] uppercase tracking-widest font-bold text-emerald-900">
+    Sri Lanka Time
+  </p>
+
+  <p className="text-sm md:text-base font-bold text-emerald-950">
+    {currentSLTime}
+  </p>
 </div>
 </header>
 
