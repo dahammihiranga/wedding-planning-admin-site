@@ -109,6 +109,39 @@ const WindowsFlagFix = () => (
 .calendar-premium .rbc-off-range-bg {
   background: #f9fafb;
 }
+  @media (max-width: 768px) {
+  .calendar-premium {
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+
+  .calendar-premium .rbc-toolbar {
+    align-items: stretch;
+  }
+
+  .calendar-premium .rbc-toolbar-label {
+    width: 100%;
+    text-align: center;
+    font-size: 15px;
+    margin: 6px 0;
+  }
+
+  .calendar-premium .rbc-btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .calendar-premium .rbc-toolbar button {
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+
+  .calendar-premium .rbc-event {
+    font-size: 10px;
+    padding: 2px 5px;
+  }
+}
   `}</style>
 );
 
@@ -1484,7 +1517,7 @@ const clearSearchAndFilters = () => {
 
       {isCalendarOpen && (
   <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-    <div className="bg-white rounded-2xl w-full max-w-6xl p-5 shadow-2xl border border-gray-100">
+    <div className="bg-white rounded-2xl w-full max-w-6xl h-[92vh] p-3 md:p-5 shadow-2xl border border-gray-100 flex flex-col overflow-hidden">
       <div className="flex items-center justify-between border-b pb-3 mb-4">
         <div>
           <h2 className="text-lg font-bold text-gray-900">
@@ -1503,7 +1536,7 @@ const clearSearchAndFilters = () => {
         </button>
       </div>
 
-      <div className="h-[70vh] rounded-2xl overflow-hidden border border-gray-100 shadow-inner bg-white p-3 calendar-premium">
+      <div className="flex-1 min-h-[520px] md:min-h-0 rounded-2xl overflow-auto border border-gray-100 shadow-inner bg-white p-2 md:p-3 calendar-premium">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
   <div className="bg-gradient-to-r from-emerald-50 to-white border border-emerald-100 rounded-2xl p-4 mb-4 shadow-sm">
   <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
@@ -1610,7 +1643,7 @@ const clearSearchAndFilters = () => {
     }
   }}
   popup
-  style={{ height: "100%" }}
+  style={{ height: "520px", minWidth: "720px" }}
   onSelectEvent={(event) => {
     setSelectedCalendarEvent(event.resource);
   }}
