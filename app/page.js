@@ -1037,22 +1037,15 @@ const clearSearchAndFilters = () => {
                           Record #{index + 1}
                         </span>
                         <h3 className="text-base font-bold text-gray-900 flex items-center gap-1.5">
-                          <span className="emoji-flag text-base select-none">
-                            {countryInfo.flag}
-                          </span>
-                          <span
-                            className={
-                              tappedCountry === item.id
-                                ? "text-xs text-emerald-700 font-bold"
-                                : ""
-                            }
-                          >
-                            {tappedCountry === item.id
-                              ? countryInfo.name
-                              : item.couple_name}
-                          </span>
-                          <span>{item.couple_name}</span>
-                        </h3>
+  <span className="emoji-flag text-base select-none">
+    {countryInfo.flag}
+  </span>
+  <span>{item.couple_name}</span>
+</h3>
+
+<p className="text-xs font-semibold text-gray-500 mt-0.5">
+  {item.service_type || "Service type pending"}
+</p>
                         <p className="text-xs font-semibold text-emerald-700">
                           {item.wedding_date || "Date Pending"}
                         </p>
