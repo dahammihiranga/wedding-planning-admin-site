@@ -1183,13 +1183,13 @@ const clearSearchAndFilters = () => {
 
       {/* INPUT / EDIT DIALOG FORM MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-2 md:p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[95vh] overflow-y-auto shadow-2xl">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start md:items-center justify-center p-3 md:p-4 z-[9999] overflow-y-auto">
+    <div className="bg-white rounded-2xl w-full max-w-lg p-4 md:p-6 shadow-2xl space-y-4 my-4 md:my-8 border border-gray-100 max-h-[92vh] overflow-y-auto">
             <h2 className="text-lg font-bold text-gray-900 border-b pb-2">
               {formData.id ? "Modify Wedding File" : "Add New Wedding Record"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-3 gap-3 items-end">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
                 <div className="col-span-2">
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
                     Couple Name *
@@ -1222,7 +1222,7 @@ const clearSearchAndFilters = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
                     Wedding Date
@@ -1286,7 +1286,7 @@ const clearSearchAndFilters = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
                     Service Type
@@ -1327,7 +1327,7 @@ const clearSearchAndFilters = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
                     Bridesmaid
@@ -1689,7 +1689,7 @@ const clearSearchAndFilters = () => {
 
       <div className="p-5 space-y-4">
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
           <div>
             <p className="text-xs text-gray-400 font-semibold">
@@ -1723,7 +1723,7 @@ const clearSearchAndFilters = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
           <div>
             <p className="text-xs text-gray-400 font-semibold">
