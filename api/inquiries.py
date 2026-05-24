@@ -76,13 +76,26 @@ async def get_inquiries(tab: str = "all"):
 @app.post("/api/inquiries")
 async def create_inquiry(data: dict):
 
-    client = create_client_sync(url=url, auth_token=auth_token)
+    client = create_client_sync(
+        url=url,
+        auth_token=auth_token
+    )
 
     try:
+        couple_name = (data.get("couple_name") or "").strip()
 
-        agreed_price = float(data.get("agreed_price", 0))
-        advance_paid = float(data.get("advance_paid", 0))
+        if not couple_name:
+            return {
+                "success": False,
+                "error": "Couple name is required"
+            }
+
+        agreed_price = float(data.get("agreed_price") or 0)
+        advance_paid = float(data.get("advance_paid") or 0)
         pending_payment = agreed_price - advance_paid
+
+        guest_count_raw = data.get("guest_count")
+        guest_count = int(guest_count_raw) if guest_count_raw not in [None, ""] else None
 
         query = """
         INSERT INTO inquiries (
@@ -107,21 +120,21 @@ async def create_inquiry(data: dict):
         client.execute(
             query,
             [
-                data.get("couple_name"),
-                data.get("wedding_date"),
-                data.get("hotel"),
-                data.get("service_type"),
-                data.get("wedding_type"),
-                int(data.get("guest_count", 0)),
-                data.get("contact_no"),
-                data.get("bridesmaid_option"),
+                couple_name,
+                data.get("wedding_date") or None,
+                data.get("hotel") or None,
+                data.get("service_type") or None,
+                data.get("wedding_type") or None,
+                guest_count,
+                data.get("contact_no") or None,
+                data.get("bridesmaid_option") or "-",
                 agreed_price,
                 advance_paid,
                 pending_payment,
-                data.get("status"),
-                data.get("remarks"),
-                data.get("country"),
-            ],
+                data.get("status") or "Inquiry",
+                data.get("remarks") or None,
+                data.get("country") or "Local",
+            ]
         )
 
         client.close()
@@ -129,8 +142,11 @@ async def create_inquiry(data: dict):
         return {"success": True}
 
     except Exception as e:
-        return {"success": False, "error": str(e)}
-
+        client.close()
+        return {
+            "success": False,
+            "error": str(e)
+        }
 
 @app.put("/api/inquiries")
 async def update_inquiry(id: int, data: dict):
@@ -141,12 +157,22 @@ async def update_inquiry(id: int, data: dict):
     )
 
     try:
+        couple_name = (data.get("couple_name") or "").strip()
 
-        agreed_price = float(data.get("agreed_price", 0) or 0)
-        advance_paid = float(data.get("advance_paid", 0) or 0)
+        if not couple_name:
+            return {
+                "success": False,
+                "error": "Couple name is required"
+            }
+
+        agreed_price = float(data.get("agreed_price") or 0)
+        advance_paid = float(data.get("advance_paid") or 0)
         pending_payment = agreed_price - advance_paid
 
-        res = client.execute("""
+        guest_count_raw = data.get("guest_count")
+        guest_count = int(guest_count_raw) if guest_count_raw not in [None, ""] else None
+
+        client.execute("""
             UPDATE inquiries SET 
                 couple_name=?,
                 wedding_date=?,
@@ -164,19 +190,19 @@ async def update_inquiry(id: int, data: dict):
                 country=?
             WHERE id=?
         """, [
-            data.get("couple_name"),
-            data.get("wedding_date"),
-            data.get("hotel"),
-            data.get("service_type"),
-            data.get("wedding_type"),
-            int(data.get("guest_count") or 0),
-            data.get("contact_no"),
+            couple_name,
+            data.get("wedding_date") or None,
+            data.get("hotel") or None,
+            data.get("service_type") or None,
+            data.get("wedding_type") or None,
+            guest_count,
+            data.get("contact_no") or None,
             data.get("bridesmaid_option") or "-",
             agreed_price,
             advance_paid,
             pending_payment,
             data.get("status") or "Inquiry",
-            data.get("remarks"),
+            data.get("remarks") or None,
             data.get("country") or "Local",
             id
         ])
@@ -190,9 +216,7 @@ async def update_inquiry(id: int, data: dict):
         }
 
     except Exception as e:
-
         client.close()
-
         return {
             "success": False,
             "error": str(e)
