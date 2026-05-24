@@ -218,6 +218,8 @@ const StatusDropdown = ({ currentStatus, onStatusChange }) => {
   );
 };
 
+const localizer = momentLocalizer(moment);
+
 export default function Dashboard() {
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
