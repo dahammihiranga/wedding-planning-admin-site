@@ -25,32 +25,32 @@ print("TOKEN EXISTS:", bool(auth_token))
 # Note: Turso handles table creation via the Dashboard SQL console
 # or a migration script. We no longer need init_db() local function.
 
+
 class InquiryBase(BaseModel):
     couple_name: str
     wedding_date: Optional[str] = None
     hotel: Optional[str] = None
-    service_type: Optional[str] = "Full wedding planning"       
-    wedding_type: Optional[str] = "One day"                 
+    service_type: Optional[str] = "Full wedding planning"
+    wedding_type: Optional[str] = "One day"
     guest_count: Optional[int] = None
     contact_no: Optional[str] = None
-    bridesmaid_option: Optional[str] = "-" 
+    bridesmaid_option: Optional[str] = "-"
     agreed_price: Optional[float] = 0.0
     advance_paid: Optional[float] = 0.0
-    status: Optional[str] = "Inquiry"                       
+    status: Optional[str] = "Inquiry"
     remarks: Optional[str] = None
     country: Optional[str] = "Local"
+
 
 class InquiryResponse(InquiryBase):
     id: int
     pending_payment: float
 
+
 @app.get("/api/inquiries")
 async def get_inquiries(tab: str = "all"):
 
-    client = create_client_sync(
-        url=url,
-        auth_token=auth_token
-    )
+    client = create_client_sync(url=url, auth_token=auth_token)
 
     try:
 
@@ -59,9 +59,7 @@ async def get_inquiries(tab: str = "all"):
                 "SELECT * FROM inquiries WHERE status = 'Completed' ORDER BY id DESC"
             )
         else:
-            result = client.execute(
-                "SELECT * FROM inquiries ORDER BY id DESC"
-            )
+            result = client.execute("SELECT * FROM inquiries ORDER BY id DESC")
 
         columns = result.columns
         rows = [dict(zip(columns, row)) for row in result.rows]
@@ -72,18 +70,13 @@ async def get_inquiries(tab: str = "all"):
 
     except Exception as e:
 
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        return {"success": False, "error": str(e)}
+
 
 @app.post("/api/inquiries")
 async def create_inquiry(data: dict):
 
-    client = create_client_sync(
-        url=url,
-        auth_token=auth_token
-    )
+    client = create_client_sync(url=url, auth_token=auth_token)
 
     try:
 
@@ -128,7 +121,7 @@ async def create_inquiry(data: dict):
                 data.get("status"),
                 data.get("remarks"),
                 data.get("country"),
-            ]
+            ],
         )
 
         client.close()
@@ -136,88 +129,75 @@ async def create_inquiry(data: dict):
         return {"success": True}
 
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        return {"success": False, "error": str(e)}
+
 
 @app.put("/api/inquiries")
 async def update_inquiry(id: int, data: dict):
-    client = create_client_sync(
-        url=url,
-        auth_token=auth_token
-    )
+    client = create_client_sync(url=url, auth_token=auth_token)
 
     try:
         agreed_price = float(data.get("agreed_price", 0) or 0)
         advance_paid = float(data.get("advance_paid", 0) or 0)
         pending_payment = agreed_price - advance_paid
 
-        res = client.execute("""
-            UPDATE inquiries SET 
-                couple_name=?,
-                wedding_date=?,
-                hotel=?,
-                service_type=?,
-                wedding_type=?,
-                guest_count=?,
-                contact_no=?,
-                bridesmaid_option=?,
-                agreed_price=?,
-                advance_paid=?,
-                pending_payment=?,
-                status=?,
-                remarks=?,
-                country=?
-            WHERE id=?
-        """, [
-            data.get("couple_name"),
-            data.get("wedding_date"),
-            data.get("hotel"),
-            data.get("service_type"),
-            data.get("wedding_type"),
-            int(data.get("guest_count") or 0),
-            data.get("contact_no"),
-            data.get("bridesmaid_option") or "-",
-            agreed_price,
-            advance_paid,
-            pending_payment,
-            data.get("status") or "Inquiry",
-            data.get("remarks"),
-            data.get("country") or "Local",
-            inquiry_id
-        ])
+        res = client.execute(
+            """
+    UPDATE inquiries SET 
+        couple_name=?,
+        wedding_date=?,
+        hotel=?,
+        service_type=?,
+        wedding_type=?,
+        guest_count=?,
+        contact_no=?,
+        bridesmaid_option=?,
+        agreed_price=?,
+        advance_paid=?,
+        pending_payment=?,
+        status=?,
+        remarks=?,
+        country=?
+    WHERE id=?
+""",
+            [
+                data.get("couple_name"),
+                data.get("wedding_date"),
+                data.get("hotel"),
+                data.get("service_type"),
+                data.get("wedding_type"),
+                int(data.get("guest_count") or 0),
+                data.get("contact_no"),
+                data.get("bridesmaid_option") or "-",
+                agreed_price,
+                advance_paid,
+                pending_payment,
+                data.get("status") or "Inquiry",
+                data.get("remarks"),
+                data.get("country") or "Local",
+                id,
+            ],
+        )
 
         client.close()
 
         if res.affected_rows == 0:
-            return {
-                "success": False,
-                "error": "Wedding record not found"
-            }
+            return {"success": False, "error": "Wedding record not found"}
 
-        return {
-            "success": True,
-            "id": inquiry_id,
-            "pending_payment": pending_payment
-        }
+        return {"success": True, "id": id, "pending_payment": pending_payment}
 
     except Exception as e:
         client.close()
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        return {"success": False, "error": str(e)}
+
 
 @app.delete("/api/inquiries")
 async def delete_inquiry(id: int):
-    client = create_client_sync(
-        url=url,
-        auth_token=auth_token
-    )
+    client = create_client_sync(url=url, auth_token=auth_token)
     res = client.execute("DELETE FROM inquiries WHERE id = ?", [id])
     if res.affected_rows == 0:
         raise HTTPException(status_code=404, detail="Wedding record not found")
     return {"message": "Record successfully deleted", "id": inquiry_id}
+
 
 handler = app
