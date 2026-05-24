@@ -63,7 +63,8 @@ async def get_inquiries(tab: str = "all"):
                 "SELECT * FROM inquiries ORDER BY id DESC"
             )
 
-        rows = [dict(row) for row in result.rows]
+        columns = result.columns
+        rows = [dict(zip(columns, row)) for row in result.rows]
 
         client.close()
 
