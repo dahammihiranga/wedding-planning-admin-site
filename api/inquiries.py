@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
-from libsql_client import create_client
+from libsql_client import create_client_sync
 
 app = FastAPI(title="Chathu Wedding Planners CRM")
 
@@ -44,24 +44,42 @@ class InquiryResponse(InquiryBase):
     id: int
     pending_payment: float
 
-@app.get("api/inquiries", response_model=List[InquiryResponse])
+@app.get("/api/inquiries")
 async def get_inquiries(tab: str = "all"):
-    client = create_client(
+
+    client = create_client_sync(
         url=url,
         auth_token=auth_token
     )
-    if tab == "completed":
-        result = await client.execute("SELECT * FROM inquiries WHERE status = 'Completed' ORDER BY updated_at ASC")
-    else:
-        result = await client.execute("SELECT * FROM inquiries ORDER BY id ASC")
-    
-    # Convert rows to a list of dictionaries
-    return [row._asdict() for row in result.rows]
+
+    try:
+
+        if tab == "completed":
+            result = client.execute(
+                "SELECT * FROM inquiries WHERE status = 'Completed' ORDER BY id DESC"
+            )
+        else:
+            result = client.execute(
+                "SELECT * FROM inquiries ORDER BY id DESC"
+            )
+
+        rows = [dict(row) for row in result.rows]
+
+        client.close()
+
+        return rows
+
+    except Exception as e:
+
+        return {
+            "success": False,
+            "error": str(e)
+        }
 
 @app.post("/api/inquiries")
 async def create_inquiry(data: dict):
 
-    client = create_client(
+    client = create_client_sync(
         url=url,
         auth_token=auth_token
     )
@@ -92,7 +110,7 @@ async def create_inquiry(data: dict):
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
-        await client.execute(
+        client.execute(
             query,
             [
                 data.get("couple_name"),
@@ -112,7 +130,7 @@ async def create_inquiry(data: dict):
             ]
         )
 
-        await client.close()
+        client.close()
 
         return {"success": True}
 
@@ -122,9 +140,9 @@ async def create_inquiry(data: dict):
             "error": str(e)
         }
 
-@app.put("api/inquiries/{inquiry_id}", response_model=InquiryResponse)
+@app.put("/api/inquiries/{inquiry_id}", response_model=InquiryResponse)
 async def update_inquiry(inquiry_id: int, inquiry: InquiryBase):
-    client = create_client(
+    client = create_client_sync(
         url=url,
         auth_token=auth_token
     )
@@ -132,7 +150,7 @@ async def update_inquiry(inquiry_id: int, inquiry: InquiryBase):
     advance = inquiry.advance_paid or 0.0
     pending = agreed - advance
     
-    res = await client.execute("""
+    res = client.execute("""
         UPDATE inquiries SET 
             couple_name=?, wedding_date=?, hotel=?, service_type=?, wedding_type=?, 
             guest_count=?, contact_no=?, bridesmaid_option=?, agreed_price=?, 
@@ -149,13 +167,13 @@ async def update_inquiry(inquiry_id: int, inquiry: InquiryBase):
         
     return {**inquiry.model_dump(), "id": inquiry_id, "pending_payment": pending}
 
-@app.delete("api/inquiries/{inquiry_id}")
+@app.delete("/api/inquiries/{inquiry_id}")
 async def delete_inquiry(inquiry_id: int):
-    client = create_client(
+    client = create_client_sync(
         url=url,
         auth_token=auth_token
     )
-    res = await client.execute("DELETE FROM inquiries WHERE id = ?", (inquiry_id,))
+    res = client.execute("DELETE FROM inquiries WHERE id = ?", (inquiry_id,))
     if res.affected_rows == 0:
         raise HTTPException(status_code=404, detail="Wedding record not found")
     return {"message": "Record successfully deleted", "id": inquiry_id}
