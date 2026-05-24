@@ -44,41 +44,37 @@ class InquiryResponse(InquiryBase):
     id: int
     pending_payment: float
 
-@app.get("/api/test-env")
-def test_env():
-    return {
-        "url": url,
-        "token_exists": bool(auth_token)
-    }
+@app.get("/api/inquiries")
+async def get_inquiries(tab: str = "all"):
 
-    # client = create_client_sync(
-    #     url=url,
-    #     auth_token=auth_token
-    # )
+    client = create_client_sync(
+        url=url,
+        auth_token=auth_token
+    )
 
-    # try:
+    try:
 
-    #     if tab == "completed":
-    #         result = client.execute(
-    #             "SELECT * FROM inquiries WHERE status = 'Completed' ORDER BY id DESC"
-    #         )
-    #     else:
-    #         result = client.execute(
-    #             "SELECT * FROM inquiries ORDER BY id DESC"
-    #         )
+        if tab == "completed":
+            result = client.execute(
+                "SELECT * FROM inquiries WHERE status = 'Completed' ORDER BY id DESC"
+            )
+        else:
+            result = client.execute(
+                "SELECT * FROM inquiries ORDER BY id DESC"
+            )
 
-    #     rows = [dict(row) for row in result.rows]
+        rows = [dict(row) for row in result.rows]
 
-    #     client.close()
+        client.close()
 
-    #     return rows
+        return rows
 
-    # except Exception as e:
+    except Exception as e:
 
-    #     return {
-    #         "success": False,
-    #         "error": str(e)
-    #     }
+        return {
+            "success": False,
+            "error": str(e)
+        }
 
 @app.post("/api/inquiries")
 async def create_inquiry(data: dict):
