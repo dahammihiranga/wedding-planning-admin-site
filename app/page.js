@@ -284,6 +284,8 @@ export default function Dashboard() {
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [manualCalendarDate, setManualCalendarDate] = useState("");
   const [isServiceDropdownOpen, setIsServiceDropdownOpen] = useState(false);
+  const [isFilterServiceDropdownOpen, setIsFilterServiceDropdownOpen] =
+  useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -614,7 +616,7 @@ const clearSearchAndFilters = () => {
 
   setFilters({
     weddingDate: "",
-    serviceType: "",
+    serviceType: [],
     weddingType: "",
     status: "",
   });
@@ -722,45 +724,53 @@ const clearSearchAndFilters = () => {
       className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
     />
 
-    <div className="bg-white border rounded-xl p-3">
-  <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
-    Service Types
-  </p>
+    <div className="relative">
+  <button
+    type="button"
+    onClick={() => setIsFilterServiceDropdownOpen(!isFilterServiceDropdownOpen)}
+    className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none text-left flex items-center justify-between focus:ring-2 focus:ring-emerald-500"
+  >
+    <span className="truncate">
+      {filters.serviceType?.length > 0
+        ? `${filters.serviceType.length} service type(s) selected`
+        : "All Service Types"}
+    </span>
+    <span className="text-gray-400">▾</span>
+  </button>
 
-  <div className="space-y-2">
-    {SERVICE_TYPE_OPTIONS.map((service) => (
-      <label
-        key={service}
-        className="flex items-center gap-2 text-sm"
-      >
-        <input
-          type="checkbox"
-          checked={filters.serviceType?.includes(service)}
-          onChange={(e) => {
+  {isFilterServiceDropdownOpen && (
+    <div className="absolute z-[1000] mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl p-2 space-y-1">
+      {SERVICE_TYPE_OPTIONS.map((service) => (
+        <label
+          key={service}
+          className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-emerald-50 cursor-pointer text-sm"
+        >
+          <input
+            type="checkbox"
+            checked={filters.serviceType?.includes(service)}
+            onChange={(e) => {
+              const current = filters.serviceType || [];
 
-            const current = filters.serviceType || [];
+              if (e.target.checked) {
+                setFilters({
+                  ...filters,
+                  serviceType: [...current, service],
+                });
+              } else {
+                setFilters({
+                  ...filters,
+                  serviceType: current.filter((s) => s !== service),
+                });
+              }
+            }}
+            className="accent-emerald-600"
+          />
 
-            if (e.target.checked) {
-              setFilters({
-                ...filters,
-                serviceType: [...current, service],
-              });
-            } else {
-              setFilters({
-                ...filters,
-                serviceType: current.filter(
-                  (s) => s !== service
-                ),
-              });
-            }
-          }}
-          className="accent-emerald-600"
-        />
-
-        <span>{service}</span>
-      </label>
-    ))}
-  </div>
+          <span className="font-medium text-gray-700">{service}</span>
+        </label>
+      ))}
+    </div>
+  )}
 </div>
 
     <select
