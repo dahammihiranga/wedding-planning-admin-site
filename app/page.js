@@ -228,6 +228,7 @@ export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tappedCountry, setTappedCountry] = useState(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [selectedCalendarEvent, setSelectedCalendarEvent] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -1490,17 +1491,130 @@ const clearSearchAndFilters = () => {
 
       <div className="h-[70vh]">
         <Calendar
-          localizer={localizer}
-          events={calendarEvents}
-          startAccessor="start"
-          endAccessor="end"
-          titleAccessor="title"
-          views={["month", "week", "day", "agenda"]}
-          defaultView="month"
-          popup
-          style={{ height: "100%" }}
-        />
+  localizer={localizer}
+  events={calendarEvents}
+  startAccessor="start"
+  endAccessor="end"
+  titleAccessor="title"
+  views={["month", "week", "day", "agenda"]}
+  defaultView="month"
+  popup
+  style={{ height: "100%" }}
+  onSelectEvent={(event) => {
+    setSelectedCalendarEvent(event.resource);
+  }}
+/>
       </div>
+      {selectedCalendarEvent && (
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+
+    <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-gray-100 overflow-hidden">
+
+      <div className="bg-emerald-700 px-5 py-4 text-white">
+        <h2 className="text-xl font-bold">
+          {selectedCalendarEvent.couple_name}
+        </h2>
+
+        <p className="text-emerald-100 text-sm mt-1">
+          Wedding Details
+        </p>
+      </div>
+
+      <div className="p-5 space-y-4">
+
+        <div className="grid grid-cols-2 gap-4">
+
+          <div>
+            <p className="text-xs text-gray-400 font-semibold">
+              Wedding Date
+            </p>
+
+            <p className="font-semibold text-gray-800">
+              {selectedCalendarEvent.wedding_date || "-"}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs text-gray-400 font-semibold">
+              Guest Count
+            </p>
+
+            <p className="font-semibold text-gray-800">
+              {selectedCalendarEvent.guest_count || "-"}
+            </p>
+          </div>
+
+        </div>
+
+        <div>
+          <p className="text-xs text-gray-400 font-semibold">
+            Hotel
+          </p>
+
+          <p className="font-semibold text-gray-800">
+            {selectedCalendarEvent.hotel || "-"}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+
+          <div>
+            <p className="text-xs text-gray-400 font-semibold">
+              Service Type
+            </p>
+
+            <p className="font-semibold text-gray-800">
+              {selectedCalendarEvent.service_type || "-"}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs text-gray-400 font-semibold">
+              Wedding Type
+            </p>
+
+            <p className="font-semibold text-gray-800">
+              {selectedCalendarEvent.wedding_type || "-"}
+            </p>
+          </div>
+
+        </div>
+
+        <div>
+          <p className="text-xs text-gray-400 font-semibold">
+            Contact Number
+          </p>
+
+          <p className="font-semibold text-gray-800">
+            {selectedCalendarEvent.contact_no || "-"}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs text-gray-400 font-semibold">
+            Status
+          </p>
+
+          <span className="inline-flex px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 mt-1">
+            {selectedCalendarEvent.status || "-"}
+          </span>
+        </div>
+
+      </div>
+
+      <div className="border-t p-4 flex justify-end">
+        <button
+          onClick={() => setSelectedCalendarEvent(null)}
+          className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm"
+        >
+          Close
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+)}
     </div>
   </div>
 )}
