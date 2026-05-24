@@ -90,7 +90,9 @@ async def create_inquiry(data: dict):
                 "error": "Couple name is required"
             }
 
-        agreed_price = float(data.get("agreed_price") or 0)
+        package_price = float(data.get("package_price") or 0)
+        discount_rate = float(data.get("discount_rate") or 0)
+        agreed_price = package_price - ((package_price * discount_rate) / 100)
         advance_paid = float(data.get("advance_paid") or 0)
         pending_payment = agreed_price - advance_paid
 
@@ -107,6 +109,8 @@ async def create_inquiry(data: dict):
             guest_count,
             contact_no,
             bridesmaid_option,
+            package_price,
+            discount_rate,
             agreed_price,
             advance_paid,
             pending_payment,
@@ -115,7 +119,7 @@ async def create_inquiry(data: dict):
             country,
             advance_paid_date
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
         client.execute(
@@ -129,6 +133,8 @@ async def create_inquiry(data: dict):
                 guest_count,
                 data.get("contact_no") or None,
                 data.get("bridesmaid_option") or "-",
+                package_price,
+                discount_rate,
                 agreed_price,
                 advance_paid,
                 pending_payment,
@@ -167,7 +173,9 @@ async def update_inquiry(id: int, data: dict):
                 "error": "Couple name is required"
             }
 
-        agreed_price = float(data.get("agreed_price") or 0)
+        package_price = float(data.get("package_price") or 0)
+        discount_rate = float(data.get("discount_rate") or 0)
+        agreed_price = package_price - ((package_price * discount_rate) / 100)
         advance_paid = float(data.get("advance_paid") or 0)
         pending_payment = agreed_price - advance_paid
 
@@ -184,6 +192,8 @@ async def update_inquiry(id: int, data: dict):
         guest_count=?,
         contact_no=?,
         bridesmaid_option=?,
+        package_price=?,
+        discount_rate=?,
         agreed_price=?,
         advance_paid=?,
         advance_paid_date=?,
@@ -201,6 +211,8 @@ async def update_inquiry(id: int, data: dict):
     guest_count,
     data.get("contact_no") or None,
     data.get("bridesmaid_option") or "-",
+    package_price,
+    discount_rate,
     agreed_price,
     advance_paid,
     data.get("advance_paid_date") or None,
