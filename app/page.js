@@ -283,6 +283,7 @@ export default function Dashboard() {
   const [selectedCalendarEvent, setSelectedCalendarEvent] = useState(null);
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [manualCalendarDate, setManualCalendarDate] = useState("");
+  const [isServiceDropdownOpen, setIsServiceDropdownOpen] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -474,16 +475,20 @@ const [filters, setFilters] = useState({
   };
 
   const openEditModal = (item) => {
-    setFormData({
-      ...item,
-      bridesmaid_option:
-        item.bridesmaid_option && item.bridesmaid_option !== "-"
-          ? item.bridesmaid_option
-          : "",
-      country: item.country || "Local",
-    });
-    setIsModalOpen(true);
-  };
+  setFormData({
+    ...item,
+    service_type: item.service_type
+      ? item.service_type.split(",").map((s) => s.trim())
+      : [],
+    bridesmaid_option:
+      item.bridesmaid_option && item.bridesmaid_option !== "-"
+        ? item.bridesmaid_option
+        : "",
+    country: item.country || "Local",
+  });
+
+  setIsModalOpen(true);
+};
 
   const openAddModal = () => {
     setFormData({
@@ -1325,46 +1330,68 @@ const clearSearchAndFilters = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-  <label className="block text-xs font-bold uppercase tracking-wider text-emerald-800 mb-2">
-    Service Types
+                <div className="relative">
+  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+    Service Type
   </label>
 
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-    {SERVICE_TYPE_OPTIONS.map((service) => (
-      <label
-        key={service}
-        className="flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 cursor-pointer hover:border-emerald-300 transition"
-      >
-        <input
-          type="checkbox"
-          checked={formData.service_type?.includes(service)}
-          onChange={(e) => {
-            if (e.target.checked) {
-              setFormData({
-  ...item,
-  service_type: item.service_type
-    ? item.service_type.split(",").map((s) => s.trim())
-    : [],
-});
-            } else {
-              setFormData({
-                ...formData,
-                service_type: Array.isArray(formData.service_type)
-  ? formData.service_type.join(", ")
-  : formData.service_type,
-              });
-            }
-          }}
-          className="accent-emerald-600"
-        />
+  <button
+    type="button"
+    onClick={() => setIsServiceDropdownOpen(!isServiceDropdownOpen)}
+    className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none text-left flex items-center justify-between"
+  >
+    <span className="truncate">
+      {Array.isArray(formData.service_type) &&
+      formData.service_type.length > 0
+        ? formData.service_type.join(", ")
+        : "Please select service type"}
+    </span>
 
-        <span className="text-sm font-medium text-gray-700">
-          {service}
-        </span>
-      </label>
-    ))}
-  </div>
+    <span className="text-gray-400">▾</span>
+  </button>
+
+  {isServiceDropdownOpen && (
+    <div className="absolute z-[10000] mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl p-2 space-y-1">
+      {SERVICE_TYPE_OPTIONS.map((service) => (
+        <label
+          key={service}
+          className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-emerald-50 cursor-pointer text-sm"
+        >
+          <input
+            type="checkbox"
+            checked={
+              Array.isArray(formData.service_type) &&
+              formData.service_type.includes(service)
+            }
+            onChange={(e) => {
+              const current = Array.isArray(formData.service_type)
+                ? formData.service_type
+                : [];
+
+              if (e.target.checked) {
+                setFormData({
+                  ...formData,
+                  service_type: [...current, service],
+                });
+              } else {
+                setFormData({
+                  ...formData,
+                  service_type: current.filter(
+                    (s) => s !== service
+                  ),
+                });
+              }
+            }}
+            className="accent-emerald-600"
+          />
+
+          <span className="font-medium text-gray-700">
+            {service}
+          </span>
+        </label>
+      ))}
+    </div>
+  )}
 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
