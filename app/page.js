@@ -625,7 +625,19 @@ const clearSearchAndFilters = () => {
   if (!mounted) return <div className="min-h-screen bg-gray-50" />;
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 font-sans pb-10 relative">
+    <div
+  className="min-h-screen text-gray-800 font-sans pb-10 relative"
+  style={{
+    backgroundImage: "url('/background_img_1.png')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundAttachment: "fixed",
+    backgroundRepeat: "no-repeat",
+  }}
+>
+  <div className="absolute inset-0 bg-white/75 backdrop-blur-[2px] pointer-events-none"></div>
+
+<div className="relative z-10">
       {/* HIGH VISIBILITY FLOATING INTERACTIVE TOAST BARS */}
       {toast.show && (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4 pointer-events-auto">
@@ -1909,6 +1921,7 @@ const clearSearchAndFilters = () => {
 )}
 
       <WindowsFlagFix />
+    </div>
     </div>
   );
 }
