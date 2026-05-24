@@ -670,35 +670,37 @@ const clearSearchAndFilters = () => {
         </div>
       )}
 
-      <header className="bg-emerald-600 text-white shadow-md p-4 sticky top-0 z-10 flex justify-between items-center">
-        <div>
-          <h1 className="text-xl font-bold tracking-wide">
-            Chathu Wedding Planners
-          </h1>
-          <p className="text-xs text-emerald-100 mt-0.5 uppercase tracking-wider">
-            {activeTab === "all"
-              ? "ACTIVE WEDDING INQUIRIES"
-              : activeTab === "completed"
-                ? "OUR WEDDING ENQUIRIES"
-                : "RECYCLE TRACK STORAGE"}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-  <button
-    onClick={() => setIsCalendarOpen(true)}
-    className="bg-emerald-800/40 text-white font-semibold px-4 py-2 rounded-lg shadow hover:bg-emerald-800/60 transition text-sm"
-  >
-    📅 Calendar
-  </button>
+      <header
+  className="text-emerald-950 shadow-md p-4 sticky top-0 z-10 flex justify-between items-center"
+  style={{
+    backgroundImage: "url('/header-nav-img.jpg')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+  }}
+>
+  <div className="flex items-center gap-3">
+  <img
+    src="/official Logo.png"
+    alt="Chathu Wedding Planners"
+    className="w-12 h-12 object-contain rounded-full shadow-sm"
+  />
 
-  <button
-    onClick={openAddModal}
-    className="bg-white text-emerald-700 font-semibold px-4 py-2 rounded-lg shadow hover:bg-emerald-50 transition text-sm"
-  >
-    + New Inquiry
-  </button>
+  <div>
+    <h1 className="text-xl font-bold tracking-wide text-emerald-950">
+      Chathu Wedding Planners
+    </h1>
+
+    <p className="text-xs text-emerald-900 mt-0.5 uppercase tracking-wider">
+      {activeTab === "all"
+        ? "ACTIVE WEDDING INQUIRIES"
+        : activeTab === "completed"
+          ? "OUR WEDDING ENQUIRIES"
+          : "RECYCLE TRACK STORAGE"}
+    </p>
+  </div>
 </div>
-      </header>
+</header>
 
       <div className="max-w-[98%] mx-auto mt-4 bg-white border border-gray-100 rounded-2xl shadow-sm p-4">
 
@@ -821,6 +823,22 @@ const clearSearchAndFilters = () => {
 
   </div>
 
+</div>
+
+<div className="max-w-[98%] mx-auto mt-4 flex justify-start gap-2">
+  <button
+    onClick={openAddModal}
+    className="bg-white text-emerald-700 border border-emerald-200 font-semibold px-4 py-2 rounded-lg shadow hover:bg-emerald-50 transition text-sm"
+  >
+    + New Inquiry
+  </button>
+
+  <button
+    onClick={() => setIsCalendarOpen(true)}
+    className="bg-emerald-700 text-white font-semibold px-4 py-2 rounded-lg shadow hover:bg-emerald-800 transition text-sm"
+  >
+    📅 Calendar
+  </button>
 </div>
 
       {/* DASHBOARD TAB SEGMENT CONSOLE NAVIGATION BAR */}
