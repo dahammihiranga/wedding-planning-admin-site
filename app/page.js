@@ -223,6 +223,15 @@ export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tappedCountry, setTappedCountry] = useState(null);
 
+  const [searchTerm, setSearchTerm] = useState("");
+
+const [filters, setFilters] = useState({
+  weddingDate: "",
+  serviceType: "",
+  weddingType: "",
+  status: "",
+});
+
   const [toast, setToast] = useState({
     show: false,
     message: "",
@@ -474,7 +483,54 @@ export default function Dashboard() {
       : { flag: "🇱🇰", name: "Local Sri Lanka" };
   };
 
-  const activeRecordsDisplay = activeTab === "trash" ? deletedRecords : data;
+  const activeRecordsDisplay =
+  activeTab === "trash" ? deletedRecords : data;
+
+const filteredRecordsDisplay = activeRecordsDisplay.filter((item) => {
+
+  const search = searchTerm.toLowerCase().trim();
+
+  const matchesSearch =
+    !search ||
+    item.couple_name?.toLowerCase().includes(search) ||
+    item.wedding_date?.toLowerCase().includes(search) ||
+    item.contact_no?.toLowerCase().includes(search);
+
+  const matchesWeddingDate =
+    !filters.weddingDate ||
+    item.wedding_date === filters.weddingDate;
+
+  const matchesServiceType =
+    !filters.serviceType ||
+    item.service_type === filters.serviceType;
+
+  const matchesWeddingType =
+    !filters.weddingType ||
+    item.wedding_type === filters.weddingType;
+
+  const matchesStatus =
+    !filters.status ||
+    item.status === filters.status;
+
+  return (
+    matchesSearch &&
+    matchesWeddingDate &&
+    matchesServiceType &&
+    matchesWeddingType &&
+    matchesStatus
+  );
+});
+
+const clearSearchAndFilters = () => {
+  setSearchTerm("");
+
+  setFilters({
+    weddingDate: "",
+    serviceType: "",
+    weddingType: "",
+    status: "",
+  });
+};
 
   if (!mounted) return <div className="min-h-screen bg-gray-50" />;
 
@@ -573,6 +629,105 @@ export default function Dashboard() {
           </button>
         </div>
 
+        <div className="max-w-[98%] mx-auto mt-4 bg-white border border-gray-100 rounded-2xl shadow-sm p-4">
+
+  <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+
+    <input
+      type="text"
+      placeholder="Search by couple name, wedding date or contact no..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="md:col-span-2 w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+    />
+
+    <input
+      type="date"
+      value={filters.weddingDate}
+      onChange={(e) =>
+        setFilters({
+          ...filters,
+          weddingDate: e.target.value,
+        })
+      }
+      className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+    />
+
+    <select
+      value={filters.serviceType}
+      onChange={(e) =>
+        setFilters({
+          ...filters,
+          serviceType: e.target.value,
+        })
+      }
+      className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+    >
+      <option value="">All Service Types</option>
+      <option value="Full wedding planning">
+        Full wedding planning
+      </option>
+      <option value="Partial wedding planning">
+        Partial wedding planning
+      </option>
+      <option value="Wedding day coordination">
+        Wedding day coordination
+      </option>
+      <option value="Wedding agenda making">
+        Wedding agenda making
+      </option>
+    </select>
+
+    <select
+      value={filters.weddingType}
+      onChange={(e) =>
+        setFilters({
+          ...filters,
+          weddingType: e.target.value,
+        })
+      }
+      className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+    >
+      <option value="">All Wedding Types</option>
+      <option value="One day">One day</option>
+      <option value="Two days">Two days</option>
+    </select>
+  </div>
+
+  <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mt-3">
+
+    <select
+      value={filters.status}
+      onChange={(e) =>
+        setFilters({
+          ...filters,
+          status: e.target.value,
+        })
+      }
+      className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+    >
+      <option value="">All Status</option>
+      <option value="Inquiry">Inquiry</option>
+      <option value="Confirmed">Confirmed</option>
+      <option value="Completed">Completed</option>
+    </select>
+
+    <button
+      type="button"
+      onClick={clearSearchAndFilters}
+      className="px-4 py-2.5 rounded-xl bg-gray-100 text-gray-700 text-sm font-bold hover:bg-gray-200 transition"
+    >
+      Clear Filters
+    </button>
+
+    <div className="md:col-span-3 flex items-center justify-end text-xs font-bold text-gray-400">
+      Showing {filteredRecordsDisplay.length} of {activeRecordsDisplay.length} records
+    </div>
+
+  </div>
+
+</div>
+
         {activeTab === "trash" && deletedRecords.length > 0 && (
           <button
             onClick={() =>
@@ -591,7 +746,7 @@ export default function Dashboard() {
       </div>
 
       <main className="max-w-[98%] mx-auto mt-4">
-        {activeRecordsDisplay.length === 0 ? (
+        {filteredRecordsDisplay.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-xl shadow border border-gray-100">
             <p className="text-gray-400 text-sm font-medium">
               {activeTab === "trash"
@@ -638,7 +793,7 @@ export default function Dashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 text-xs bg-white">
-                  {activeRecordsDisplay.map((item, index) => {
+                  {filteredRecordsDisplay.map((item, index) => {
                     const countryInfo = getCountryDisplay(item.country);
                     return (
                       <tr
@@ -791,7 +946,7 @@ export default function Dashboard() {
 
             {/* Mobile Cards View Layout Block */}
             <div className="block lg:hidden space-y-4">
-              {activeRecordsDisplay.map((item, index) => {
+              {filteredRecordsDisplay.map((item, index) => {
                 const countryInfo = getCountryDisplay(item.country);
                 return (
                   <div
