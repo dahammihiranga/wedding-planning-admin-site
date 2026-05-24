@@ -31,72 +31,84 @@ const COUNTRIES = [
 
 const WindowsFlagFix = () => (
   <style jsx global>{`
-    @font-face {
-      font-family: "TwemojiFlags";
-      src: url("https://cdn.jsdelivr.net/gh/bramus/country-flag-emoji-polyfill@latest/dist/TwemojiCountryFlags.woff2")
-        format("woff2");
-      font-display: swap;
-    }
-    .emoji-flag {
-      font-family:
-        "TwemojiFlags", "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
-    }
-    @keyframes slideBounce {
-      0% {
-        transform: translateY(-20px) scale(0.9);
-        opacity: 0;
-      }
-      60% {
-        transform: translateY(10px) scale(1.02);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(0) scale(1);
-        opacity: 1;
-      }
-    }
-    @keyframes pulseGlow {
-      0%,
-      100% {
-        opacity: 0.6;
-      }
-      50% {
-        opacity: 1;
-      }
-    }
-    @keyframes menuFadeUp {
-      0% {
-        opacity: 0;
-        transform: translate(-50%, 8px) scale(0.95);
-      }
-      100% {
-        opacity: 1;
-        transform: translate(-50%, 0) scale(1);
-      }
-    }
-    @keyframes menuFadeDown {
-      0% {
-        opacity: 0;
-        transform: translate(-50%, -8px) scale(0.95);
-      }
-      100% {
-        opacity: 1;
-        transform: translate(-50%, 0) scale(1);
-      }
-    }
-    .animate-notification {
-      animation: slideBounce 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275)
-        forwards;
-    }
-    .animate-pulse-glow {
-      animation: pulseGlow 2s infinite ease-in-out;
-    }
-    .animate-menu-up {
-      animation: menuFadeUp 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    .animate-menu-down {
-      animation: menuFadeDown 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
+    .calendar-premium .rbc-calendar {
+  font-family: inherit;
+}
+
+.calendar-premium .rbc-toolbar {
+  margin-bottom: 16px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.calendar-premium .rbc-toolbar button {
+  border: 1px solid #d1fae5;
+  background: #ecfdf5;
+  color: #047857;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 800;
+  transition: all 0.2s ease;
+}
+
+.calendar-premium .rbc-toolbar button:hover,
+.calendar-premium .rbc-toolbar button.rbc-active {
+  background: #059669;
+  color: white;
+  border-color: #059669;
+}
+
+.calendar-premium .rbc-toolbar-label {
+  font-size: 18px;
+  font-weight: 900;
+  color: #064e3b;
+}
+
+.calendar-premium .rbc-month-view,
+.calendar-premium .rbc-time-view,
+.calendar-premium .rbc-agenda-view {
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.calendar-premium .rbc-header {
+  padding: 10px;
+  font-size: 12px;
+  font-weight: 900;
+  color: #065f46;
+  background: #ecfdf5;
+}
+
+.calendar-premium .rbc-date-cell {
+  padding: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.calendar-premium .rbc-today {
+  background: #ecfdf5;
+}
+
+.calendar-premium .rbc-event {
+  background: linear-gradient(135deg, #059669, #10b981);
+  border: none;
+  border-radius: 10px;
+  padding: 3px 7px;
+  font-size: 11px;
+  font-weight: 800;
+  box-shadow: 0 4px 10px rgba(5, 150, 105, 0.25);
+}
+
+.calendar-premium .rbc-event:hover {
+  filter: brightness(1.05);
+  transform: scale(1.01);
+}
+
+.calendar-premium .rbc-off-range-bg {
+  background: #f9fafb;
+}
   `}</style>
 );
 
@@ -230,6 +242,7 @@ export default function Dashboard() {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [selectedCalendarEvent, setSelectedCalendarEvent] = useState(null);
   const [calendarDate, setCalendarDate] = useState(new Date());
+  const [manualCalendarDate, setManualCalendarDate] = useState("");
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -1490,23 +1503,85 @@ const clearSearchAndFilters = () => {
         </button>
       </div>
 
-      <div className="h-[70vh]">
+      <div className="h-[70vh] rounded-2xl overflow-hidden border border-gray-100 shadow-inner bg-white p-3 calendar-premium">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
-  <div className="flex items-center gap-2">
-    <label className="text-sm font-bold text-gray-600">
-      Jump to date:
-    </label>
+  <div className="bg-gradient-to-r from-emerald-50 to-white border border-emerald-100 rounded-2xl p-4 mb-4 shadow-sm">
+  <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+    <div>
+      <h3 className="text-sm font-black text-emerald-800 uppercase tracking-wider">
+        Calendar Navigator
+      </h3>
+      <p className="text-xs text-gray-500 mt-1">
+        Jump quickly to future wedding enquiry dates.
+      </p>
+    </div>
 
-    <input
-      type="date"
-      value={moment(calendarDate).format("YYYY-MM-DD")}
-      onChange={(e) => {
-        const selectedDate = moment(e.target.value, "YYYY-MM-DD").toDate();
-        setCalendarDate(selectedDate);
-      }}
-      className="p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
-    />
+    <div className="flex flex-col md:flex-row gap-3">
+      <div>
+        <label className="block text-xs font-bold text-gray-500 mb-1">
+          Date Picker
+        </label>
+        <input
+          type="date"
+          value={moment(calendarDate).format("YYYY-MM-DD")}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (!value) return;
+
+            const selectedDate = moment(value, "YYYY-MM-DD", true);
+
+            if (selectedDate.isValid()) {
+              setCalendarDate(selectedDate.toDate());
+              setManualCalendarDate(selectedDate.format("YYYY-MM-DD"));
+            }
+          }}
+          className="w-full md:w-44 p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+        />
+      </div>
+
+      <div>
+        <label className="block text-xs font-bold text-gray-500 mb-1">
+          Type Date Manually
+        </label>
+        <input
+          type="text"
+          placeholder="YYYY-MM-DD"
+          value={manualCalendarDate}
+          onChange={(e) => setManualCalendarDate(e.target.value)}
+          className="w-full md:w-44 p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+        />
+      </div>
+
+      <button
+        type="button"
+        onClick={() => {
+          const selectedDate = moment(manualCalendarDate, "YYYY-MM-DD", true);
+
+          if (selectedDate.isValid()) {
+            setCalendarDate(selectedDate.toDate());
+          } else {
+            triggerNotification("Please enter date as YYYY-MM-DD", "delete");
+          }
+        }}
+        className="px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-black hover:bg-emerald-700 transition"
+      >
+        Go
+      </button>
+
+      <button
+        type="button"
+        onClick={() => {
+          const today = new Date();
+          setCalendarDate(today);
+          setManualCalendarDate(moment(today).format("YYYY-MM-DD"));
+        }}
+        className="px-4 py-2.5 rounded-xl bg-gray-100 text-gray-700 text-sm font-black hover:bg-gray-200 transition"
+      >
+        Today
+      </button>
+    </div>
   </div>
+</div>
 
   <button
     type="button"
@@ -1524,8 +1599,16 @@ const clearSearchAndFilters = () => {
   titleAccessor="title"
   views={["month", "week", "day", "agenda"]}
   defaultView="month"
-  date={calendarDate}
-onNavigate={(date) => setCalendarDate(date)}
+  date={
+    calendarDate instanceof Date && !isNaN(calendarDate)
+      ? calendarDate
+      : new Date()
+  }
+  onNavigate={(date) => {
+    if (date instanceof Date && !isNaN(date)) {
+      setCalendarDate(date);
+    }
+  }}
   popup
   style={{ height: "100%" }}
   onSelectEvent={(event) => {
