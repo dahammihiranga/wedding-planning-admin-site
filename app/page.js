@@ -683,7 +683,7 @@ const clearSearchAndFilters = () => {
       )}
 
       <header
-  className="text-emerald-950 shadow-xl backdrop-blur-xl p-4 sticky top-0 z-10 flex justify-between items-center border-b border-white/30"
+  className="text-emerald-950 shadow-md p-4 sticky top-0 z-10 flex justify-between items-center"
   style={{
     backgroundImage: "url('/header-nav-img.jpg')",
     backgroundSize: "cover",
@@ -714,7 +714,7 @@ const clearSearchAndFilters = () => {
 </div>
 </header>
 
-      <div className="max-w-[98%] mx-auto mt-4 bg-white/45 backdrop-blur-xl border border-white/40 rounded-2xl shadow-xl p-4">
+      <div className="max-w-[98%] mx-auto mt-4 bg-white border border-gray-100 rounded-2xl shadow-sm p-4">
 
   <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
 
@@ -837,7 +837,7 @@ const clearSearchAndFilters = () => {
 
 </div>
 
-<div className="max-w-[98%] mx-auto mt-4 flex justify-start gap-2 bg-white/30 backdrop-blur-lg border border-white/30 rounded-2xl p-3 shadow-lg">
+<div className="max-w-[98%] mx-auto mt-4 flex justify-start gap-2">
   <button
     onClick={openAddModal}
     className="bg-white text-emerald-700 border border-emerald-200 font-semibold px-4 py-2 rounded-lg shadow hover:bg-emerald-50 transition text-sm"
@@ -854,7 +854,7 @@ const clearSearchAndFilters = () => {
 </div>
 
       {/* DASHBOARD TAB SEGMENT CONSOLE NAVIGATION BAR */}
-      <div className="max-w-[98%] mx-auto mt-6 flex flex-col bg-white/25 backdrop-blur-lg border border-white/30 rounded-2xl px-4 md:flex-row md:items-center justify-between gap-4 border-b border-gray-200">
+      <div className="max-w-[98%] mx-auto mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200">
         <div className="flex flex-wrap">
           <button
             onClick={() => setActiveTab("all")}
@@ -900,7 +900,7 @@ const clearSearchAndFilters = () => {
 
       <main className="max-w-[98%] mx-auto mt-4">
         {filteredRecordsDisplay.length === 0 ? (
-          <div className="text-center py-12 bg-white/45 backdrop-blur-xl rounded-xl shadow-xl border border-white/40">
+          <div className="text-center py-12 bg-white rounded-xl shadow border border-gray-100">
             <p className="text-gray-400 text-sm font-medium">
               {activeTab === "trash"
                 ? "Your Deleted Records folder is completely empty."
@@ -910,8 +910,8 @@ const clearSearchAndFilters = () => {
         ) : (
           <>
             {/* Desktop Table View Container - Patched Layout constraints */}
-            <div className="hidden lg:block bg-white/40 backdrop-blur-xl shadow-xl rounded-xl border border-white/40 overflow-x-auto w-full clear-both">
-              <table className="w-full text-left border-collapse min-w-max table-auto bg-transparent rounded-xl">
+            <div className="hidden lg:block bg-white shadow-md rounded-xl border border-gray-100 overflow-x-auto w-full clear-both">
+              <table className="w-full text-left border-collapse min-w-max table-auto bg-white rounded-xl">
                 <thead>
                   <tr
                     className={`${activeTab === "trash" ? "bg-amber-50 text-amber-950" : "bg-emerald-50 text-emerald-900"} text-xs uppercase font-bold border-b border-gray-200`}
@@ -945,13 +945,13 @@ const clearSearchAndFilters = () => {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/20 text-xs bg-transparent">
+                <tbody className="divide-y divide-gray-100 text-xs bg-white">
                   {filteredRecordsDisplay.map((item, index) => {
                     const countryInfo = getCountryDisplay(item.country);
                     return (
                       <tr
                         key={item.id}
-                        className="hover:bg-white/20 transition-all duration-300 bg-transparent"
+                        className="hover:bg-gray-50/80 transition bg-white"
                       >
                         <td className="p-3 text-center font-medium text-gray-400">
                           {index + 1}
@@ -1112,7 +1112,7 @@ const clearSearchAndFilters = () => {
                 return (
                   <div
                     key={item.id}
-                    className={`bg-white/45 backdrop-blur-xl rounded-xl p-4 shadow-xl border border-white/40 space-y-3 ${activeTab === "trash" ? "border-amber-200" : "border-gray-100"}`}
+                    className={`bg-white rounded-xl p-4 shadow border space-y-3 ${activeTab === "trash" ? "border-amber-200" : "border-gray-100"}`}
                   >
                     <div className="flex justify-between items-start">
                       <div>
@@ -1267,7 +1267,7 @@ const clearSearchAndFilters = () => {
       {/* INPUT / EDIT DIALOG FORM MODAL */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start md:items-center justify-center p-3 md:p-4 z-[9999] overflow-y-auto">
-    <div className="bg-white/60 backdrop-blur-2xl rounded-2xl w-full max-w-lg p-4 md:p-6 shadow-2xl space-y-4 my-4 md:my-8 border border-gray-100 max-h-[92vh] overflow-y-auto">
+    <div className="bg-white rounded-2xl w-full max-w-lg p-4 md:p-6 shadow-2xl space-y-4 my-4 md:my-8 border border-gray-100 max-h-[92vh] overflow-y-auto">
             <h2 className="text-lg font-bold text-gray-900 border-b pb-2">
               {formData.id ? "Modify Wedding File" : "Add New Wedding Record"}
             </h2>
@@ -1572,7 +1572,7 @@ const clearSearchAndFilters = () => {
       {/* DYNAMIC CONFIRMATION DIALOG MODAL */}
       {deleteModal.show && (
         <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-md flex items-center justify-center p-4 z-50">
-          <div className="bg-white/60 backdrop-blur-2xl rounded-3xl w-full max-w-md p-6 shadow-2xl text-center space-y-4 border border-rose-100">
+          <div className="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl text-center space-y-4 border border-rose-100">
             <div
               className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto text-3xl font-bold relative ${
                 deleteModal.type === "soft"
@@ -1651,7 +1651,7 @@ const clearSearchAndFilters = () => {
 
       {isCalendarOpen && (
   <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-    <div className="bg-white/55 backdrop-blur-2xl rounded-2xl w-full max-w-6xl h-[92vh] p-3 md:p-5 shadow-2xl border border-gray-100 flex flex-col overflow-hidden">
+    <div className="bg-white rounded-2xl w-full max-w-6xl h-[92vh] p-3 md:p-5 shadow-2xl border border-gray-100 flex flex-col overflow-hidden">
       <div className="flex items-center justify-between border-b pb-3 mb-4">
         <div>
           <h2 className="text-lg font-bold text-gray-900">
