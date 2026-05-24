@@ -49,7 +49,7 @@ class InquiryResponse(InquiryBase):
     id: int
     pending_payment: float
 
-@app.get("/inquiries", response_model=List[InquiryResponse])
+@app.get("api/inquiries", response_model=List[InquiryResponse])
 async def get_inquiries(tab: str = "all"):
     if tab == "completed":
         result = await client.execute("SELECT * FROM inquiries WHERE status = 'Completed' ORDER BY updated_at ASC")
@@ -59,32 +59,63 @@ async def get_inquiries(tab: str = "all"):
     # Convert rows to a list of dictionaries
     return [row._asdict() for row in result.rows]
 
-@app.post("/inquiries", response_model=InquiryResponse, status_code=status.HTTP_201_CREATED)
-async def create_inquiry(inquiry: InquiryBase):
-    agreed = inquiry.agreed_price or 0.0
-    advance = inquiry.advance_paid or 0.0
-    pending = agreed - advance
-    
-    await client.execute("""
+@app.post("/api/inquiries")
+async def create_inquiry(data: dict):
+    try:
+
+        query = """
         INSERT INTO inquiries (
-            couple_name, wedding_date, hotel, service_type, wedding_type, 
-            guest_count, contact_no, bridesmaid_option, agreed_price, 
-            advance_paid, pending_payment, status, remarks, country
+            couple_name,
+            wedding_date,
+            hotel,
+            service_type,
+            wedding_type,
+            guest_count,
+            contact_no,
+            bridesmaid_option,
+            agreed_price,
+            advance_paid,
+            pending_payment,
+            status,
+            remarks,
+            country
         )
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        inquiry.couple_name, inquiry.wedding_date, inquiry.hotel, inquiry.service_type,
-        inquiry.wedding_type, inquiry.guest_count, inquiry.contact_no, inquiry.bridesmaid_option,
-        agreed, advance, pending, inquiry.status, inquiry.remarks, inquiry.country
-    ))
-    
-    # Get the last inserted ID
-    res = await client.execute("SELECT last_insert_rowid() as id")
-    new_id = res.rows[0]["id"]
-    
-    return {**inquiry.model_dump(), "id": new_id, "pending_payment": pending}
+        """
 
-@app.put("/inquiries/{inquiry_id}", response_model=InquiryResponse)
+        agreed_price = float(data.get("agreed_price", 0))
+        advance_paid = float(data.get("advance_paid", 0))
+        pending_payment = agreed_price - advance_paid
+
+        await client.execute(
+            query,
+            [
+                data.get("couple_name"),
+                data.get("wedding_date"),
+                data.get("hotel"),
+                data.get("service_type"),
+                data.get("wedding_type"),
+                int(data.get("guest_count", 0)),
+                data.get("contact_no"),
+                data.get("bridesmaid_option"),
+                agreed_price,
+                advance_paid,
+                pending_payment,
+                data.get("status"),
+                data.get("remarks"),
+                data.get("country"),
+            ]
+        )
+
+        return {"success": True}
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+@app.put("api/inquiries/{inquiry_id}", response_model=InquiryResponse)
 async def update_inquiry(inquiry_id: int, inquiry: InquiryBase):
     agreed = inquiry.agreed_price or 0.0
     advance = inquiry.advance_paid or 0.0
@@ -107,7 +138,7 @@ async def update_inquiry(inquiry_id: int, inquiry: InquiryBase):
         
     return {**inquiry.model_dump(), "id": inquiry_id, "pending_payment": pending}
 
-@app.delete("/inquiries/{inquiry_id}")
+@app.delete("api/inquiries/{inquiry_id}")
 async def delete_inquiry(inquiry_id: int):
     res = await client.execute("DELETE FROM inquiries WHERE id = ?", (inquiry_id,))
     if res.affected_rows == 0:
