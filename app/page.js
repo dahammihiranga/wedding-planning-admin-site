@@ -291,6 +291,9 @@ export default function Dashboard() {
 
 const [filters, setFilters] = useState({
   weddingDate: "",
+  weddingDateFrom: "",
+  weddingDateTo: "",
+  weddingMonth: "",
   serviceType: [],
   weddingType: "",
   status: "",
@@ -569,9 +572,19 @@ const filteredRecordsDisplay = activeRecordsDisplay.filter((item) => {
     item.wedding_date?.toLowerCase().includes(search) ||
     item.contact_no?.toLowerCase().includes(search);
 
-  const matchesWeddingDate =
-    !filters.weddingDate ||
-    item.wedding_date === filters.weddingDate;
+  const itemWeddingDate = item.wedding_date || "";
+
+const matchesWeddingDate =
+  !filters.weddingDate ||
+  itemWeddingDate === filters.weddingDate;
+
+const matchesWeddingDateRange =
+  (!filters.weddingDateFrom || itemWeddingDate >= filters.weddingDateFrom) &&
+  (!filters.weddingDateTo || itemWeddingDate <= filters.weddingDateTo);
+
+const matchesWeddingMonth =
+  !filters.weddingMonth ||
+  itemWeddingDate.slice(0, 7) === filters.weddingMonth;
 
   const matchesServiceType =
   !filters.serviceType?.length ||
@@ -588,12 +601,14 @@ const filteredRecordsDisplay = activeRecordsDisplay.filter((item) => {
     item.status === filters.status;
 
   return (
-    matchesSearch &&
-    matchesWeddingDate &&
-    matchesServiceType &&
-    matchesWeddingType &&
-    matchesStatus
-  );
+  matchesSearch &&
+  matchesWeddingDate &&
+  matchesWeddingDateRange &&
+  matchesWeddingMonth &&
+  matchesServiceType &&
+  matchesWeddingType &&
+  matchesStatus
+);
 });
 
 const calendarEvents = activeRecordsDisplay
@@ -615,11 +630,14 @@ const clearSearchAndFilters = () => {
   setSearchTerm("");
 
   setFilters({
-    weddingDate: "",
-    serviceType: [],
-    weddingType: "",
-    status: "",
-  });
+  weddingDate: "",
+  weddingDateFrom: "",
+  weddingDateTo: "",
+  weddingMonth: "",
+  serviceType: [],
+  weddingType: "",
+  status: "",
+});
 };
 
   if (!mounted) return <div className="min-h-screen bg-gray-50" />;
@@ -727,16 +745,43 @@ const clearSearchAndFilters = () => {
     />
 
     <input
-      type="date"
-      value={filters.weddingDate}
-      onChange={(e) =>
-        setFilters({
-          ...filters,
-          weddingDate: e.target.value,
-        })
-      }
-      className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
-    />
+  type="date"
+  value={filters.weddingDateFrom}
+  onChange={(e) =>
+    setFilters({
+      ...filters,
+      weddingDateFrom: e.target.value,
+    })
+  }
+  className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+  title="Wedding date from"
+/>
+
+<input
+  type="date"
+  value={filters.weddingDateTo}
+  onChange={(e) =>
+    setFilters({
+      ...filters,
+      weddingDateTo: e.target.value,
+    })
+  }
+  className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+  title="Wedding date to"
+/>
+
+<input
+  type="month"
+  value={filters.weddingMonth}
+  onChange={(e) =>
+    setFilters({
+      ...filters,
+      weddingMonth: e.target.value,
+    })
+  }
+  className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+  title="Filter by month"
+/>
 
     <div className="relative">
   <button
