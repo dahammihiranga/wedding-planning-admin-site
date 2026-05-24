@@ -175,41 +175,41 @@ async def update_inquiry(id: int, data: dict):
         guest_count = int(guest_count_raw) if guest_count_raw not in [None, ""] else None
 
         client.execute("""
-            UPDATE inquiries SET 
-                couple_name=?,
-                wedding_date=?,
-                hotel=?,
-                service_type=?,
-                wedding_type=?,
-                guest_count=?,
-                contact_no=?,
-                bridesmaid_option=?,
-                agreed_price=?,
-                advance_paid=?,
-                pending_payment=?,
-                status=?,
-                remarks=?,
-                country=?,
-                advance_paid_date=?
-            WHERE id=?
-        """, [
-            couple_name,
-            data.get("wedding_date") or None,
-            data.get("hotel") or None,
-            data.get("service_type") or None,
-            data.get("wedding_type") or None,
-            guest_count,
-            data.get("contact_no") or None,
-            data.get("bridesmaid_option") or "-",
-            agreed_price,
-            advance_paid,
-            pending_payment,
-            data.get("status") or "Inquiry",
-            data.get("remarks") or None,
-            data.get("country") or "Local",
-            id,
-            data.get("advance_paid_date") or None
-        ])
+    UPDATE inquiries SET 
+        couple_name=?,
+        wedding_date=?,
+        hotel=?,
+        service_type=?,
+        wedding_type=?,
+        guest_count=?,
+        contact_no=?,
+        bridesmaid_option=?,
+        agreed_price=?,
+        advance_paid=?,
+        advance_paid_date=?,
+        pending_payment=?,
+        status=?,
+        remarks=?,
+        country=?
+    WHERE id=?
+""", [
+    couple_name,
+    data.get("wedding_date") or None,
+    data.get("hotel") or None,
+    data.get("service_type") or None,
+    data.get("wedding_type") or None,
+    guest_count,
+    data.get("contact_no") or None,
+    data.get("bridesmaid_option") or "-",
+    agreed_price,
+    advance_paid,
+    data.get("advance_paid_date") or None,
+    pending_payment,
+    data.get("status") or "Inquiry",
+    data.get("remarks") or None,
+    data.get("country") or "Local",
+    id
+])
 
         client.close()
 
