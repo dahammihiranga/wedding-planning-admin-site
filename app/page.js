@@ -340,6 +340,16 @@ export default function Dashboard() {
   }
 };
 
+  const initiateDelete = (item, type = "soft") => {
+  setDeleteModal({
+    show: true,
+    id: item.id,
+    name: item.couple_name,
+    type,
+    rawItem: item,
+  });
+};
+
   const confirmDeleteAction = async () => {
     const { id, name, type, rawItem } = deleteModal;
 
