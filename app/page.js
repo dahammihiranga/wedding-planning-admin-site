@@ -265,6 +265,13 @@ const StatusDropdown = ({ currentStatus, onStatusChange }) => {
 
 const localizer = momentLocalizer(moment);
 
+const SERVICE_TYPE_OPTIONS = [
+  "Full wedding planning",
+  "Partial wedding planning",
+  "Wedding day coordination",
+  "Wedding agenda making",
+];
+
 export default function Dashboard() {
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
@@ -281,7 +288,7 @@ export default function Dashboard() {
 
 const [filters, setFilters] = useState({
   weddingDate: "",
-  serviceType: "",
+  serviceType: [],
   weddingType: "",
   status: "",
 });
@@ -303,7 +310,7 @@ const [filters, setFilters] = useState({
     couple_name: "",
     wedding_date: "",
     hotel: "",
-    service_type: "Full wedding planning",
+    service_type: [],
     wedding_type: "One day",
     guest_count: "",
     contact_no: "",
@@ -484,7 +491,7 @@ const [filters, setFilters] = useState({
       couple_name: "",
       wedding_date: "",
       hotel: "",
-      service_type: "Full wedding planning",
+      service_type: [],
       wedding_type: "One day",
       guest_count: "",
       contact_no: "",
@@ -505,11 +512,14 @@ const [filters, setFilters] = useState({
     const url = formData.id ? `${API_URL}?id=${formData.id}` : API_URL;
 
     const adjustedData = {
-      ...formData,
-      guest_count:
-        formData.guest_count === "" ? null : parseInt(formData.guest_count, 10),
-      bridesmaid_option: formData.bridesmaid_option || "-",
-    };
+  ...formData,
+  service_type: Array.isArray(formData.service_type)
+    ? formData.service_type.join(", ")
+    : formData.service_type,
+  guest_count:
+    formData.guest_count === "" ? null : parseInt(formData.guest_count, 10),
+  bridesmaid_option: formData.bridesmaid_option || "-",
+};
 
     try {
       const res = await fetch(url, {
@@ -557,8 +567,10 @@ const filteredRecordsDisplay = activeRecordsDisplay.filter((item) => {
     item.wedding_date === filters.weddingDate;
 
   const matchesServiceType =
-    !filters.serviceType ||
-    item.service_type === filters.serviceType;
+  !filters.serviceType?.length ||
+  filters.serviceType.some((service) =>
+    item.service_type?.includes(service)
+  );
 
   const matchesWeddingType =
     !filters.weddingType ||
@@ -705,30 +717,46 @@ const clearSearchAndFilters = () => {
       className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
     />
 
-    <select
-      value={filters.serviceType}
-      onChange={(e) =>
-        setFilters({
-          ...filters,
-          serviceType: e.target.value,
-        })
-      }
-      className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
-    >
-      <option value="">All Service Types</option>
-      <option value="Full wedding planning">
-        Full wedding planning
-      </option>
-      <option value="Partial wedding planning">
-        Partial wedding planning
-      </option>
-      <option value="Wedding day coordination">
-        Wedding day coordination
-      </option>
-      <option value="Wedding agenda making">
-        Wedding agenda making
-      </option>
-    </select>
+    <div className="bg-white border rounded-xl p-3">
+  <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
+    Service Types
+  </p>
+
+  <div className="space-y-2">
+    {SERVICE_TYPE_OPTIONS.map((service) => (
+      <label
+        key={service}
+        className="flex items-center gap-2 text-sm"
+      >
+        <input
+          type="checkbox"
+          checked={filters.serviceType?.includes(service)}
+          onChange={(e) => {
+
+            const current = filters.serviceType || [];
+
+            if (e.target.checked) {
+              setFilters({
+                ...filters,
+                serviceType: [...current, service],
+              });
+            } else {
+              setFilters({
+                ...filters,
+                serviceType: current.filter(
+                  (s) => s !== service
+                ),
+              });
+            }
+          }}
+          className="accent-emerald-600"
+        />
+
+        <span>{service}</span>
+      </label>
+    ))}
+  </div>
+</div>
 
     <select
       value={filters.weddingType}
@@ -1298,29 +1326,46 @@ const clearSearchAndFilters = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Service Type
-                  </label>
-                  <select
-                    name="service_type"
-                    value={formData.service_type}
-                    onChange={handleInputChange}
-                    className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
-                  >
-                    <option value="Full wedding planning">
-                      Full wedding planning
-                    </option>
-                    <option value="Partial wedding planning">
-                      Partial wedding planning
-                    </option>
-                    <option value="Wedding day coordination">
-                      Wedding day coordination
-                    </option>
-                    <option value="Wedding agenda making">
-                      Wedding agenda making
-                    </option>
-                  </select>
-                </div>
+  <label className="block text-xs font-bold uppercase tracking-wider text-emerald-800 mb-2">
+    Service Types
+  </label>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+    {SERVICE_TYPE_OPTIONS.map((service) => (
+      <label
+        key={service}
+        className="flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 cursor-pointer hover:border-emerald-300 transition"
+      >
+        <input
+          type="checkbox"
+          checked={formData.service_type?.includes(service)}
+          onChange={(e) => {
+            if (e.target.checked) {
+              setFormData({
+  ...item,
+  service_type: item.service_type
+    ? item.service_type.split(",").map((s) => s.trim())
+    : [],
+});
+            } else {
+              setFormData({
+                ...formData,
+                service_type: Array.isArray(formData.service_type)
+  ? formData.service_type.join(", ")
+  : formData.service_type,
+              });
+            }
+          }}
+          className="accent-emerald-600"
+        />
+
+        <span className="text-sm font-medium text-gray-700">
+          {service}
+        </span>
+      </label>
+    ))}
+  </div>
+</div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
                     Wedding Type
@@ -1673,7 +1718,7 @@ const clearSearchAndFilters = () => {
       couple_name: "",
       wedding_date: selectedDate,
       hotel: "",
-      service_type: "Full wedding planning",
+      service_type: [],
       wedding_type: "One day",
       guest_count: "",
       contact_no: "",
