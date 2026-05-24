@@ -307,37 +307,38 @@ export default function Dashboard() {
   };
 
   const handleStatusChange = async (item, newStatus) => {
-    const updatedRecord = { ...item, status: newStatus };
-    try {
-      await fetch(`${API_URL}/${item.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedRecord),
-      });
+  const updatedRecord = { ...item, status: newStatus };
 
-      let moveMessage = `Status updated to "${newStatus}"!`;
-      if (newStatus === "Completed" && activeTab === "all") {
-        moveMessage = `File for ${item.couple_name} marked Completed & moved to the financials tab! ✨`;
-      } else if (newStatus !== "Completed" && activeTab === "completed") {
-        moveMessage = `File for ${item.couple_name} moved back into Active Wedding Inquiries! 📋`;
-      }
-
-      triggerNotification(moveMessage, "success");
-      fetchData();
-    } catch (err) {
-      console.error("Error updating status", err);
-    }
-  };
-
-  const initiateDelete = (item, type = "soft") => {
-    setDeleteModal({
-      show: true,
-      id: item.id,
-      name: item.couple_name,
-      type,
-      rawItem: item,
+  try {
+    const res = await fetch(`${API_URL}/${item.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedRecord),
     });
-  };
+
+    const json = await res.json();
+
+    if (!res.ok || json.success === false) {
+      console.error("Status update failed:", json);
+      triggerNotification("Status update failed. Please try again.", "delete");
+      return;
+    }
+
+    let moveMessage = `Status updated to "${newStatus}"!`;
+
+    if (newStatus === "Completed" && activeTab === "all") {
+      moveMessage = `File for ${item.couple_name} marked Completed & moved to Completed Weddings! ✨`;
+    } else if (newStatus !== "Completed" && activeTab === "completed") {
+      moveMessage = `File for ${item.couple_name} moved back into Active Wedding Inquiries! 📋`;
+    }
+
+    triggerNotification(moveMessage, "success");
+    fetchData();
+  } catch (err) {
+    console.error("Error updating status", err);
+    triggerNotification("Status update failed. Please try again.", "delete");
+  }
+};
 
   const confirmDeleteAction = async () => {
     const { id, name, type, rawItem } = deleteModal;

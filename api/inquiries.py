@@ -141,32 +141,73 @@ async def create_inquiry(data: dict):
             "error": str(e)
         }
 
-@app.put("/api/inquiries/{inquiry_id}", response_model=InquiryResponse)
-async def update_inquiry(inquiry_id: int, inquiry: InquiryBase):
+@app.put("/api/inquiries/{inquiry_id}")
+async def update_inquiry(inquiry_id: int, data: dict):
     client = create_client_sync(
         url=url,
         auth_token=auth_token
     )
-    agreed = inquiry.agreed_price or 0.0
-    advance = inquiry.advance_paid or 0.0
-    pending = agreed - advance
-    
-    res = client.execute("""
-        UPDATE inquiries SET 
-            couple_name=?, wedding_date=?, hotel=?, service_type=?, wedding_type=?, 
-            guest_count=?, contact_no=?, bridesmaid_option=?, agreed_price=?, 
-            advance_paid=?, pending_payment=?, status=?, remarks=?, country=?
-        WHERE id=?
-    """, (
-        inquiry.couple_name, inquiry.wedding_date, inquiry.hotel, inquiry.service_type,
-        inquiry.wedding_type, inquiry.guest_count, inquiry.contact_no, inquiry.bridesmaid_option,
-        agreed, advance, pending, inquiry.status, inquiry.remarks, inquiry.country, inquiry_id
-    ))
-    
-    if res.affected_rows == 0:
-        raise HTTPException(status_code=404, detail="Wedding file record not found")
-        
-    return {**inquiry.model_dump(), "id": inquiry_id, "pending_payment": pending}
+
+    try:
+        agreed_price = float(data.get("agreed_price", 0) or 0)
+        advance_paid = float(data.get("advance_paid", 0) or 0)
+        pending_payment = agreed_price - advance_paid
+
+        res = client.execute("""
+            UPDATE inquiries SET 
+                couple_name=?,
+                wedding_date=?,
+                hotel=?,
+                service_type=?,
+                wedding_type=?,
+                guest_count=?,
+                contact_no=?,
+                bridesmaid_option=?,
+                agreed_price=?,
+                advance_paid=?,
+                pending_payment=?,
+                status=?,
+                remarks=?,
+                country=?
+            WHERE id=?
+        """, [
+            data.get("couple_name"),
+            data.get("wedding_date"),
+            data.get("hotel"),
+            data.get("service_type"),
+            data.get("wedding_type"),
+            int(data.get("guest_count") or 0),
+            data.get("contact_no"),
+            data.get("bridesmaid_option") or "-",
+            agreed_price,
+            advance_paid,
+            pending_payment,
+            data.get("status") or "Inquiry",
+            data.get("remarks"),
+            data.get("country") or "Local",
+            inquiry_id
+        ])
+
+        client.close()
+
+        if res.affected_rows == 0:
+            return {
+                "success": False,
+                "error": "Wedding record not found"
+            }
+
+        return {
+            "success": True,
+            "id": inquiry_id,
+            "pending_payment": pending_payment
+        }
+
+    except Exception as e:
+        client.close()
+        return {
+            "success": False,
+            "error": str(e)
+        }
 
 @app.delete("/api/inquiries/{inquiry_id}")
 async def delete_inquiry(inquiry_id: int):
