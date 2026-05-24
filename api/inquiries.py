@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
-from libsql_client import Client, ResultSet # Added for Turso
+from libsql_client import create_client # Added for Turso
 
 app = FastAPI(title="Chathu Wedding Planners CRM")
 
@@ -19,7 +19,10 @@ app.add_middleware(
 # These environment variables must be set in Vercel Settings
 url = os.environ.get("TURSO_DATABASE_URL")
 auth_token = os.environ.get("TURSO_AUTH_TOKEN")
-client = Client(url=url, auth_token=auth_token)
+client = create_client(
+    url=url,
+    auth_token=auth_token
+)
 
 # Note: Turso handles table creation via the Dashboard SQL console
 # or a migration script. We no longer need init_db() local function.

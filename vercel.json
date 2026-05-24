@@ -1,5 +1,7 @@
 {
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/backend/index.py" }
-  ]
+  "functions": {
+    "api/*.py": {
+      "runtime": "vercel-python@0.5.2"
+    }
+  }
 }
