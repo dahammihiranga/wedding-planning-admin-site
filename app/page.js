@@ -1642,6 +1642,29 @@ const clearSearchAndFilters = () => {
       setCalendarDate(date);
     }
   }}
+  selectable
+  onSelectSlot={(slotInfo) => {
+    const selectedDate = moment(slotInfo.start).format("YYYY-MM-DD");
+
+    setFormData({
+      id: null,
+      couple_name: "",
+      wedding_date: selectedDate,
+      hotel: "",
+      service_type: "Full wedding planning",
+      wedding_type: "One day",
+      guest_count: "",
+      contact_no: "",
+      bridesmaid_option: "",
+      agreed_price: 0,
+      advance_paid: 0,
+      status: "Inquiry",
+      remarks: "",
+      country: "Local",
+    });
+
+    setIsModalOpen(true);
+  }}
   popup
   style={{ height: "520px", minWidth: "720px" }}
   onSelectEvent={(event) => {
