@@ -110,3 +110,5 @@ async def delete_inquiry(inquiry_id: int):
     if res.affected_rows == 0:
         raise HTTPException(status_code=404, detail="Wedding record not found")
     return {"message": "Record successfully deleted", "id": inquiry_id}
+
+handler = app
