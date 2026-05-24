@@ -310,7 +310,7 @@ export default function Dashboard() {
   const updatedRecord = { ...item, status: newStatus };
 
   try {
-    const res = await fetch(`${API_URL}/${item.id}`, {
+    const res = await fetch(`${API_URL}?id=${item.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedRecord),
@@ -352,7 +352,7 @@ export default function Dashboard() {
       );
     } else if (type === "permanent") {
       try {
-        const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+        const res = await fetch(`${API_URL}?id=${id}`, { method: "DELETE" });
         if (res.ok) {
           const filteredTrash = deletedRecords.filter((item) => item.id !== id);
           saveTrashToStorage(filteredTrash);
@@ -367,7 +367,7 @@ export default function Dashboard() {
     } else if (type === "all") {
       try {
         for (const item of deletedRecords) {
-          await fetch(`${API_URL}/${item.id}`, { method: "DELETE" });
+          await fetch(`${API_URL}?id=${item.id}`, { method: "DELETE" });
         }
         saveTrashToStorage([]);
         triggerNotification(
@@ -427,7 +427,7 @@ export default function Dashboard() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const method = formData.id ? "PUT" : "POST";
-    const url = formData.id ? `${API_URL}/${formData.id}` : API_URL;
+    const url = formData.id ? `${API_URL}?id=${formData.id}` : API_URL;
 
     const adjustedData = {
       ...formData,

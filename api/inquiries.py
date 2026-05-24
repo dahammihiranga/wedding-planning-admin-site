@@ -141,8 +141,8 @@ async def create_inquiry(data: dict):
             "error": str(e)
         }
 
-@app.put("/api/inquiries/{inquiry_id}")
-async def update_inquiry(inquiry_id: int, data: dict):
+@app.put("/api/inquiries")
+async def update_inquiry(id: int, data: dict):
     client = create_client_sync(
         url=url,
         auth_token=auth_token
@@ -209,13 +209,13 @@ async def update_inquiry(inquiry_id: int, data: dict):
             "error": str(e)
         }
 
-@app.delete("/api/inquiries/{inquiry_id}")
-async def delete_inquiry(inquiry_id: int):
+@app.delete("/api/inquiries")
+async def delete_inquiry(id: int):
     client = create_client_sync(
         url=url,
         auth_token=auth_token
     )
-    res = client.execute("DELETE FROM inquiries WHERE id = ?", (inquiry_id,))
+    res = client.execute("DELETE FROM inquiries WHERE id = ?", [id])
     if res.affected_rows == 0:
         raise HTTPException(status_code=404, detail="Wedding record not found")
     return {"message": "Record successfully deleted", "id": inquiry_id}
