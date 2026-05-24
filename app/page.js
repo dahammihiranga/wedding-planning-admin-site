@@ -683,7 +683,7 @@ const clearSearchAndFilters = () => {
       )}
 
       <header
-  className="text-emerald-950 shadow-md p-4 sticky top-0 z-10 flex justify-between items-center"
+  className="text-emerald-950 shadow-xl backdrop-blur-xl p-4 sticky top-0 z-10 flex justify-between items-center border-b border-white/30"
   style={{
     backgroundImage: "url('/header-nav-img.jpg')",
     backgroundSize: "cover",
@@ -837,7 +837,7 @@ const clearSearchAndFilters = () => {
 
 </div>
 
-<div className="max-w-[98%] mx-auto mt-4 flex justify-start gap-2">
+<div className="max-w-[98%] mx-auto mt-4 flex justify-start gap-2 bg-white/30 backdrop-blur-lg border border-white/30 rounded-2xl p-3 shadow-lg">
   <button
     onClick={openAddModal}
     className="bg-white text-emerald-700 border border-emerald-200 font-semibold px-4 py-2 rounded-lg shadow hover:bg-emerald-50 transition text-sm"
