@@ -1183,8 +1183,8 @@ const clearSearchAndFilters = () => {
 
       {/* INPUT / EDIT DIALOG FORM MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-4 my-8 border border-gray-100">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-2 md:p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[95vh] overflow-y-auto shadow-2xl">
             <h2 className="text-lg font-bold text-gray-900 border-b pb-2">
               {formData.id ? "Modify Wedding File" : "Add New Wedding Record"}
             </h2>
