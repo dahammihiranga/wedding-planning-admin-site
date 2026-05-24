@@ -1,5 +1,8 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import moment from "moment";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 
 // Country list mapping with flags and labels
 const COUNTRIES = [
@@ -103,6 +106,7 @@ const StatusDropdown = ({ currentStatus, onStatusChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [menuStyle, setMenuStyle] = useState({});
   const buttonRef = useRef(null);
+  const localizer = momentLocalizer(moment);
 
   const toggleDropdown = (e) => {
     e.stopPropagation();
@@ -222,6 +226,7 @@ export default function Dashboard() {
   const [deletedRecords, setDeletedRecords] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tappedCountry, setTappedCountry] = useState(null);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -521,6 +526,21 @@ const filteredRecordsDisplay = activeRecordsDisplay.filter((item) => {
   );
 });
 
+const calendarEvents = activeRecordsDisplay
+  .filter((item) => item.wedding_date)
+  .map((item) => {
+    const eventDate = new Date(`${item.wedding_date}T00:00:00`);
+
+    return {
+      id: item.id,
+      title: item.couple_name,
+      start: eventDate,
+      end: eventDate,
+      allDay: true,
+      resource: item,
+    };
+  });
+
 const clearSearchAndFilters = () => {
   setSearchTerm("");
 
@@ -593,43 +613,24 @@ const clearSearchAndFilters = () => {
                 : "RECYCLE TRACK STORAGE"}
           </p>
         </div>
-        <button
-          onClick={openAddModal}
-          className="bg-white text-emerald-700 font-semibold px-4 py-2 rounded-lg shadow hover:bg-emerald-50 transition text-sm"
-        >
-          + New Inquiry
-        </button>
+        <div className="flex items-center gap-2">
+  <button
+    onClick={() => setIsCalendarOpen(true)}
+    className="bg-emerald-800/40 text-white font-semibold px-4 py-2 rounded-lg shadow hover:bg-emerald-800/60 transition text-sm"
+  >
+    📅 Calendar
+  </button>
+
+  <button
+    onClick={openAddModal}
+    className="bg-white text-emerald-700 font-semibold px-4 py-2 rounded-lg shadow hover:bg-emerald-50 transition text-sm"
+  >
+    + New Inquiry
+  </button>
+</div>
       </header>
 
-      {/* DASHBOARD TAB SEGMENT CONSOLE NAVIGATION BAR */}
-      <div className="max-w-[98%] mx-auto mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200">
-        <div className="flex flex-wrap">
-          <button
-            onClick={() => setActiveTab("all")}
-            className={`py-3 px-5 font-semibold text-sm transition-all border-b-2 ${activeTab === "all" ? "border-emerald-600 text-emerald-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}
-          >
-            💚 Active Wedding Inquiries
-          </button>
-          <button
-            onClick={() => setActiveTab("completed")}
-            className={`py-3 px-5 font-semibold text-sm transition-all border-b-2 ${activeTab === "completed" ? "border-emerald-600 text-emerald-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}
-          >
-            ✨ Completed Weddings
-          </button>
-          <button
-            onClick={() => setActiveTab("trash")}
-            className={`py-3 px-5 font-semibold text-sm transition-all border-b-2 flex items-center gap-1.5 ${activeTab === "trash" ? "border-amber-600 text-amber-700 font-bold bg-amber-50/40" : "border-transparent text-gray-400 hover:text-gray-600"}`}
-          >
-            🗑️ Deleted Records
-            {deletedRecords.length > 0 && (
-              <span className="bg-amber-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-black animate-pulse">
-                {deletedRecords.length}
-              </span>
-            )}
-          </button>
-        </div>
-
-        <div className="max-w-[98%] mx-auto mt-4 bg-white border border-gray-100 rounded-2xl shadow-sm p-4">
+      <div className="max-w-[98%] mx-auto mt-4 bg-white border border-gray-100 rounded-2xl shadow-sm p-4">
 
   <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
 
@@ -727,6 +728,34 @@ const clearSearchAndFilters = () => {
   </div>
 
 </div>
+
+      {/* DASHBOARD TAB SEGMENT CONSOLE NAVIGATION BAR */}
+      <div className="max-w-[98%] mx-auto mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200">
+        <div className="flex flex-wrap">
+          <button
+            onClick={() => setActiveTab("all")}
+            className={`py-3 px-5 font-semibold text-sm transition-all border-b-2 ${activeTab === "all" ? "border-emerald-600 text-emerald-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+          >
+            💚 Active Wedding Inquiries
+          </button>
+          <button
+            onClick={() => setActiveTab("completed")}
+            className={`py-3 px-5 font-semibold text-sm transition-all border-b-2 ${activeTab === "completed" ? "border-emerald-600 text-emerald-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+          >
+            ✨ Completed Weddings
+          </button>
+          <button
+            onClick={() => setActiveTab("trash")}
+            className={`py-3 px-5 font-semibold text-sm transition-all border-b-2 flex items-center gap-1.5 ${activeTab === "trash" ? "border-amber-600 text-amber-700 font-bold bg-amber-50/40" : "border-transparent text-gray-400 hover:text-gray-600"}`}
+          >
+            🗑️ Deleted Records
+            {deletedRecords.length > 0 && (
+              <span className="bg-amber-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-black animate-pulse">
+                {deletedRecords.length}
+              </span>
+            )}
+          </button>
+        </div>
 
         {activeTab === "trash" && deletedRecords.length > 0 && (
           <button
@@ -1436,6 +1465,44 @@ const clearSearchAndFilters = () => {
           </div>
         </div>
       )}
+
+      {isCalendarOpen && (
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="bg-white rounded-2xl w-full max-w-6xl p-5 shadow-2xl border border-gray-100">
+      <div className="flex items-center justify-between border-b pb-3 mb-4">
+        <div>
+          <h2 className="text-lg font-bold text-gray-900">
+            Wedding Inquiry Calendar
+          </h2>
+          <p className="text-xs text-gray-500">
+            Showing inquiries with wedding dates only
+          </p>
+        </div>
+
+        <button
+          onClick={() => setIsCalendarOpen(false)}
+          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm font-bold text-gray-700"
+        >
+          Close
+        </button>
+      </div>
+
+      <div className="h-[70vh]">
+        <Calendar
+          localizer={localizer}
+          events={calendarEvents}
+          startAccessor="start"
+          endAccessor="end"
+          titleAccessor="title"
+          views={["month", "week", "day", "agenda"]}
+          defaultView="month"
+          popup
+          style={{ height: "100%" }}
+        />
+      </div>
+    </div>
+  </div>
+)}
 
       <WindowsFlagFix />
     </div>
