@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
-import "react-big-calendar/lib/css/react-big-calendar.css";
 
 // Country list mapping with flags and labels
 const COUNTRIES = [
@@ -529,13 +528,13 @@ const filteredRecordsDisplay = activeRecordsDisplay.filter((item) => {
 const calendarEvents = activeRecordsDisplay
   .filter((item) => item.wedding_date)
   .map((item) => {
-    const eventDate = new Date(`${item.wedding_date}T00:00:00`);
+    const startDate = moment(item.wedding_date, "YYYY-MM-DD").toDate();
 
     return {
       id: item.id,
-      title: item.couple_name,
-      start: eventDate,
-      end: eventDate,
+      title: item.couple_name || "Unnamed Inquiry",
+      start: startDate,
+      end: startDate,
       allDay: true,
       resource: item,
     };
