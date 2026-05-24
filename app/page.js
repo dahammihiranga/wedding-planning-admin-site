@@ -344,17 +344,19 @@ const [filters, setFilters] = useState({
   const updateSLTime = () => {
     const now = new Date();
 
-    const sriLankaTime = now.toLocaleString("en-LK", {
-      timeZone: "Asia/Colombo",
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      weekday: "short",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: true,
-    });
+    const isMobile = window.innerWidth < 768;
+
+const sriLankaTime = now.toLocaleString("en-LK", {
+  timeZone: "Asia/Colombo",
+  year: isMobile ? undefined : "numeric",
+  month: "short",
+  day: "numeric",
+  weekday: isMobile ? undefined : "short",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: isMobile ? undefined : "2-digit",
+  hour12: true,
+});
 
     setCurrentSLTime(sriLankaTime);
   };
@@ -728,7 +730,7 @@ const clearSearchAndFilters = () => {
       )}
 
       <header
-  className="text-emerald-950 shadow-xl backdrop-blur-xl p-4 sticky top-0 z-10 flex justify-between items-center border-b border-white/30"
+  className="text-emerald-950 shadow-xl backdrop-blur-xl p-4 sticky top-0 z-10 flex items-center justify-between border-b border-white/30"
   style={{
     backgroundImage: "url('/header-nav-img.jpg')",
     backgroundSize: "cover",
@@ -737,35 +739,35 @@ const clearSearchAndFilters = () => {
   }}
 >
   <div className="flex items-center gap-3">
-  <img
-    src="/official Logo.png"
-    alt="Chathu Wedding Planners"
-    className="w-12 h-12 object-contain rounded-full shadow-sm"
-  />
+    <img
+      src="/official Logo.png"
+      alt="Chathu Wedding Planners"
+      className="w-12 h-12 object-contain rounded-full shadow-sm"
+    />
 
-  <div>
-    <h1 className="text-xl font-bold tracking-wide text-emerald-950">
-      Chathu Wedding Planners
-    </h1>
+    <div>
+      <h1 className="text-xl font-bold tracking-wide text-emerald-950">
+        Chathu Wedding Planners
+      </h1>
 
-    <p className="text-xs text-emerald-900 mt-0.5 uppercase tracking-wider">
-      {activeTab === "all"
-        ? "ACTIVE WEDDING INQUIRIES"
-        : activeTab === "completed"
-          ? "OUR WEDDING ENQUIRIES"
-          : "RECYCLE TRACK STORAGE"}
+      <p className="text-xs text-emerald-900 mt-0.5 uppercase tracking-wider">
+        {activeTab === "all"
+          ? "ACTIVE WEDDING INQUIRIES"
+          : activeTab === "completed"
+            ? "OUR WEDDING ENQUIRIES"
+            : "RECYCLE TRACK STORAGE"}
+      </p>
+    </div>
+  </div>
+
+  <div className="text-right leading-tight ml-2">
+    <p className="text-[9px] md:text-[10px] uppercase tracking-wider font-bold text-emerald-900">
+      Sri Lanka
+    </p>
+    <p className="text-[10px] md:text-sm font-bold text-emerald-950 whitespace-nowrap">
+      {currentSLTime}
     </p>
   </div>
-</div>
-<div className="bg-white/30 backdrop-blur-md border border-white/30 rounded-2xl px-4 py-2 shadow-lg text-right">
-  <p className="text-[10px] uppercase tracking-widest font-bold text-emerald-900">
-    Sri Lanka Time
-  </p>
-
-  <p className="text-sm md:text-base font-bold text-emerald-950">
-    {currentSLTime}
-  </p>
-</div>
 </header>
 
       <div className="max-w-[98%] mx-auto mt-4 bg-white border border-gray-100 rounded-2xl shadow-sm p-4">
