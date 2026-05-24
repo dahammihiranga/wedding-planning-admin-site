@@ -229,6 +229,7 @@ export default function Dashboard() {
   const [tappedCountry, setTappedCountry] = useState(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [selectedCalendarEvent, setSelectedCalendarEvent] = useState(null);
+  const [calendarDate, setCalendarDate] = useState(new Date());
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -1490,6 +1491,31 @@ const clearSearchAndFilters = () => {
       </div>
 
       <div className="h-[70vh]">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+  <div className="flex items-center gap-2">
+    <label className="text-sm font-bold text-gray-600">
+      Jump to date:
+    </label>
+
+    <input
+      type="date"
+      value={moment(calendarDate).format("YYYY-MM-DD")}
+      onChange={(e) => {
+        const selectedDate = moment(e.target.value, "YYYY-MM-DD").toDate();
+        setCalendarDate(selectedDate);
+      }}
+      className="p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+    />
+  </div>
+
+  <button
+    type="button"
+    onClick={() => setCalendarDate(new Date())}
+    className="px-4 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 text-sm font-bold hover:bg-emerald-100 transition"
+  >
+    Today
+  </button>
+</div>
         <Calendar
   localizer={localizer}
   events={calendarEvents}
@@ -1498,6 +1524,8 @@ const clearSearchAndFilters = () => {
   titleAccessor="title"
   views={["month", "week", "day", "agenda"]}
   defaultView="month"
+  date={calendarDate}
+onNavigate={(date) => setCalendarDate(date)}
   popup
   style={{ height: "100%" }}
   onSelectEvent={(event) => {
