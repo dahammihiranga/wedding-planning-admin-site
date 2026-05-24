@@ -112,9 +112,10 @@ async def create_inquiry(data: dict):
             pending_payment,
             status,
             remarks,
-            country
+            country,
+            advance_paid_date
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
         client.execute(
@@ -134,6 +135,7 @@ async def create_inquiry(data: dict):
                 data.get("status") or "Inquiry",
                 data.get("remarks") or None,
                 data.get("country") or "Local",
+                data.get("advance_paid_date") or None
             ]
         )
 
@@ -187,7 +189,8 @@ async def update_inquiry(id: int, data: dict):
                 pending_payment=?,
                 status=?,
                 remarks=?,
-                country=?
+                country=?,
+                advance_paid_date=?
             WHERE id=?
         """, [
             couple_name,
@@ -204,7 +207,8 @@ async def update_inquiry(id: int, data: dict):
             data.get("status") or "Inquiry",
             data.get("remarks") or None,
             data.get("country") or "Local",
-            id
+            id,
+            data.get("advance_paid_date") or None
         ])
 
         client.close()

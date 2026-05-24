@@ -313,6 +313,7 @@ const [filters, setFilters] = useState({
     status: "Inquiry",
     remarks: "",
     country: "Local",
+    advance_paid_date: ""
   });
 
   const API_URL = "/api/inquiries"
@@ -493,6 +494,7 @@ const [filters, setFilters] = useState({
       status: "Inquiry",
       remarks: "",
       country: "Local",
+      advance_paid_date: ""
     });
     setIsModalOpen(true);
   };
@@ -931,12 +933,20 @@ const clearSearchAndFilters = () => {
                             : "0.00"}
                         </td>
                         <td className="p-3 text-right font-mono font-semibold text-amber-700">
-                          {item.advance_paid
-                            ? item.advance_paid.toLocaleString("en-LK", {
-                                minimumFractionDigits: 2,
-                              })
-                            : "0.00"}
-                        </td>
+  <div>
+    {item.advance_paid
+      ? Number(item.advance_paid).toLocaleString("en-LK", {
+          minimumFractionDigits: 2,
+        })
+      : "0.00"}
+  </div>
+
+  {item.advance_paid_date && (
+    <div className="text-[10px] text-gray-400 font-sans mt-0.5">
+      ({item.advance_paid_date})
+    </div>
+  )}
+</td>
                         <td className="p-3 text-right font-mono font-bold text-red-600">
                           {item.pending_payment
                             ? item.pending_payment.toLocaleString("en-LK", {
@@ -1094,15 +1104,22 @@ const clearSearchAndFilters = () => {
                           </span>
                         </div>
                         <div>
-                          <span className="text-[9px] text-gray-400 block uppercase font-bold">
-                            Paid:
-                          </span>
-                          <span className="text-xs font-bold text-amber-800">
-                            {item.advance_paid
-                              ? item.advance_paid.toLocaleString("en-LK")
-                              : "0"}
-                          </span>
-                        </div>
+  <span className="text-[9px] text-gray-400 block uppercase font-bold">
+    Paid:
+  </span>
+
+  <span className="text-xs font-bold text-amber-800 block">
+    {item.advance_paid
+      ? item.advance_paid.toLocaleString("en-LK")
+      : "0"}
+  </span>
+
+  {item.advance_paid_date && (
+    <span className="block text-[9px] text-gray-400 font-sans mt-0.5">
+      ({item.advance_paid_date})
+    </span>
+  )}
+</div>
                         <div>
                           <span className="text-[9px] text-gray-400 block uppercase font-bold">
                             Pending:
@@ -1380,6 +1397,18 @@ const clearSearchAndFilters = () => {
                     className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
                   />
                 </div>
+                <div>
+  <label className="block text-xs font-bold uppercase tracking-wider text-emerald-800 mb-1">
+    Advance Paid Date
+  </label>
+  <input
+    type="date"
+    name="advance_paid_date"
+    value={formData.advance_paid_date || ""}
+    onChange={handleInputChange}
+    className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
+  />
+</div>
               </div>
 
               <div>
