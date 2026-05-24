@@ -19,11 +19,6 @@ app.add_middleware(
 url = os.environ.get("TURSO_DATABASE_URL")
 auth_token = os.environ.get("TURSO_AUTH_TOKEN")
 
-client = create_client(
-    url=url,
-    auth_token=auth_token
-)
-
 print("DATABASE URL:", url)
 print("TOKEN EXISTS:", bool(auth_token))
 
@@ -51,6 +46,10 @@ class InquiryResponse(InquiryBase):
 
 @app.get("api/inquiries", response_model=List[InquiryResponse])
 async def get_inquiries(tab: str = "all"):
+    client = create_client(
+        url=url,
+        auth_token=auth_token
+    )
     if tab == "completed":
         result = await client.execute("SELECT * FROM inquiries WHERE status = 'Completed' ORDER BY updated_at ASC")
     else:
@@ -61,7 +60,17 @@ async def get_inquiries(tab: str = "all"):
 
 @app.post("/api/inquiries")
 async def create_inquiry(data: dict):
+
+    client = create_client(
+        url=url,
+        auth_token=auth_token
+    )
+
     try:
+
+        agreed_price = float(data.get("agreed_price", 0))
+        advance_paid = float(data.get("advance_paid", 0))
+        pending_payment = agreed_price - advance_paid
 
         query = """
         INSERT INTO inquiries (
@@ -83,10 +92,6 @@ async def create_inquiry(data: dict):
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
-        agreed_price = float(data.get("agreed_price", 0))
-        advance_paid = float(data.get("advance_paid", 0))
-        pending_payment = agreed_price - advance_paid
-
         await client.execute(
             query,
             [
@@ -107,6 +112,8 @@ async def create_inquiry(data: dict):
             ]
         )
 
+        await client.close()
+
         return {"success": True}
 
     except Exception as e:
@@ -117,6 +124,10 @@ async def create_inquiry(data: dict):
 
 @app.put("api/inquiries/{inquiry_id}", response_model=InquiryResponse)
 async def update_inquiry(inquiry_id: int, inquiry: InquiryBase):
+    client = create_client(
+        url=url,
+        auth_token=auth_token
+    )
     agreed = inquiry.agreed_price or 0.0
     advance = inquiry.advance_paid or 0.0
     pending = agreed - advance
@@ -140,6 +151,10 @@ async def update_inquiry(inquiry_id: int, inquiry: InquiryBase):
 
 @app.delete("api/inquiries/{inquiry_id}")
 async def delete_inquiry(inquiry_id: int):
+    client = create_client(
+        url=url,
+        auth_token=auth_token
+    )
     res = await client.execute("DELETE FROM inquiries WHERE id = ?", (inquiry_id,))
     if res.affected_rows == 0:
         raise HTTPException(status_code=404, detail="Wedding record not found")
