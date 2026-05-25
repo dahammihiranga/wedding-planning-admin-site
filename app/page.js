@@ -218,8 +218,6 @@ const StatusDropdown = ({ currentStatus, onStatusChange }) => {
     }
   };
 
-  
-
   return (
     <div className="relative inline-block text-left" ref={buttonRef}>
       <button
@@ -295,12 +293,12 @@ export default function Dashboard() {
   const [selectedRemark, setSelectedRemark] = useState(null);
   const [tabLoading, setTabLoading] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-const [loginData, setLoginData] = useState({
-  username: "",
-  password: "",
-});
-const [loginError, setLoginError] = useState("");
-const [loginLoading, setLoginLoading] = useState(false);
+  const [loginData, setLoginData] = useState({
+    username: "",
+    password: "",
+  });
+  const [loginError, setLoginError] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -327,13 +325,13 @@ const [loginLoading, setLoginLoading] = useState(false);
   });
 
   const handleTabChange = (tab) => {
-  setTabLoading(true);
+    setTabLoading(true);
 
-  setTimeout(() => {
-    setActiveTab(tab);
-    setTabLoading(false);
-  }, 350);
-};
+    setTimeout(() => {
+      setActiveTab(tab);
+      setTabLoading(false);
+    }, 350);
+  };
 
   const [formData, setFormData] = useState({
     id: null,
@@ -357,64 +355,58 @@ const [loginLoading, setLoginLoading] = useState(false);
 
   const API_URL = "/api/inquiries";
 
-useEffect(() => {
-  setMounted(true);
-
   useEffect(() => {
-  if (!isLoggedIn) return;
+    setMounted(true);
 
-  const AUTO_LOGOUT_TIME = 60 * 60 * 1000; // 1 hour
+    useEffect(() => {
+      if (!isLoggedIn) return;
 
-  const logoutTimer = setTimeout(() => {
-    localStorage.removeItem("chathu_admin_logged_in");
+      const AUTO_LOGOUT_TIME = 60 * 60 * 1000; // 1 hour
 
-    setLoginData({
-      username: "",
-      password: "",
-    });
+      const logoutTimer = setTimeout(() => {
+        localStorage.removeItem("chathu_admin_logged_in");
 
-    setLoginError("");
+        setLoginData({
+          username: "",
+          password: "",
+        });
 
-    setIsLoggedIn(false);
+        setLoginError("");
 
-    triggerNotification(
-      "Session expired. Logged out automatically for security.",
-      "delete"
-    );
-  }, AUTO_LOGOUT_TIME);
+        setIsLoggedIn(false);
 
-  return () => clearTimeout(logoutTimer);
-}, [isLoggedIn]);
+        triggerNotification(
+          "Session expired. Logged out automatically for security.",
+          "delete",
+        );
+      }, AUTO_LOGOUT_TIME);
 
-  const savedLogin = localStorage.getItem(
-    "chathu_admin_logged_in"
-  );
+      return () => clearTimeout(logoutTimer);
+    }, [isLoggedIn]);
 
-  const loginTime = localStorage.getItem(
-  "chathu_admin_login_time"
-);
+    const savedLogin = localStorage.getItem("chathu_admin_logged_in");
 
-const ONE_HOUR = 60 * 60 * 1000;
+    const loginTime = localStorage.getItem("chathu_admin_login_time");
 
-if (
-  savedLogin === "true" &&
-  loginTime &&
-  Date.now() - Number(loginTime) < ONE_HOUR
-) {
-  setIsLoggedIn(true);
-} else {
-  localStorage.removeItem("chathu_admin_logged_in");
-  localStorage.removeItem("chathu_admin_login_time");
-}
+    const ONE_HOUR = 60 * 60 * 1000;
 
-  const savedTrash = localStorage.getItem(
-    "chathu_trash_bin"
-  );
+    if (
+      savedLogin === "true" &&
+      loginTime &&
+      Date.now() - Number(loginTime) < ONE_HOUR
+    ) {
+      setIsLoggedIn(true);
+    } else {
+      localStorage.removeItem("chathu_admin_logged_in");
+      localStorage.removeItem("chathu_admin_login_time");
+    }
 
-  if (savedTrash) {
-    setDeletedRecords(JSON.parse(savedTrash));
-  }
-}, []);
+    const savedTrash = localStorage.getItem("chathu_trash_bin");
+
+    if (savedTrash) {
+      setDeletedRecords(JSON.parse(savedTrash));
+    }
+  }, []);
 
   useEffect(() => {
     const updateSLTime = () => {
@@ -500,7 +492,6 @@ if (
     }
 
     setFormData(updatedForm);
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(updatedForm));
 
     if (!updatedForm.id) {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(updatedForm));
@@ -746,33 +737,30 @@ if (
   });
 
   const upcomingWeddings = data.filter((item) => {
-  if (
-    item.status !== "Confirmed" ||
-    !item.wedding_date
-  ) {
-    return false;
-  }
+    if (item.status !== "Confirmed" || !item.wedding_date) {
+      return false;
+    }
 
-  const weddingDate = moment(item.wedding_date);
-  const today = moment();
+    const weddingDate = moment(item.wedding_date);
+    const today = moment();
 
-  const daysLeft = weddingDate.diff(today, "days");
+    const daysLeft = weddingDate.diff(today, "days");
 
-  return daysLeft >= 0 && daysLeft <= 14;
-});
+    return daysLeft >= 0 && daysLeft <= 14;
+  });
 
-const urgentUpcomingWeddings = data.filter((item) => {
-  if (item.status !== "Confirmed" || !item.wedding_date) {
-    return false;
-  }
+  const urgentUpcomingWeddings = data.filter((item) => {
+    if (item.status !== "Confirmed" || !item.wedding_date) {
+      return false;
+    }
 
-  const weddingDate = moment(item.wedding_date, "YYYY-MM-DD").startOf("day");
-  const today = moment().startOf("day");
+    const weddingDate = moment(item.wedding_date, "YYYY-MM-DD").startOf("day");
+    const today = moment().startOf("day");
 
-  const daysLeft = weddingDate.diff(today, "days");
+    const daysLeft = weddingDate.diff(today, "days");
 
-  return daysLeft >= 0 && daysLeft <= 7;
-});
+    return daysLeft >= 0 && daysLeft <= 7;
+  });
 
   const calendarEvents = activeRecordsDisplay
     .filter((item) => item.wedding_date)
@@ -804,133 +792,130 @@ const urgentUpcomingWeddings = data.filter((item) => {
   };
 
   const handleLogin = (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  setLoginLoading(true);
-  setLoginError("");
+    setLoginLoading(true);
+    setLoginError("");
 
-  setTimeout(() => {
-    const ADMIN_USERNAME = "admin";
-    const ADMIN_PASSWORD = "12345";
+    setTimeout(() => {
+      const ADMIN_USERNAME = "admin";
+      const ADMIN_PASSWORD = "12345";
 
-    if (
-      loginData.username === ADMIN_USERNAME &&
-      loginData.password === ADMIN_PASSWORD
-    ) {
-      localStorage.setItem("chathu_admin_logged_in", "true");
-      localStorage.setItem(
-  "chathu_admin_login_time",
-  Date.now().toString()
-);
-      setIsLoggedIn(true);
-      setLoginData({ username: "", password: "" });
-    } else {
-      setLoginError("Invalid username or password");
-    }
+      if (
+        loginData.username === ADMIN_USERNAME &&
+        loginData.password === ADMIN_PASSWORD
+      ) {
+        localStorage.setItem("chathu_admin_logged_in", "true");
+        localStorage.setItem("chathu_admin_login_time", Date.now().toString());
+        setIsLoggedIn(true);
+        setLoginData({ username: "", password: "" });
+      } else {
+        setLoginError("Invalid username or password");
+      }
 
-    setLoginLoading(false);
-  }, 900);
-};
+      setLoginLoading(false);
+    }, 900);
+  };
 
-const handleLogout = () => {
-  localStorage.removeItem("chathu_admin_logged_in");
+  const handleLogout = () => {
+    localStorage.removeItem("chathu_admin_logged_in");
 
-  setLoginData({
-    username: "",
-    password: "",
-  });
+    setLoginData({
+      username: "",
+      password: "",
+    });
 
-  setLoginError("");
+    setLoginError("");
 
-  setIsLoggedIn(false);
-};
+    setIsLoggedIn(false);
+  };
 
   if (!mounted) return <div className="min-h-screen bg-gray-50" />;
 
   if (!isLoggedIn) {
-  return (
-    <div
-      className="min-h-screen flex items-center justify-center p-5 relative overflow-hidden"
-      style={{
-        backgroundImage: "url('/background_img_1.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <div className="absolute inset-0 bg-white/55 backdrop-blur-[3px]" />
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center p-5 relative overflow-hidden"
+        style={{
+          backgroundImage: "url('/background_img_1.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="absolute inset-0 bg-white/55 backdrop-blur-[3px]" />
 
-      <div className="relative z-10 w-full max-w-sm">
-        <div className="bg-white/70 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/50 p-6 overflow-hidden">
-          <div className="absolute -top-20 -right-20 w-40 h-40 bg-fuchsia-200/50 rounded-full blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-rose-200/50 rounded-full blur-3xl" />
+        <div className="relative z-10 w-full max-w-sm">
+          <div className="bg-white/70 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/50 p-6 overflow-hidden">
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-fuchsia-200/50 rounded-full blur-3xl" />
+            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-rose-200/50 rounded-full blur-3xl" />
 
-          <div className="relative text-center mb-6">
-            <div className="w-24 h-24 mx-auto rounded-full bg-white/80 shadow-xl border border-white/60 flex items-center justify-center mb-4">
-              <img
-                src="/official Logo.png"
-                alt="Chathu Wedding Planners"
-                className="w-20 h-20 object-contain"
-              />
+            <div className="relative text-center mb-6">
+              <div className="w-24 h-24 mx-auto rounded-full bg-white/80 shadow-xl border border-white/60 flex items-center justify-center mb-4">
+                <img
+                  src="/official Logo.png"
+                  alt="Chathu Wedding Planners"
+                  className="w-20 h-20 object-contain"
+                />
+              </div>
+
+              <h1 className="text-2xl font-black text-fuchsia-950">
+                Welcome Back
+              </h1>
+
+              <p className="text-xs text-gray-500 mt-1 font-semibold">
+                Chathu Wedding Planners Admin Panel
+              </p>
             </div>
 
-            <h1 className="text-2xl font-black text-fuchsia-950">
-              Welcome Back
-            </h1>
+            <form onSubmit={handleLogin} className="relative space-y-4">
+              <input
+                type="text"
+                placeholder="Username"
+                value={loginData.username}
+                disabled={loginLoading}
+                onChange={(e) =>
+                  setLoginData({ ...loginData, username: e.target.value })
+                }
+                className="w-full p-3.5 text-black rounded-2xl bg-white/80 border border-fuchsia-200 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold disabled:opacity-60"
+              />
 
-            <p className="text-xs text-gray-500 mt-1 font-semibold">
-              Chathu Wedding Planners Admin Panel
-            </p>
-          </div>
+              <input
+                type="password"
+                placeholder="Password"
+                value={loginData.password}
+                disabled={loginLoading}
+                onChange={(e) =>
+                  setLoginData({ ...loginData, password: e.target.value })
+                }
+                className="w-full p-3.5 text-black rounded-2xl bg-white/80 border border-fuchsia-200 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold disabled:opacity-60"
+              />
 
-          <form onSubmit={handleLogin} className="relative space-y-4">
-            <input
-              type="text"
-              placeholder="Username"
-              value={loginData.username}
-              disabled={loginLoading}
-              onChange={(e) =>
-                setLoginData({ ...loginData, username: e.target.value })
-              }
-              className="w-full p-3.5 text-black rounded-2xl bg-white/80 border border-fuchsia-200 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold disabled:opacity-60"
-            />
-
-            <input
-              type="password"
-              placeholder="Password"
-              value={loginData.password}
-              disabled={loginLoading}
-              onChange={(e) =>
-                setLoginData({ ...loginData, password: e.target.value })
-              }
-              className="w-full p-3.5 text-black rounded-2xl bg-white/80 border border-fuchsia-200 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold disabled:opacity-60"
-            />
-
-            {loginError && (
-              <div className="bg-red-50 border border-red-100 text-red-600 text-xs font-bold rounded-2xl p-3">
-                {loginError}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={loginLoading}
-              className="w-full p-3.5 rounded-2xl bg-fuchsia-300 hover:bg-fuchsia-400 text-black font-black transition flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-            >
-              {loginLoading ? (
-                <>
-                  <span className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
-                  Logging in...
-                </>
-              ) : (
-                "Login"
+              {loginError && (
+                <div className="bg-red-50 border border-red-100 text-red-600 text-xs font-bold rounded-2xl p-3">
+                  {loginError}
+                </div>
               )}
-            </button>
-          </form>
+
+              <button
+                type="submit"
+                disabled={loginLoading}
+                className="w-full p-3.5 rounded-2xl bg-fuchsia-300 hover:bg-fuchsia-400 text-black font-black transition flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {loginLoading ? (
+                  <>
+                    <span className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                    Logging in...
+                  </>
+                ) : (
+                  "Login"
+                )}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <div
@@ -1019,40 +1004,40 @@ const handleLogout = () => {
                     : "RECYCLE TRACK STORAGE"}
               </p>
               {upcomingWeddings.length > 0 && (
-  <div className="mt-2 flex flex-wrap gap-2">
-    <div className="inline-flex items-center gap-2 bg-rose-100/90 backdrop-blur-md text-rose-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-rose-200">
-      🔔 {upcomingWeddings.length} Within 14 Days
-    </div>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <div className="inline-flex items-center gap-2 bg-rose-100/90 backdrop-blur-md text-rose-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-rose-200">
+                    🔔 {upcomingWeddings.length} Within 14 Days
+                  </div>
 
-    {urgentUpcomingWeddings.length > 0 && (
-      <div className="inline-flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-red-700">
-        🚨 {urgentUpcomingWeddings.length} Within 7 Days
-      </div>
-    )}
-  </div>
-)}
+                  {urgentUpcomingWeddings.length > 0 && (
+                    <div className="inline-flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-red-700">
+                      🚨 {urgentUpcomingWeddings.length} Within 7 Days
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
           <div className="flex items-center gap-2 ml-2">
-  <div className="text-right leading-tight max-w-[105px] md:max-w-none">
-    <p className="text-[8px] md:text-[10px] uppercase tracking-wider font-bold text-fuchsia-900">
-      Sri Lanka
-    </p>
+            <div className="text-right leading-tight max-w-[105px] md:max-w-none">
+              <p className="text-[8px] md:text-[10px] uppercase tracking-wider font-bold text-fuchsia-900">
+                Sri Lanka
+              </p>
 
-    <p className="text-[9px] md:text-sm font-bold text-fuchsia-950 whitespace-nowrap">
-      {currentSLTime}
-    </p>
-  </div>
+              <p className="text-[9px] md:text-sm font-bold text-fuchsia-950 whitespace-nowrap">
+                {currentSLTime}
+              </p>
+            </div>
 
-  <button
-    type="button"
-    onClick={handleLogout}
-    className="px-2 md:px-3 py-2 rounded-xl bg-white/40 hover:bg-white/60 text-fuchsia-900 text-[10px] md:text-xs font-bold border border-white/40"
-  >
-    Logout
-  </button>
-</div>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="px-2 md:px-3 py-2 rounded-xl bg-white/40 hover:bg-white/60 text-fuchsia-900 text-[10px] md:text-xs font-bold border border-white/40"
+            >
+              Logout
+            </button>
+          </div>
         </header>
 
         <div className="hidden md:block max-w-[98%] mx-auto mt-4 bg-white border border-gray-100 rounded-2xl shadow-sm p-4">
@@ -1296,91 +1281,87 @@ const handleLogout = () => {
         </div>
 
         {tabLoading && (
-  <div className="fixed inset-0 z-[99999] bg-black/20 backdrop-blur-sm flex items-center justify-center">
-    <div className="bg-white/90 backdrop-blur-xl rounded-3xl px-8 py-6 shadow-2xl border border-white/40 flex flex-col items-center gap-4">
-      <div className="w-14 h-14 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin" />
+          <div className="fixed inset-0 z-[99999] bg-black/20 backdrop-blur-sm flex items-center justify-center">
+            <div className="bg-white/90 backdrop-blur-xl rounded-3xl px-8 py-6 shadow-2xl border border-white/40 flex flex-col items-center gap-4">
+              <div className="w-14 h-14 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin" />
 
-      <div className="text-center">
-        <p className="text-base font-bold text-gray-800">
-          Loading Wedding Records
-        </p>
+              <div className="text-center">
+                <p className="text-base font-bold text-gray-800">
+                  Loading Wedding Records
+                </p>
 
-        <p className="text-xs text-gray-500 mt-1">
-          Please wait a moment...
-        </p>
-      </div>
-    </div>
-  </div>
-)}
-
-{upcomingWeddings.length > 0 && (
-  <div className="max-w-[98%] mx-auto mt-5 bg-gradient-to-r from-rose-500/10 to-pink-500/10 backdrop-blur-xl border border-rose-200 rounded-3xl shadow-xl overflow-hidden">
-    
-    <div className="px-5 py-4 border-b border-rose-200/50 flex items-center justify-between">
-      <div>
-        <h3 className="text-lg font-black text-rose-700 flex items-center gap-2">
-          🔔 Upcoming Weddings
-        </h3>
-
-        <p className="text-xs text-rose-500 mt-1">
-          Weddings happening within next 14 days
-        </p>
-      </div>
-
-      <div className="bg-rose-600 text-white text-sm font-black px-3 py-1 rounded-full animate-pulse">
-        {upcomingWeddings.length}
-      </div>
-    </div>
-
-    <div className="divide-y divide-rose-100">
-      {upcomingWeddings.map((item) => {
-        const daysLeft = moment(item.wedding_date).diff(
-          moment(),
-          "days"
-        );
-
-        return (
-          <div
-            key={item.id}
-            className="p-4 hover:bg-white/30 transition"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h4 className="font-black text-gray-900 text-sm md:text-base">
-                  {item.couple_name}
-                </h4>
-
-                <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-600">
-                  <span>
-                    📅 {moment(item.wedding_date).format("MMMM D, YYYY")}
-                  </span>
-
-                  <span>•</span>
-
-                  <span>
-                    🏨 {item.hotel || "Venue not added"}
-                  </span>
-                </div>
-              </div>
-
-              <div
-                className={`px-3 py-1 rounded-full text-xs font-black shrink-0 ${
-                  daysLeft <= 3
-                    ? "bg-red-600 text-white animate-pulse"
-                    : "bg-rose-100 text-rose-700"
-                }`}
-              >
-                {daysLeft === 0
-                  ? "TODAY"
-                  : `${daysLeft} DAYS LEFT`}
+                <p className="text-xs text-gray-500 mt-1">
+                  Please wait a moment...
+                </p>
               </div>
             </div>
           </div>
-        );
-      })}
-    </div>
-  </div>
-)}
+        )}
+
+        {upcomingWeddings.length > 0 && (
+          <div className="max-w-[98%] mx-auto mt-5 bg-gradient-to-r from-rose-500/10 to-pink-500/10 backdrop-blur-xl border border-rose-200 rounded-3xl shadow-xl overflow-hidden">
+            <div className="px-5 py-4 border-b border-rose-200/50 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-black text-rose-700 flex items-center gap-2">
+                  🔔 Upcoming Weddings
+                </h3>
+
+                <p className="text-xs text-rose-500 mt-1">
+                  Weddings happening within next 14 days
+                </p>
+              </div>
+
+              <div className="bg-rose-600 text-white text-sm font-black px-3 py-1 rounded-full animate-pulse">
+                {upcomingWeddings.length}
+              </div>
+            </div>
+
+            <div className="divide-y divide-rose-100">
+              {upcomingWeddings.map((item) => {
+                const daysLeft = moment(item.wedding_date).diff(
+                  moment(),
+                  "days",
+                );
+
+                return (
+                  <div
+                    key={item.id}
+                    className="p-4 hover:bg-white/30 transition"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h4 className="font-black text-gray-900 text-sm md:text-base">
+                          {item.couple_name}
+                        </h4>
+
+                        <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-600">
+                          <span>
+                            📅{" "}
+                            {moment(item.wedding_date).format("MMMM D, YYYY")}
+                          </span>
+
+                          <span>•</span>
+
+                          <span>🏨 {item.hotel || "Venue not added"}</span>
+                        </div>
+                      </div>
+
+                      <div
+                        className={`px-3 py-1 rounded-full text-xs font-black shrink-0 ${
+                          daysLeft <= 3
+                            ? "bg-red-600 text-white animate-pulse"
+                            : "bg-rose-100 text-rose-700"
+                        }`}
+                      >
+                        {daysLeft === 0 ? "TODAY" : `${daysLeft} DAYS LEFT`}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* DASHBOARD TAB SEGMENT CONSOLE NAVIGATION BAR */}
         <div className="max-w-[98%] mx-auto mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 md:border-b bg-white/50 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none rounded-3xl md:rounded-none p-3 md:p-0 shadow-xl md:shadow-none border border-white/40 md:border-0">
@@ -1871,20 +1852,20 @@ const handleLogout = () => {
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start md:items-center justify-center p-3 md:p-4 z-[9999] overflow-y-auto pb-[env(safe-area-inset-bottom)]">
             <div className="bg-white rounded-2xl w-full max-w-lg p-4 md:p-6 shadow-2xl space-y-4 my-4 md:my-8 border border-gray-100 max-h-[92vh] overflow-y-auto pb-28 md:pb-6">
               <div className="flex items-center justify-between border-b pb-3">
-  <h2 className="text-lg font-bold text-gray-900">
-    {formData.id
-      ? "Modify Wedding File"
-      : "Add New Wedding Record"}
-  </h2>
+                <h2 className="text-lg font-bold text-gray-900">
+                  {formData.id
+                    ? "Modify Wedding File"
+                    : "Add New Wedding Record"}
+                </h2>
 
-  <button
-    type="button"
-    onClick={() => setIsModalOpen(false)}
-    className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition flex items-center justify-center text-lg font-bold active:scale-95"
-  >
-    ✕
-  </button>
-</div>
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition flex items-center justify-center text-lg font-bold active:scale-95"
+                >
+                  ✕
+                </button>
+              </div>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
                   <div className="col-span-2">
@@ -2034,10 +2015,12 @@ const handleLogout = () => {
 
                                   setFormData(updatedForm);
 
-                                  localStorage.setItem(
-                                    DRAFT_KEY,
-                                    JSON.stringify(updatedForm),
-                                  );
+                                  if (!updatedForm.id) {
+                                    localStorage.setItem(
+                                      DRAFT_KEY,
+                                      JSON.stringify(updatedForm),
+                                    );
+                                  }
                                 } else {
                                   const updatedForm = {
                                     ...formData,
@@ -2048,10 +2031,12 @@ const handleLogout = () => {
 
                                   setFormData(updatedForm);
 
-                                  localStorage.setItem(
-                                    DRAFT_KEY,
-                                    JSON.stringify(updatedForm),
-                                  );
+                                  if (!updatedForm.id) {
+                                    localStorage.setItem(
+                                      DRAFT_KEY,
+                                      JSON.stringify(updatedForm),
+                                    );
+                                  }
                                 }
                               }}
                               className="accent-emerald-600"
@@ -2216,39 +2201,39 @@ const handleLogout = () => {
 
                 <div className="flex justify-end gap-3 pt-4 pb-6 md:pb-0 border-t">
                   <button
-  type="button"
-  onClick={() => {
-    localStorage.removeItem(DRAFT_KEY);
+                    type="button"
+                    onClick={() => {
+                      localStorage.removeItem(DRAFT_KEY);
 
-    setFormData({
-      id: null,
-      couple_name: "",
-      wedding_date: "",
-      hotel: "",
-      service_type: [],
-      wedding_type: "One day",
-      guest_count: "",
-      contact_no: "",
-      bridesmaid_option: "",
-      package_price: 0,
-      discount_rate: 0,
-      agreed_price: 0,
-      advance_paid: 0,
-      status: "Inquiry",
-      remarks: "",
-      country: "Local",
-      advance_paid_date: "",
-    });
+                      setFormData({
+                        id: null,
+                        couple_name: "",
+                        wedding_date: "",
+                        hotel: "",
+                        service_type: [],
+                        wedding_type: "One day",
+                        guest_count: "",
+                        contact_no: "",
+                        bridesmaid_option: "",
+                        package_price: 0,
+                        discount_rate: 0,
+                        agreed_price: 0,
+                        advance_paid: 0,
+                        status: "Inquiry",
+                        remarks: "",
+                        country: "Local",
+                        advance_paid_date: "",
+                      });
 
-    triggerNotification(
-      "All inquiry fields cleared successfully.",
-      "delete"
-    );
-  }}
-  className="px-4 py-2 border border-rose-200 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 text-sm font-semibold transition"
->
-  Clear All
-</button>
+                      triggerNotification(
+                        "All inquiry fields cleared successfully.",
+                        "delete",
+                      );
+                    }}
+                    className="px-4 py-2 border border-rose-200 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 text-sm font-semibold transition"
+                  >
+                    Clear All
+                  </button>
                   <button
                     type="button"
                     onClick={() => setIsModalOpen(false)}
