@@ -311,6 +311,7 @@ export default function Dashboard() {
     remarks: "",
   });
   const [vendorLoading, setVendorLoading] = useState(false);
+  const [customerSearch, setCustomerSearch] = useState("");
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -960,6 +961,12 @@ export default function Dashboard() {
     }
   };
 
+  const filteredCustomers = data.filter((item) =>
+  item.couple_name
+    ?.toLowerCase()
+    .includes(customerSearch.toLowerCase().trim())
+);
+
   if (!mounted) return <div className="min-h-screen bg-gray-50" />;
 
   if (!isLoggedIn) {
@@ -1083,7 +1090,10 @@ export default function Dashboard() {
           </button>
 
           <button
-            onClick={() => setActivePage("customers")}
+            onClick={() => {
+              setActivePage("customers");
+              setActiveTab("allRecords");
+            }}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "customers" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
           >
             👰 Customers
@@ -3008,38 +3018,113 @@ export default function Dashboard() {
         )}
 
         {activePage === "customers" && (
-          <div className="p-6">
-            <h1 className="text-3xl font-black text-fuchsia-950 mb-6">
-              Customers
-            </h1>
+          <div className="p-4 md:p-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+              <div>
+                <h1 className="text-2xl md:text-3xl font-black text-fuchsia-950">
+                  👰 Customers
+                </h1>
+                <p className="text-sm text-fuchsia-900/70 mt-1 font-semibold">
+                  All wedding customers from inquiries, confirmed and completed
+                  records
+                </p>
+              </div>
 
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/40 overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="border-b text-sm text-gray-500 uppercase">
-                    <th className="p-3">Couple Name</th>
-                    <th className="p-3">Wedding Date</th>
-                    <th className="p-3">Contact Number</th>
-                    <th className="p-3">Service Type</th>
-                  </tr>
-                </thead>
+              <div className="bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl px-4 py-2 shadow text-sm font-black text-fuchsia-700">
+                Total Customers: {filteredCustomers.length}
+              </div>
+            </div>
+            <div className="mb-4 bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl p-3 shadow">
+  <input
+    type="text"
+    placeholder="Search by couple name..."
+    value={customerSearch}
+    onChange={(e) => setCustomerSearch(e.target.value)}
+    className="w-full p-3 rounded-xl border border-fuchsia-100 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold"
+  />
+</div>
 
-                <tbody>
-                  {data.map((item) => (
-                    <tr
-                      key={item.id}
-                      className="border-b hover:bg-fuchsia-50/40"
-                    >
-                      <td className="p-3 font-bold text-gray-900">
-                        {item.couple_name}
-                      </td>
-                      <td className="p-3">{item.wedding_date || "—"}</td>
-                      <td className="p-3">{item.contact_no || "—"}</td>
-                      <td className="p-3">{item.service_type || "—"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
+              {filteredCustomers.length === 0 ? (
+                <div className="p-12 text-center">
+                  <div className="text-4xl mb-3">👰</div>
+                  <p className="text-gray-400 text-sm font-bold">
+                    No customers found yet.
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse min-w-max">
+                    <thead>
+                      <tr className="bg-fuchsia-50 text-fuchsia-900 uppercase text-xs md:text-[15px] font-black border-b border-gray-200">
+                        <th className="p-4 text-center w-12">#</th>
+                        <th className="p-4">Couple Name</th>
+                        <th className="p-4">Wedding Date</th>
+                        <th className="p-4">Contact Number</th>
+                        <th className="p-4">Service Type</th>
+                        <th className="p-4 text-center">Status</th>
+                      </tr>
+                    </thead>
+
+                    <tbody className="divide-y divide-gray-100 bg-white md:text-sm">
+                      {filteredCustomers.map((item, index) => {
+                        const countryInfo = getCountryDisplay(item.country);
+
+                        return (
+                          <tr
+                            key={item.id}
+                            className="hover:bg-fuchsia-50/40 transition"
+                          >
+                            <td className="p-4 text-center font-medium text-gray-400">
+                              {index + 1}
+                            </td>
+
+                            <td className="p-4 font-bold text-gray-900">
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className="emoji-flag text-base select-none"
+                                  title={countryInfo.name}
+                                >
+                                  {countryInfo.flag}
+                                </span>
+                                <span>{item.couple_name}</span>
+                              </div>
+                            </td>
+
+                            <td className="p-4 text-gray-700 font-medium">
+                              {item.wedding_date || "—"}
+                            </td>
+
+                            <td className="p-4 font-mono text-gray-700">
+                              {item.contact_no || "—"}
+                            </td>
+
+                            <td className="p-4">
+                              <span className="px-2 py-0.5 bg-gray-100 text-gray-800 rounded font-medium">
+                                {item.service_type || "—"}
+                              </span>
+                            </td>
+
+                            <td className="p-4 text-center">
+                              <span
+                                className={`px-3 py-1 rounded-xl text-xs font-black border ${
+                                  item.status === "Confirmed"
+                                    ? "bg-amber-50 text-amber-800 border-amber-200"
+                                    : item.status === "Completed"
+                                      ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                                      : "bg-blue-50 text-blue-800 border-blue-200"
+                                }`}
+                              >
+                                {item.status || "Inquiry"}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         )}
