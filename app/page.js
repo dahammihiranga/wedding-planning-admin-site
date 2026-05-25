@@ -701,6 +701,19 @@ export default function Dashboard() {
   return daysLeft >= 0 && daysLeft <= 14;
 });
 
+const urgentUpcomingWeddings = data.filter((item) => {
+  if (item.status !== "Confirmed" || !item.wedding_date) {
+    return false;
+  }
+
+  const weddingDate = moment(item.wedding_date, "YYYY-MM-DD").startOf("day");
+  const today = moment().startOf("day");
+
+  const daysLeft = weddingDate.diff(today, "days");
+
+  return daysLeft >= 0 && daysLeft <= 7;
+});
+
   const calendarEvents = activeRecordsDisplay
     .filter((item) => item.wedding_date)
     .map((item) => {
@@ -819,9 +832,16 @@ export default function Dashboard() {
                     : "RECYCLE TRACK STORAGE"}
               </p>
               {upcomingWeddings.length > 0 && (
-  <div className="mt-2 inline-flex items-center gap-2 bg-rose-100/90 backdrop-blur-md text-rose-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-rose-200">
-    🔔 {upcomingWeddings.length} Upcoming Wedding
-    {upcomingWeddings.length > 1 ? "s" : ""}
+  <div className="mt-2 flex flex-wrap gap-2">
+    <div className="inline-flex items-center gap-2 bg-rose-100/90 backdrop-blur-md text-rose-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-rose-200">
+      🔔 {upcomingWeddings.length} Within 14 Days
+    </div>
+
+    {urgentUpcomingWeddings.length > 0 && (
+      <div className="inline-flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-red-700">
+        🚨 {urgentUpcomingWeddings.length} Within 7 Days
+      </div>
+    )}
   </div>
 )}
             </div>
