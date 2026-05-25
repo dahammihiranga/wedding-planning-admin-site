@@ -272,6 +272,8 @@ const SERVICE_TYPE_OPTIONS = [
   "Wedding agenda making",
 ];
 
+const DRAFT_KEY = "chathu_inquiry_draft";
+
 export default function Dashboard() {
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
@@ -428,6 +430,11 @@ export default function Dashboard() {
     }
 
     setFormData(updatedForm);
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(updatedForm));
+
+    if (!updatedForm.id) {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(updatedForm));
+    }
   };
 
   const handleStatusChange = async (item, newStatus) => {
@@ -546,25 +553,32 @@ export default function Dashboard() {
   };
 
   const openAddModal = () => {
-    setFormData({
-      id: null,
-      couple_name: "",
-      wedding_date: "",
-      hotel: "",
-      service_type: [],
-      wedding_type: "One day",
-      guest_count: "",
-      contact_no: "",
-      bridesmaid_option: "",
-      package_price: 0,
-      discount_rate: 0,
-      agreed_price: 0,
-      advance_paid: 0,
-      status: "Inquiry",
-      remarks: "",
-      country: "Local",
-      advance_paid_date: "",
-    });
+    const savedDraft = localStorage.getItem(DRAFT_KEY);
+
+    if (savedDraft) {
+      setFormData(JSON.parse(savedDraft));
+    } else {
+      setFormData({
+        id: null,
+        couple_name: "",
+        wedding_date: "",
+        hotel: "",
+        service_type: [],
+        wedding_type: "One day",
+        guest_count: "",
+        contact_no: "",
+        bridesmaid_option: "",
+        package_price: 0,
+        discount_rate: 0,
+        agreed_price: 0,
+        advance_paid: 0,
+        status: "Inquiry",
+        remarks: "",
+        country: "Local",
+        advance_paid_date: "",
+      });
+    }
+
     setIsModalOpen(true);
   };
 
@@ -590,6 +604,9 @@ export default function Dashboard() {
         body: JSON.stringify(adjustedData),
       });
       if (res.ok) {
+        if (!formData.id) {
+          localStorage.removeItem(DRAFT_KEY);
+        }
         setIsModalOpen(false);
         fetchData();
         triggerNotification(
@@ -867,15 +884,31 @@ export default function Dashboard() {
                           const current = filters.serviceType || [];
 
                           if (e.target.checked) {
-                            setFilters({
-                              ...filters,
-                              serviceType: [...current, service],
-                            });
+                            const updatedForm = {
+                              ...formData,
+                              service_type: [...current, service],
+                            };
+
+                            setFormData(updatedForm);
+
+                            localStorage.setItem(
+                              DRAFT_KEY,
+                              JSON.stringify(updatedForm),
+                            );
                           } else {
-                            setFilters({
-                              ...filters,
-                              serviceType: current.filter((s) => s !== service),
-                            });
+                            const updatedForm = {
+                              ...formData,
+                              service_type: current.filter(
+                                (s) => s !== service,
+                              ),
+                            };
+
+                            setFormData(updatedForm);
+
+                            localStorage.setItem(
+                              DRAFT_KEY,
+                              JSON.stringify(updatedForm),
+                            );
                           }
                         }}
                         className="accent-emerald-600"
@@ -1645,17 +1678,31 @@ export default function Dashboard() {
                                   : [];
 
                                 if (e.target.checked) {
-                                  setFormData({
+                                  const updatedForm = {
                                     ...formData,
                                     service_type: [...current, service],
-                                  });
+                                  };
+
+                                  setFormData(updatedForm);
+
+                                  localStorage.setItem(
+                                    DRAFT_KEY,
+                                    JSON.stringify(updatedForm),
+                                  );
                                 } else {
-                                  setFormData({
+                                  const updatedForm = {
                                     ...formData,
                                     service_type: current.filter(
                                       (s) => s !== service,
                                     ),
-                                  });
+                                  };
+
+                                  setFormData(updatedForm);
+
+                                  localStorage.setItem(
+                                    DRAFT_KEY,
+                                    JSON.stringify(updatedForm),
+                                  );
                                 }
                               }}
                               className="accent-emerald-600"
@@ -2087,6 +2134,10 @@ export default function Dashboard() {
                       remarks: "",
                       country: "Local",
                     });
+                    localStorage.setItem(
+                      DRAFT_KEY,
+                      JSON.stringify(updatedForm),
+                    );
 
                     setIsModalOpen(true);
                   }}
@@ -2360,7 +2411,7 @@ export default function Dashboard() {
                 <button
                   type="button"
                   onClick={() => setIsMobileFilterOpen(false)}
-                  className="p-3 rounded-2xl bg-emerald-700 text-white font-bold"
+                  className="p-3 rounded-2xl bg-fuchsia-200 text-black font-bold"
                 >
                   Apply
                 </button>
@@ -2384,7 +2435,7 @@ export default function Dashboard() {
                 <button
                   type="button"
                   onClick={() => setSelectedRemark(null)}
-                  className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-bold"
+                  className="px-4 py-2 rounded-xl bg-fuchsia-200 text-white text-sm font-bold"
                 >
                   Close
                 </button>
