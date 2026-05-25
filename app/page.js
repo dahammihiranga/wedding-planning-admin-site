@@ -355,50 +355,50 @@ export default function Dashboard() {
   const API_URL = "/api/inquiries";
 
   useEffect(() => {
-  setMounted(true);
+    setMounted(true);
 
-  const savedLogin = localStorage.getItem("chathu_admin_logged_in");
-  const loginTime = localStorage.getItem("chathu_admin_login_time");
-  const ONE_HOUR = 60 * 60 * 1000;
+    const savedLogin = localStorage.getItem("chathu_admin_logged_in");
+    const loginTime = localStorage.getItem("chathu_admin_login_time");
+    const ONE_HOUR = 60 * 60 * 1000;
 
-  if (
-    savedLogin === "true" &&
-    loginTime &&
-    Date.now() - Number(loginTime) < ONE_HOUR
-  ) {
-    setIsLoggedIn(true);
-  } else {
-    localStorage.removeItem("chathu_admin_logged_in");
-    localStorage.removeItem("chathu_admin_login_time");
-  }
+    if (
+      savedLogin === "true" &&
+      loginTime &&
+      Date.now() - Number(loginTime) < ONE_HOUR
+    ) {
+      setIsLoggedIn(true);
+    } else {
+      localStorage.removeItem("chathu_admin_logged_in");
+      localStorage.removeItem("chathu_admin_login_time");
+    }
 
-  const savedTrash = localStorage.getItem("chathu_trash_bin");
+    const savedTrash = localStorage.getItem("chathu_trash_bin");
 
-  if (savedTrash) {
-    setDeletedRecords(JSON.parse(savedTrash));
-  }
-}, []);
+    if (savedTrash) {
+      setDeletedRecords(JSON.parse(savedTrash));
+    }
+  }, []);
 
-useEffect(() => {
-  if (!isLoggedIn) return;
+  useEffect(() => {
+    if (!isLoggedIn) return;
 
-  const AUTO_LOGOUT_TIME = 60 * 60 * 1000;
+    const AUTO_LOGOUT_TIME = 60 * 60 * 1000;
 
-  const logoutTimer = setTimeout(() => {
-    localStorage.removeItem("chathu_admin_logged_in");
-    localStorage.removeItem("chathu_admin_login_time");
+    const logoutTimer = setTimeout(() => {
+      localStorage.removeItem("chathu_admin_logged_in");
+      localStorage.removeItem("chathu_admin_login_time");
 
-    setLoginData({
-      username: "",
-      password: "",
-    });
+      setLoginData({
+        username: "",
+        password: "",
+      });
 
-    setLoginError("");
-    setIsLoggedIn(false);
-  }, AUTO_LOGOUT_TIME);
+      setLoginError("");
+      setIsLoggedIn(false);
+    }, AUTO_LOGOUT_TIME);
 
-  return () => clearTimeout(logoutTimer);
-}, [isLoggedIn]);
+    return () => clearTimeout(logoutTimer);
+  }, [isLoggedIn]);
 
   useEffect(() => {
     const updateSLTime = () => {
@@ -441,7 +441,9 @@ useEffect(() => {
       const trashIds = deletedRecords.map((item) => item.id);
       const nonDeletedData = json.filter((item) => !trashIds.includes(item.id));
 
-      if (activeTab === "all") {
+      if (activeTab === "allRecords") {
+        setData(nonDeletedData);
+      } else if (activeTab === "all") {
         setData(nonDeletedData.filter((item) => item.status !== "Completed"));
       } else if (activeTab === "completed") {
         setData(nonDeletedData.filter((item) => item.status === "Completed"));
@@ -989,11 +991,13 @@ useEffect(() => {
               </h1>
 
               <p className="text-xs text-fuchsia-900 mt-0.5 uppercase tracking-wider">
-                {activeTab === "all"
-                  ? "ACTIVE WEDDING INQUIRIES"
-                  : activeTab === "completed"
-                    ? "OUR WEDDING ENQUIRIES"
-                    : "RECYCLE TRACK STORAGE"}
+                {activeTab === "allRecords"
+                  ? "ALL WEDDING RECORDS"
+                  : activeTab === "all"
+                    ? "ACTIVE WEDDING INQUIRIES"
+                    : activeTab === "completed"
+                      ? "OUR WEDDING ENQUIRIES"
+                      : "RECYCLE TRACK STORAGE"}
               </p>
               {upcomingWeddings.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -1378,6 +1382,17 @@ useEffect(() => {
               }`}
             >
               ✨ Completed Weddings
+            </button>
+
+            <button
+              onClick={() => handleTabChange("allRecords")}
+              className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
+                activeTab === "allRecords"
+                  ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
+                  : "bg-white/60 text-gray-500 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-700"
+              }`}
+            >
+              📁 All Records
             </button>
 
             <button
