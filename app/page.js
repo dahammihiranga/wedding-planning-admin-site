@@ -355,57 +355,50 @@ export default function Dashboard() {
   const API_URL = "/api/inquiries";
 
   useEffect(() => {
-    setMounted(true);
+  setMounted(true);
 
-    useEffect(() => {
-      if (!isLoggedIn) return;
+  const savedLogin = localStorage.getItem("chathu_admin_logged_in");
+  const loginTime = localStorage.getItem("chathu_admin_login_time");
+  const ONE_HOUR = 60 * 60 * 1000;
 
-      const AUTO_LOGOUT_TIME = 60 * 60 * 1000; // 1 hour
+  if (
+    savedLogin === "true" &&
+    loginTime &&
+    Date.now() - Number(loginTime) < ONE_HOUR
+  ) {
+    setIsLoggedIn(true);
+  } else {
+    localStorage.removeItem("chathu_admin_logged_in");
+    localStorage.removeItem("chathu_admin_login_time");
+  }
 
-      const logoutTimer = setTimeout(() => {
-        localStorage.removeItem("chathu_admin_logged_in");
+  const savedTrash = localStorage.getItem("chathu_trash_bin");
 
-        setLoginData({
-          username: "",
-          password: "",
-        });
+  if (savedTrash) {
+    setDeletedRecords(JSON.parse(savedTrash));
+  }
+}, []);
 
-        setLoginError("");
+useEffect(() => {
+  if (!isLoggedIn) return;
 
-        setIsLoggedIn(false);
+  const AUTO_LOGOUT_TIME = 60 * 60 * 1000;
 
-        triggerNotification(
-          "Session expired. Logged out automatically for security.",
-          "delete",
-        );
-      }, AUTO_LOGOUT_TIME);
+  const logoutTimer = setTimeout(() => {
+    localStorage.removeItem("chathu_admin_logged_in");
+    localStorage.removeItem("chathu_admin_login_time");
 
-      return () => clearTimeout(logoutTimer);
-    }, [isLoggedIn]);
+    setLoginData({
+      username: "",
+      password: "",
+    });
 
-    const savedLogin = localStorage.getItem("chathu_admin_logged_in");
+    setLoginError("");
+    setIsLoggedIn(false);
+  }, AUTO_LOGOUT_TIME);
 
-    const loginTime = localStorage.getItem("chathu_admin_login_time");
-
-    const ONE_HOUR = 60 * 60 * 1000;
-
-    if (
-      savedLogin === "true" &&
-      loginTime &&
-      Date.now() - Number(loginTime) < ONE_HOUR
-    ) {
-      setIsLoggedIn(true);
-    } else {
-      localStorage.removeItem("chathu_admin_logged_in");
-      localStorage.removeItem("chathu_admin_login_time");
-    }
-
-    const savedTrash = localStorage.getItem("chathu_trash_bin");
-
-    if (savedTrash) {
-      setDeletedRecords(JSON.parse(savedTrash));
-    }
-  }, []);
+  return () => clearTimeout(logoutTimer);
+}, [isLoggedIn]);
 
   useEffect(() => {
     const updateSLTime = () => {
