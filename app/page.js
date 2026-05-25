@@ -287,6 +287,7 @@ export default function Dashboard() {
   const [isFilterServiceDropdownOpen, setIsFilterServiceDropdownOpen] =
     useState(false);
   const [currentSLTime, setCurrentSLTime] = useState("");
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -786,7 +787,7 @@ export default function Dashboard() {
           </div>
         </header>
 
-        <div className="max-w-[98%] mx-auto mt-4 bg-white border border-gray-100 rounded-2xl shadow-sm p-4">
+        <div className="hidden md:block max-w-[98%] mx-auto mt-4 bg-white border border-gray-100 rounded-2xl shadow-sm p-4">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
             <input
               type="text"
@@ -935,6 +936,58 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
+        <div className="md:hidden max-w-[94%] mx-auto mt-4">
+  <div className="flex items-center gap-2">
+    <input
+      type="text"
+      placeholder="Search by name, date or contact..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="flex-1 p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+    />
+
+    <button
+  type="button"
+  onClick={() => setIsMobileFilterOpen(true)}
+  className="w-12 h-12 rounded-2xl bg-white/85 backdrop-blur-xl border border-white/50 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-200"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="w-5 h-5 text-gray-700"
+  >
+    <line x1="4" y1="21" x2="4" y2="14"></line>
+    <line x1="4" y1="10" x2="4" y2="3"></line>
+    <line x1="12" y1="21" x2="12" y2="12"></line>
+    <line x1="12" y1="8" x2="12" y2="3"></line>
+    <line x1="20" y1="21" x2="20" y2="16"></line>
+    <line x1="20" y1="12" x2="20" y2="3"></line>
+
+    <line x1="1" y1="14" x2="7" y2="14"></line>
+    <line x1="9" y1="8" x2="15" y2="8"></line>
+    <line x1="17" y1="16" x2="23" y2="16"></line>
+  </svg>
+</button>
+  </div>
+
+  <input
+    type="date"
+    value={filters.weddingDate}
+    onChange={(e) =>
+      setFilters({
+        ...filters,
+        weddingDate: e.target.value,
+      })
+    }
+    className="mt-3 w-full p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+  />
+</div>
 
         <div className="max-w-[98%] mx-auto mt-4 flex justify-start gap-2 bg-white/30 backdrop-blur-lg border border-white/30 rounded-2xl p-3 shadow-lg">
           <button
@@ -2114,6 +2167,176 @@ export default function Dashboard() {
             </div>
           </div>
         )}
+
+        {isMobileFilterOpen && (
+  <div className="md:hidden fixed inset-0 z-[9998] bg-black/40 backdrop-blur-sm flex items-end">
+    <div className="w-full bg-white rounded-t-[2rem] p-5 shadow-2xl max-h-[82vh] overflow-y-auto">
+      <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-5" />
+
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-lg font-bold text-gray-900">
+          Filters
+        </h3>
+
+        <button
+          type="button"
+          onClick={() => setIsMobileFilterOpen(false)}
+          className="text-gray-400 font-bold text-xl"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+            Date From
+          </label>
+          <input
+            type="date"
+            value={filters.weddingDateFrom}
+            onChange={(e) =>
+              setFilters({
+                ...filters,
+                weddingDateFrom: e.target.value,
+              })
+            }
+            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+            Date To
+          </label>
+          <input
+            type="date"
+            value={filters.weddingDateTo}
+            onChange={(e) =>
+              setFilters({
+                ...filters,
+                weddingDateTo: e.target.value,
+              })
+            }
+            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+            Month
+          </label>
+          <input
+            type="month"
+            value={filters.weddingMonth}
+            onChange={(e) =>
+              setFilters({
+                ...filters,
+                weddingMonth: e.target.value,
+              })
+            }
+            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
+            Service Types
+          </label>
+
+          <div className="flex flex-wrap gap-2">
+            {SERVICE_TYPE_OPTIONS.map((service) => (
+              <label
+                key={service}
+                className={`px-3 py-2 rounded-2xl text-xs font-bold border cursor-pointer ${
+                  filters.serviceType?.includes(service)
+                    ? "bg-emerald-600 text-white border-emerald-600"
+                    : "bg-gray-50 text-gray-600 border-gray-100"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  className="hidden"
+                  checked={filters.serviceType?.includes(service)}
+                  onChange={(e) => {
+                    const current = filters.serviceType || [];
+
+                    setFilters({
+                      ...filters,
+                      serviceType: e.target.checked
+                        ? [...current, service]
+                        : current.filter((s) => s !== service),
+                    });
+                  }}
+                />
+                {service}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+            Wedding Type
+          </label>
+          <select
+            value={filters.weddingType}
+            onChange={(e) =>
+              setFilters({
+                ...filters,
+                weddingType: e.target.value,
+              })
+            }
+            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+          >
+            <option value="">All Wedding Types</option>
+            <option value="One day">One day</option>
+            <option value="Two days">Two days</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+            Status
+          </label>
+          <select
+            value={filters.status}
+            onChange={(e) =>
+              setFilters({
+                ...filters,
+                status: e.target.value,
+              })
+            }
+            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+          >
+            <option value="">All Status</option>
+            <option value="Inquiry">Inquiry</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 mt-6">
+        <button
+          type="button"
+          onClick={clearSearchAndFilters}
+          className="p-3 rounded-2xl border border-gray-300 text-gray-700 font-bold"
+        >
+          Reset
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setIsMobileFilterOpen(false)}
+          className="p-3 rounded-2xl bg-emerald-700 text-white font-bold"
+        >
+          Apply
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
         <WindowsFlagFix />
       </div>
