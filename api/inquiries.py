@@ -56,10 +56,10 @@ async def get_inquiries(tab: str = "all"):
 
         if tab == "completed":
             result = client.execute(
-                "SELECT * FROM inquiries WHERE status = 'Completed' ORDER BY id DESC"
+                "SELECT * FROM inquiries WHERE status = 'Completed' ORDER BY id ASC"
             )
         else:
-            result = client.execute("SELECT * FROM inquiries ORDER BY id DESC")
+            result = client.execute("SELECT * FROM inquiries ORDER BY id ASC")
 
         columns = result.columns
         rows = [dict(zip(columns, row)) for row in result.rows]
