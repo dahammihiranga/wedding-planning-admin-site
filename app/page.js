@@ -1092,7 +1092,7 @@ export default function Dashboard() {
                 <table className="w-full text-left border-collapse min-w-max table-auto bg-white rounded-xl">
                   <thead>
                     <tr
-                      className={`${activeTab === "trash" ? "bg-amber-50 text-amber-950" : "bg-emerald-50 text-emerald-900"} text-xs uppercase font-bold border-b border-gray-200`}
+                      className={`${activeTab === "trash" ? "bg-fuchsia-50 text-fuchsia-950" : "bg-fuchsia-50 text-fuchsia-900"} text-xs uppercase font-bold border-b border-gray-200`}
                     >
                       <th className="p-3 text-center w-12 bg-inherit">#</th>
                       <th className="p-3 bg-inherit">Couple Name</th>
@@ -1274,7 +1274,7 @@ export default function Dashboard() {
                               <div className="flex items-center justify-center gap-3">
                                 <button
                                   onClick={() => openEditModal(item)}
-                                  className="text-emerald-600 font-bold hover:underline"
+                                  className="text-fuchsia-600 font-bold hover:underline"
                                 >
                                   Edit
                                 </button>
