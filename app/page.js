@@ -1016,7 +1016,7 @@ export default function Dashboard() {
   <div className="grid grid-cols-1 gap-2 w-full md:flex md:flex-wrap">
     <button
       onClick={() => setActiveTab("all")}
-      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-sm transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
+      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold md:text-md transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
         activeTab === "all"
           ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
           : "bg-white/60 text-gray-500 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-700"
@@ -1027,7 +1027,7 @@ export default function Dashboard() {
 
     <button
       onClick={() => setActiveTab("completed")}
-      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-sm transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
+      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold md:text-md transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
         activeTab === "completed"
           ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
           : "bg-white/60 text-gray-500 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-700"
@@ -1038,7 +1038,7 @@ export default function Dashboard() {
 
     <button
       onClick={() => setActiveTab("trash")}
-      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-sm transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
+      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold md:text-md transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
         activeTab === "trash"
           ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-amber-50/40 md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
           : "bg-white/60 text-gray-400 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-600"
@@ -1127,7 +1127,7 @@ export default function Dashboard() {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100 text-xs bg-white">
+                  <tbody className="divide-y divide-gray-100 md:text-sm bg-white">
                     {filteredRecordsDisplay.map((item, index) => {
                       const countryInfo = getCountryDisplay(item.country);
                       return (
