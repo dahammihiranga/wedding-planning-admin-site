@@ -594,6 +594,26 @@ const [vendorLoading, setVendorLoading] = useState(false);
       }
     }
 
+    else if (type === "vendor") {
+  try {
+    await axios.delete(`/api/vendors?id=${id}`);
+
+    await fetchVendors();
+
+    triggerNotification(
+      `${name} vendor removed successfully.`,
+      "delete"
+    );
+  } catch (error) {
+    console.error(error);
+
+    triggerNotification(
+      "Vendor delete failed. Please try again.",
+      "delete"
+    );
+  }
+}
+
     setDeleteModal({ show: false, id: null, name: "", type: "soft" });
   };
 
@@ -907,26 +927,13 @@ const handleVendorSubmit = async (e) => {
   }
 };
 
-const deleteVendor = async (id) => {
-  const vendor = vendors.find((v) => v.id === id);
-  const confirmed = window.confirm(
-    `Delete ${vendor?.name || "this vendor"}?`
-  );
-
-  if (!confirmed) return;
-
-  try {
-    await axios.delete(`/api/vendors?id=${id}`);
-    await fetchVendors();
-
-    triggerNotification(
-      `${vendor?.name || "Vendor"} deleted successfully.`,
-      "delete"
-    );
-  } catch (error) {
-    console.error(error);
-    triggerNotification("Vendor delete failed. Please try again.", "delete");
-  }
+const deleteVendor = (vendor) => {
+  setDeleteModal({
+    show: true,
+    id: vendor.id,
+    name: vendor.name,
+    type: "vendor",
+  });
 };
 
 const fetchVendors = async () => {
@@ -3063,7 +3070,7 @@ const fetchVendors = async () => {
   </button>
 
   <button
-    onClick={() => deleteVendor(vendor.id)}
+    onClick={() => deleteVendor(vendor)}
     className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
     title="Delete Vendor"
   >
