@@ -976,6 +976,13 @@ export default function Dashboard() {
 </button>
   </div>
 
+  <div className="mt-3 relative">
+  {!filters.weddingDate && (
+    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none">
+      Search by wedding date
+    </span>
+  )}
+
   <input
     type="date"
     value={filters.weddingDate}
@@ -985,8 +992,9 @@ export default function Dashboard() {
         weddingDate: e.target.value,
       })
     }
-    className="mt-3 w-full p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+    className="w-full p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm text-sm outline-none focus:ring-2 focus:ring-emerald-500 text-gray-700"
   />
+</div>
 </div>
 
         <div className="max-w-[98%] mx-auto mt-4 flex justify-start gap-2 bg-white/30 backdrop-blur-lg border border-white/30 rounded-2xl p-3 shadow-lg">
