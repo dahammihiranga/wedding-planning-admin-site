@@ -979,7 +979,7 @@ export default function Dashboard() {
   </div>
 
   <input
-  type="text"
+  type="date"
   inputMode="numeric"
   placeholder="Search by wedding date (mm/dd/yyyy)"
   value={filters.weddingDateDisplay || ""}
