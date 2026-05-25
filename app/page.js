@@ -150,7 +150,6 @@ const StatusDropdown = ({ currentStatus, onStatusChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [menuStyle, setMenuStyle] = useState({});
   const buttonRef = useRef(null);
-  const localizer = momentLocalizer(moment);
 
   const toggleDropdown = (e) => {
     e.stopPropagation();
