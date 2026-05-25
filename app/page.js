@@ -875,12 +875,12 @@ const handleVendorSubmit = async (e) => {
   try {
     if (vendorForm.id) {
       await axios.put(
-        `${API_BASE_URL}/vendors?id=${vendorForm.id}`,
+        `/api/vendors?id=${vendorForm.id}`,
         vendorForm
       );
     } else {
       await axios.post(
-        `${API_BASE_URL}/vendors`,
+        "/api/vendors",
         vendorForm
       );
     }
@@ -912,7 +912,7 @@ const deleteVendor = async (id) => {
 
   try {
     await axios.delete(
-      `${API_BASE_URL}/vendors?id=${id}`
+      `/api/vendors?id=${id}`
     );
 
     fetchVendors();
@@ -925,7 +925,7 @@ const deleteVendor = async (id) => {
 const fetchVendors = async () => {
   try {
     const response = await axios.get(
-      `${API_BASE_URL}/vendors`
+      "/api/vendors"
     );
 
     setVendors(response.data);
