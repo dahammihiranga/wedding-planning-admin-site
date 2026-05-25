@@ -299,7 +299,6 @@ export default function Dashboard() {
     serviceType: [],
     weddingType: "",
     status: "",
-    weddingDateDisplay: "",
   });
 
   const [toast, setToast] = useState({
@@ -684,7 +683,6 @@ export default function Dashboard() {
       serviceType: [],
       weddingType: "",
       status: "",
-      weddingDateDisplay: "",
     });
   };
 
@@ -978,26 +976,23 @@ export default function Dashboard() {
 </button>
   </div>
 
+  <div className="mt-3">
+  <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1 px-1">
+    Search by wedding date(mm/dd/yyyy)
+  </label>
+
   <input
-  type="date"
-  inputMode="numeric"
-  placeholder="Search by wedding date (mm/dd/yyyy)"
-  value={filters.weddingDateDisplay || ""}
-  onChange={(e) => {
-    const value = e.target.value;
-
-    const selectedDate = moment(value, "MM/DD/YYYY", true);
-
-    setFilters({
-      ...filters,
-      weddingDateDisplay: value,
-      weddingDate: selectedDate.isValid()
-        ? selectedDate.format("YYYY-MM-DD")
-        : "",
-    });
-  }}
-  className="mt-3 w-full p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm text-sm outline-none focus:ring-2 focus:ring-emerald-500"
-/>
+    type="date"
+    value={filters.weddingDate}
+    onChange={(e) =>
+      setFilters({
+        ...filters,
+        weddingDate: e.target.value,
+      })
+    }
+    className="w-full p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+  />
+</div>
 </div>
 
         <div className="max-w-[98%] mx-auto mt-4 flex justify-start gap-2 bg-white/30 backdrop-blur-lg border border-white/30 rounded-2xl p-3 shadow-lg">
