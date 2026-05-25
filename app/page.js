@@ -291,6 +291,7 @@ export default function Dashboard() {
   const [currentSLTime, setCurrentSLTime] = useState("");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [selectedRemark, setSelectedRemark] = useState(null);
+  const [tabLoading, setTabLoading] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -315,6 +316,15 @@ export default function Dashboard() {
     name: "",
     type: "soft",
   });
+
+  const handleTabChange = (tab) => {
+  setTabLoading(true);
+
+  setTimeout(() => {
+    setActiveTab(tab);
+    setTabLoading(false);
+  }, 350);
+};
 
   const [formData, setFormData] = useState({
     id: null,
@@ -1045,11 +1055,29 @@ export default function Dashboard() {
           </button>
         </div>
 
+        {tabLoading && (
+  <div className="fixed inset-0 z-[99999] bg-black/20 backdrop-blur-sm flex items-center justify-center">
+    <div className="bg-white/90 backdrop-blur-xl rounded-3xl px-8 py-6 shadow-2xl border border-white/40 flex flex-col items-center gap-4">
+      <div className="w-14 h-14 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin" />
+
+      <div className="text-center">
+        <p className="text-base font-bold text-gray-800">
+          Loading Wedding Records
+        </p>
+
+        <p className="text-xs text-gray-500 mt-1">
+          Please wait a moment...
+        </p>
+      </div>
+    </div>
+  </div>
+)}
+
         {/* DASHBOARD TAB SEGMENT CONSOLE NAVIGATION BAR */}
         <div className="max-w-[98%] mx-auto mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 md:border-b bg-white/50 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none rounded-3xl md:rounded-none p-3 md:p-0 shadow-xl md:shadow-none border border-white/40 md:border-0">
           <div className="grid grid-cols-1 gap-2 w-full md:flex md:flex-wrap">
             <button
-              onClick={() => setActiveTab("all")}
+              onClick={() => handleTabChange("all")}
               className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
                 activeTab === "all"
                   ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
@@ -1060,7 +1088,7 @@ export default function Dashboard() {
             </button>
 
             <button
-              onClick={() => setActiveTab("completed")}
+              onClick={() => handleTabChange("completed")}
               className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
                 activeTab === "completed"
                   ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
@@ -1071,7 +1099,7 @@ export default function Dashboard() {
             </button>
 
             <button
-              onClick={() => setActiveTab("trash")}
+              onClick={() => handleTabChange("trash")}
               className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
                 activeTab === "trash"
                   ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-amber-50/40 md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
