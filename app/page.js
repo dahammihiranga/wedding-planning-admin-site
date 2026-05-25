@@ -685,6 +685,22 @@ export default function Dashboard() {
     );
   });
 
+  const upcomingWeddings = data.filter((item) => {
+  if (
+    item.status !== "Confirmed" ||
+    !item.wedding_date
+  ) {
+    return false;
+  }
+
+  const weddingDate = moment(item.wedding_date);
+  const today = moment();
+
+  const daysLeft = weddingDate.diff(today, "days");
+
+  return daysLeft >= 0 && daysLeft <= 14;
+});
+
   const calendarEvents = activeRecordsDisplay
     .filter((item) => item.wedding_date)
     .map((item) => {
@@ -802,6 +818,12 @@ export default function Dashboard() {
                     ? "OUR WEDDING ENQUIRIES"
                     : "RECYCLE TRACK STORAGE"}
               </p>
+              {upcomingWeddings.length > 0 && (
+  <div className="mt-2 inline-flex items-center gap-2 bg-rose-100/90 backdrop-blur-md text-rose-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-rose-200">
+    🔔 {upcomingWeddings.length} Upcoming Wedding
+    {upcomingWeddings.length > 1 ? "s" : ""}
+  </div>
+)}
             </div>
           </div>
 
@@ -1069,6 +1091,75 @@ export default function Dashboard() {
           Please wait a moment...
         </p>
       </div>
+    </div>
+  </div>
+)}
+
+{upcomingWeddings.length > 0 && (
+  <div className="max-w-[98%] mx-auto mt-5 bg-gradient-to-r from-rose-500/10 to-pink-500/10 backdrop-blur-xl border border-rose-200 rounded-3xl shadow-xl overflow-hidden">
+    
+    <div className="px-5 py-4 border-b border-rose-200/50 flex items-center justify-between">
+      <div>
+        <h3 className="text-lg font-black text-rose-700 flex items-center gap-2">
+          🔔 Upcoming Weddings
+        </h3>
+
+        <p className="text-xs text-rose-500 mt-1">
+          Weddings happening within next 14 days
+        </p>
+      </div>
+
+      <div className="bg-rose-600 text-white text-sm font-black px-3 py-1 rounded-full animate-pulse">
+        {upcomingWeddings.length}
+      </div>
+    </div>
+
+    <div className="divide-y divide-rose-100">
+      {upcomingWeddings.map((item) => {
+        const daysLeft = moment(item.wedding_date).diff(
+          moment(),
+          "days"
+        );
+
+        return (
+          <div
+            key={item.id}
+            className="p-4 hover:bg-white/30 transition"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h4 className="font-black text-gray-900 text-sm md:text-base">
+                  {item.couple_name}
+                </h4>
+
+                <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-600">
+                  <span>
+                    📅 {moment(item.wedding_date).format("MMMM D, YYYY")}
+                  </span>
+
+                  <span>•</span>
+
+                  <span>
+                    🏨 {item.hotel || "Venue not added"}
+                  </span>
+                </div>
+              </div>
+
+              <div
+                className={`px-3 py-1 rounded-full text-xs font-black shrink-0 ${
+                  daysLeft <= 3
+                    ? "bg-red-600 text-white animate-pulse"
+                    : "bg-rose-100 text-rose-700"
+                }`}
+              >
+                {daysLeft === 0
+                  ? "TODAY"
+                  : `${daysLeft} DAYS LEFT`}
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   </div>
 )}
