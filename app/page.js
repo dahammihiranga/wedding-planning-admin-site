@@ -310,6 +310,7 @@ const [vendorForm, setVendorForm] = useState({
   location: "",
   remarks: "",
 });
+const [vendorLoading, setVendorLoading] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -887,6 +888,13 @@ const handleVendorSubmit = async (e) => {
 
     await fetchVendors();
 
+    triggerNotification(
+  vendorForm.id
+    ? `${vendorForm.name} vendor details updated successfully.`
+    : `${vendorForm.name} added to vendors successfully.`,
+  "success"
+);
+
     setIsVendorModalOpen(false);
 
     setVendorForm({
@@ -917,20 +925,27 @@ const deleteVendor = async (id) => {
 
     fetchVendors();
 
+    triggerNotification(
+  "Vendor deleted successfully.",
+  "delete"
+);
+
   } catch (error) {
     console.error(error);
   }
 };
 
 const fetchVendors = async () => {
-  try {
-    const response = await axios.get(
-      "/api/vendors"
-    );
+  setVendorLoading(true);
 
+  try {
+    const response = await axios.get("/api/vendors");
     setVendors(response.data);
   } catch (error) {
     console.error("Error fetching vendors:", error);
+    triggerNotification("Failed to load vendors.", "delete");
+  } finally {
+    setVendorLoading(false);
   }
 };
 
@@ -2975,35 +2990,45 @@ const fetchVendors = async () => {
 )}
 
 {activePage === "vendors" && (
-  <div className="p-6">
-    <div className="flex items-center justify-between mb-6">
+  <div className="p-4 md:p-6">
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
       <div>
-        <h1 className="text-3xl font-black text-fuchsia-950">
-          Vendors
+        <h1 className="text-2xl md:text-3xl font-black text-fuchsia-950">
+          🤝 Vendors
         </h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-fuchsia-900/70 mt-1 font-semibold">
           Manage wedding vendors and service providers
         </p>
       </div>
 
       <button
         onClick={() => openVendorModal()}
-        className="bg-fuchsia-300 hover:bg-fuchsia-400 text-black font-bold px-5 py-3 rounded-2xl shadow transition"
+        className="bg-white text-fuchsia-500 border border-fuchsia-200 font-semibold px-4 py-2 rounded-xl shadow hover:bg-fuchsia-50 transition text-sm"
       >
         + Add Vendor
       </button>
     </div>
 
     <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
-      {vendors.length === 0 ? (
-        <div className="p-10 text-center text-gray-400 font-semibold">
-          No vendors added yet.
+      {vendorLoading ? (
+        <div className="p-12 flex flex-col items-center justify-center gap-4">
+          <div className="w-14 h-14 border-4 border-fuchsia-100 border-t-fuchsia-400 rounded-full animate-spin" />
+          <p className="text-sm font-bold text-gray-500">
+            Loading Vendors...
+          </p>
+        </div>
+      ) : vendors.length === 0 ? (
+        <div className="p-12 text-center">
+          <div className="text-4xl mb-3">🤝</div>
+          <p className="text-gray-400 text-sm font-bold">
+            No vendors added yet.
+          </p>
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full text-left border-collapse min-w-max">
             <thead>
-              <tr className="bg-fuchsia-50 text-fuchsia-900 uppercase text-xs font-black border-b">
+              <tr className="bg-fuchsia-50 text-fuchsia-900 uppercase text-xs md:text-[15px] font-black border-b border-gray-200">
                 <th className="p-4">Name</th>
                 <th className="p-4">Service</th>
                 <th className="p-4">Contact Number</th>
@@ -3013,13 +3038,13 @@ const fetchVendors = async () => {
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-100 bg-white md:text-sm">
               {vendors.map((vendor) => (
                 <tr key={vendor.id} className="hover:bg-fuchsia-50/40 transition">
                   <td className="p-4 font-bold text-gray-900">
-                    {vendor.name}
+                    🧾 {vendor.name}
                   </td>
-                  <td className="p-4 text-gray-700">
+                  <td className="p-4 text-gray-700 font-medium">
                     {vendor.service || "—"}
                   </td>
                   <td className="p-4 font-mono text-gray-700">
@@ -3028,10 +3053,13 @@ const fetchVendors = async () => {
                   <td className="p-4 text-gray-700">
                     {vendor.location || "—"}
                   </td>
-                  <td className="p-4 text-gray-500 max-w-xs truncate">
+                  <td
+                    className="p-4 text-gray-500 max-w-xs truncate"
+                    title={vendor.remarks}
+                  >
                     {vendor.remarks || "—"}
                   </td>
-                  <td className="p-4">
+                  <td className="p-4 text-center">
                     <div className="flex items-center justify-center gap-3">
                       <button
                         onClick={() => openVendorModal(vendor)}
@@ -3042,9 +3070,9 @@ const fetchVendors = async () => {
 
                       <button
                         onClick={() => deleteVendor(vendor.id)}
-                        className="text-red-500 font-bold hover:underline"
+                        className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
                       >
-                        Delete
+                        🗑️
                       </button>
                     </div>
                   </td>
