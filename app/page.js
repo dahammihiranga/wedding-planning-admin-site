@@ -179,6 +179,10 @@ const StatusDropdown = ({ currentStatus, onStatusChange }) => {
         setIsOpen(false);
       }
     };
+    const savedLogin = localStorage.getItem("chathu_admin_logged_in");
+if (savedLogin === "true") {
+  setIsLoggedIn(true);
+}
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -217,6 +221,8 @@ const StatusDropdown = ({ currentStatus, onStatusChange }) => {
         return "bg-blue-50 text-blue-800 border-blue-200/70 hover:bg-blue-100/60";
     }
   };
+
+  
 
   return (
     <div className="relative inline-block text-left" ref={buttonRef}>
@@ -292,6 +298,13 @@ export default function Dashboard() {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [selectedRemark, setSelectedRemark] = useState(null);
   const [tabLoading, setTabLoading] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const [loginData, setLoginData] = useState({
+  username: "",
+  password: "",
+});
+const [loginError, setLoginError] = useState("");
+const [loginLoading, setLoginLoading] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -743,7 +756,130 @@ const urgentUpcomingWeddings = data.filter((item) => {
     });
   };
 
+  const handleLogin = (e) => {
+  e.preventDefault();
+
+  setLoginLoading(true);
+  setLoginError("");
+
+  setTimeout(() => {
+    const ADMIN_USERNAME = "admin";
+    const ADMIN_PASSWORD = "12345";
+
+    if (
+      loginData.username === ADMIN_USERNAME &&
+      loginData.password === ADMIN_PASSWORD
+    ) {
+      localStorage.setItem("chathu_admin_logged_in", "true");
+      setIsLoggedIn(true);
+      setLoginData({ username: "", password: "" });
+    } else {
+      setLoginError("Invalid username or password");
+    }
+
+    setLoginLoading(false);
+  }, 900);
+};
+
+const handleLogout = () => {
+  localStorage.removeItem("chathu_admin_logged_in");
+
+  setLoginData({
+    username: "",
+    password: "",
+  });
+
+  setLoginError("");
+
+  setIsLoggedIn(false);
+};
+
   if (!mounted) return <div className="min-h-screen bg-gray-50" />;
+
+  if (!isLoggedIn) {
+  return (
+    <div
+      className="min-h-screen flex items-center justify-center p-5 relative overflow-hidden"
+      style={{
+        backgroundImage: "url('/background_img_1.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div className="absolute inset-0 bg-white/55 backdrop-blur-[3px]" />
+
+      <div className="relative z-10 w-full max-w-sm">
+        <div className="bg-white/70 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/50 p-6 overflow-hidden">
+          <div className="absolute -top-20 -right-20 w-40 h-40 bg-fuchsia-200/50 rounded-full blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-rose-200/50 rounded-full blur-3xl" />
+
+          <div className="relative text-center mb-6">
+            <div className="w-24 h-24 mx-auto rounded-full bg-white/80 shadow-xl border border-white/60 flex items-center justify-center mb-4">
+              <img
+                src="/official Logo.png"
+                alt="Chathu Wedding Planners"
+                className="w-20 h-20 object-contain"
+              />
+            </div>
+
+            <h1 className="text-2xl font-black text-fuchsia-950">
+              Welcome Back
+            </h1>
+
+            <p className="text-xs text-gray-500 mt-1 font-semibold">
+              Chathu Wedding Planners Admin Panel
+            </p>
+          </div>
+
+          <form onSubmit={handleLogin} className="relative space-y-4">
+            <input
+              type="text"
+              placeholder="Username"
+              value={loginData.username}
+              disabled={loginLoading}
+              onChange={(e) =>
+                setLoginData({ ...loginData, username: e.target.value })
+              }
+              className="w-full p-3.5 text-black rounded-2xl bg-white/80 border border-fuchsia-200 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold disabled:opacity-60"
+            />
+
+            <input
+              type="password"
+              placeholder="Password"
+              value={loginData.password}
+              disabled={loginLoading}
+              onChange={(e) =>
+                setLoginData({ ...loginData, password: e.target.value })
+              }
+              className="w-full p-3.5 text-black rounded-2xl bg-white/80 border border-fuchsia-200 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold disabled:opacity-60"
+            />
+
+            {loginError && (
+              <div className="bg-red-50 border border-red-100 text-red-600 text-xs font-bold rounded-2xl p-3">
+                {loginError}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loginLoading}
+              className="w-full p-3.5 rounded-2xl bg-fuchsia-300 hover:bg-fuchsia-400 text-black font-black transition flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {loginLoading ? (
+                <>
+                  <span className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                  Logging in...
+                </>
+              ) : (
+                "Login"
+              )}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
 
   return (
     <div
@@ -847,14 +983,25 @@ const urgentUpcomingWeddings = data.filter((item) => {
             </div>
           </div>
 
-          <div className="text-right leading-tight ml-2">
-            <p className="text-[9px] md:text-[10px] uppercase tracking-wider font-bold text-fuchsia-900">
-              Sri Lanka
-            </p>
-            <p className="text-[10px] md:text-sm font-bold text-fuchsia-950 whitespace-nowrap">
-              {currentSLTime}
-            </p>
-          </div>
+          <div className="flex items-center gap-2 ml-2">
+  <div className="text-right leading-tight max-w-[105px] md:max-w-none">
+    <p className="text-[8px] md:text-[10px] uppercase tracking-wider font-bold text-fuchsia-900">
+      Sri Lanka
+    </p>
+
+    <p className="text-[9px] md:text-sm font-bold text-fuchsia-950 whitespace-nowrap">
+      {currentSLTime}
+    </p>
+  </div>
+
+  <button
+    type="button"
+    onClick={handleLogout}
+    className="px-2 md:px-3 py-2 rounded-xl bg-white/40 hover:bg-white/60 text-fuchsia-900 text-[10px] md:text-xs font-bold border border-white/40"
+  >
+    Logout
+  </button>
+</div>
         </header>
 
         <div className="hidden md:block max-w-[98%] mx-auto mt-4 bg-white border border-gray-100 rounded-2xl shadow-sm p-4">
