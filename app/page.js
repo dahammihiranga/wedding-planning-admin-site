@@ -1533,9 +1533,21 @@ export default function Dashboard() {
         {isModalOpen && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start md:items-center justify-center p-3 md:p-4 z-[9999] overflow-y-auto pb-[env(safe-area-inset-bottom)]">
             <div className="bg-white rounded-2xl w-full max-w-lg p-4 md:p-6 shadow-2xl space-y-4 my-4 md:my-8 border border-gray-100 max-h-[92vh] overflow-y-auto pb-28 md:pb-6">
-              <h2 className="text-lg font-bold text-gray-900 border-b pb-2">
-                {formData.id ? "Modify Wedding File" : "Add New Wedding Record"}
-              </h2>
+              <div className="flex items-center justify-between border-b pb-3">
+  <h2 className="text-lg font-bold text-gray-900">
+    {formData.id
+      ? "Modify Wedding File"
+      : "Add New Wedding Record"}
+  </h2>
+
+  <button
+    type="button"
+    onClick={() => setIsModalOpen(false)}
+    className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition flex items-center justify-center text-lg font-bold active:scale-95"
+  >
+    ✕
+  </button>
+</div>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
                   <div className="col-span-2">
@@ -1866,6 +1878,40 @@ export default function Dashboard() {
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4 pb-6 md:pb-0 border-t">
+                  <button
+  type="button"
+  onClick={() => {
+    localStorage.removeItem(DRAFT_KEY);
+
+    setFormData({
+      id: null,
+      couple_name: "",
+      wedding_date: "",
+      hotel: "",
+      service_type: [],
+      wedding_type: "One day",
+      guest_count: "",
+      contact_no: "",
+      bridesmaid_option: "",
+      package_price: 0,
+      discount_rate: 0,
+      agreed_price: 0,
+      advance_paid: 0,
+      status: "Inquiry",
+      remarks: "",
+      country: "Local",
+      advance_paid_date: "",
+    });
+
+    triggerNotification(
+      "All inquiry fields cleared successfully.",
+      "delete"
+    );
+  }}
+  className="px-4 py-2 border border-rose-200 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 text-sm font-semibold transition"
+>
+  Clear All
+</button>
                   <button
                     type="button"
                     onClick={() => setIsModalOpen(false)}
