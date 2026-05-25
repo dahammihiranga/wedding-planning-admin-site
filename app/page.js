@@ -312,6 +312,7 @@ export default function Dashboard() {
   });
   const [vendorLoading, setVendorLoading] = useState(false);
   const [customerSearch, setCustomerSearch] = useState("");
+  const [vendorSearch, setVendorSearch] = useState("");
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -966,6 +967,17 @@ export default function Dashboard() {
     ?.toLowerCase()
     .includes(customerSearch.toLowerCase().trim())
 );
+
+const filteredVendors = vendors.filter((vendor) => {
+  const search = vendorSearch.toLowerCase().trim();
+
+  return (
+    !search ||
+    vendor.name?.toLowerCase().includes(search) ||
+    vendor.service?.toLowerCase().includes(search) ||
+    vendor.contact_number?.toLowerCase().includes(search)
+  );
+});
 
   if (!mounted) return <div className="min-h-screen bg-gray-50" />;
 
@@ -3149,6 +3161,16 @@ export default function Dashboard() {
               </button>
             </div>
 
+            <div className="mb-4 bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl p-3 shadow">
+  <input
+    type="text"
+    placeholder="Search by name, service or contact number..."
+    value={vendorSearch}
+    onChange={(e) => setVendorSearch(e.target.value)}
+    className="w-full p-3 rounded-xl border border-fuchsia-100 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold"
+  />
+</div>
+
             <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
               {vendorLoading ? (
                 <div className="p-12 flex flex-col items-center justify-center gap-4">
@@ -3157,7 +3179,7 @@ export default function Dashboard() {
                     Loading Vendors...
                   </p>
                 </div>
-              ) : vendors.length === 0 ? (
+              ) : filteredVendors.length === 0 ? (
                 <div className="p-12 text-center">
                   <div className="text-4xl mb-3">🤝</div>
                   <p className="text-gray-400 text-sm font-bold">
@@ -3179,7 +3201,7 @@ export default function Dashboard() {
                     </thead>
 
                     <tbody className="divide-y divide-gray-100 bg-white md:text-sm">
-                      {vendors.map((vendor) => (
+                      {filteredVendors.map((vendor) => (
                         <tr
                           key={vendor.id}
                           className="hover:bg-fuchsia-50/40 transition"
