@@ -298,6 +298,17 @@ export default function Dashboard() {
   });
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
+  const [activePage, setActivePage] = useState("dashboard");
+  const [vendors, setVendors] = useState([]);
+const [isVendorModalOpen, setIsVendorModalOpen] = useState(false);
+const [vendorForm, setVendorForm] = useState({
+  id: null,
+  name: "",
+  service: "",
+  contact_number: "",
+  location: "",
+  remarks: "",
+});
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -356,6 +367,8 @@ export default function Dashboard() {
 
   useEffect(() => {
     setMounted(true);
+
+    fetchVendors();
 
     const savedLogin = localStorage.getItem("chathu_admin_logged_in");
     const loginTime = localStorage.getItem("chathu_admin_login_time");
@@ -824,6 +837,102 @@ export default function Dashboard() {
     setIsLoggedIn(false);
   };
 
+const openVendorModal = (vendor = null) => {
+  if (vendor) {
+    setVendorForm(vendor);
+  } else {
+    setVendorForm({
+      id: null,
+      name: "",
+      service: "",
+      contact_number: "",
+      location: "",
+      remarks: "",
+    });
+  }
+
+  setIsVendorModalOpen(true);
+};
+
+const handleVendorChange = (e) => {
+  const { name, value } = e.target;
+
+  setVendorForm({
+    ...vendorForm,
+    [name]: value,
+  });
+};
+
+const handleVendorSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!vendorForm.name.trim()) {
+    alert("Vendor name is required");
+    return;
+  }
+
+  try {
+    if (vendorForm.id) {
+      await axios.put(
+        `${API_BASE_URL}/vendors?id=${vendorForm.id}`,
+        vendorForm
+      );
+    } else {
+      await axios.post(
+        `${API_BASE_URL}/vendors`,
+        vendorForm
+      );
+    }
+
+    await fetchVendors();
+
+    setIsVendorModalOpen(false);
+
+    setVendorForm({
+      id: null,
+      name: "",
+      service: "",
+      contact_number: "",
+      location: "",
+      remarks: "",
+    });
+
+  } catch (error) {
+    console.error("Vendor save error:", error);
+  }
+};
+
+const deleteVendor = async (id) => {
+  const confirmed = window.confirm(
+    "Delete this vendor?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    await axios.delete(
+      `${API_BASE_URL}/vendors?id=${id}`
+    );
+
+    fetchVendors();
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const fetchVendors = async () => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/vendors`
+    );
+
+    setVendors(response.data);
+  } catch (error) {
+    console.error("Error fetching vendors:", error);
+  }
+};
+
   if (!mounted) return <div className="min-h-screen bg-gray-50" />;
 
   if (!isLoggedIn) {
@@ -912,20 +1021,52 @@ export default function Dashboard() {
   }
 
   return (
-    <div
-      className="min-h-screen text-gray-800 font-sans pb-10 relative"
-      style={{
-        backgroundImage: "url('/background_img_1.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
+  <div
+    className="min-h-screen flex text-gray-800 font-sans relative"
+    style={{
+      backgroundImage: "url('/background_img_1.png')",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundAttachment: "fixed",
+      backgroundRepeat: "no-repeat",
+    }}
+  >
       <div className="absolute inset-0 bg-white/75 backdrop-blur-[2px] pointer-events-none"></div>
 
-      <div className="relative z-10">
+      <div className="hidden md:flex w-72 min-h-screen bg-white/70 backdrop-blur-2xl border-r border-white/40 flex-col p-5 shadow-xl sticky top-0 z-20">
+  <div className="mb-10">
+    <img src="/official Logo.png" className="w-16 h-16 object-contain mb-3" />
+
+    <h1 className="text-2xl font-black text-fuchsia-950">
+      Chathu Wedding
+    </h1>
+
+    <p className="text-sm text-fuchsia-900/70">CRM System</p>
+  </div>
+
+  <div className="space-y-2">
+    <button onClick={() => setActivePage("dashboard")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "dashboard" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}>
+      🏠 Dashboard
+    </button>
+
+    <button onClick={() => setActivePage("customers")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "customers" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}>
+      👰 Customers
+    </button>
+
+    <button onClick={() => setActivePage("vendors")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "vendors" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}>
+      🤝 Vendors
+    </button>
+
+    <button onClick={() => setActivePage("packages")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "packages" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}>
+      📦 Our Packages
+    </button>
+  </div>
+</div>
+
+      <div className="relative z-10 flex-1 overflow-x-hidden pb-10">
         {/* HIGH VISIBILITY FLOATING INTERACTIVE TOAST BARS */}
+        {activePage === "dashboard" && (
+          <>
         {toast.show && (
           <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4 pointer-events-auto">
             <div
@@ -2795,6 +2936,141 @@ export default function Dashboard() {
           </div>
         )}
 
+         </>
+)}
+
+{activePage === "customers" && (
+  <div className="p-6">
+    <h1 className="text-3xl font-black text-fuchsia-950 mb-6">
+      Customers
+    </h1>
+
+    <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/40 overflow-x-auto">
+      <table className="w-full text-left">
+        <thead>
+          <tr className="border-b text-sm text-gray-500 uppercase">
+            <th className="p-3">Couple Name</th>
+            <th className="p-3">Wedding Date</th>
+            <th className="p-3">Contact Number</th>
+            <th className="p-3">Service Type</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {data.map((item) => (
+            <tr key={item.id} className="border-b hover:bg-fuchsia-50/40">
+              <td className="p-3 font-bold text-gray-900">
+                {item.couple_name}
+              </td>
+              <td className="p-3">{item.wedding_date || "—"}</td>
+              <td className="p-3">{item.contact_no || "—"}</td>
+              <td className="p-3">{item.service_type || "—"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
+
+{activePage === "vendors" && (
+  <div className="p-6">
+    <div className="flex items-center justify-between mb-6">
+      <div>
+        <h1 className="text-3xl font-black text-fuchsia-950">
+          Vendors
+        </h1>
+        <p className="text-sm text-gray-500 mt-1">
+          Manage wedding vendors and service providers
+        </p>
+      </div>
+
+      <button
+        onClick={() => openVendorModal()}
+        className="bg-fuchsia-300 hover:bg-fuchsia-400 text-black font-bold px-5 py-3 rounded-2xl shadow transition"
+      >
+        + Add Vendor
+      </button>
+    </div>
+
+    <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
+      {vendors.length === 0 ? (
+        <div className="p-10 text-center text-gray-400 font-semibold">
+          No vendors added yet.
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-fuchsia-50 text-fuchsia-900 uppercase text-xs font-black border-b">
+                <th className="p-4">Name</th>
+                <th className="p-4">Service</th>
+                <th className="p-4">Contact Number</th>
+                <th className="p-4">Location</th>
+                <th className="p-4">Remarks</th>
+                <th className="p-4 text-center">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-gray-100">
+              {vendors.map((vendor) => (
+                <tr key={vendor.id} className="hover:bg-fuchsia-50/40 transition">
+                  <td className="p-4 font-bold text-gray-900">
+                    {vendor.name}
+                  </td>
+                  <td className="p-4 text-gray-700">
+                    {vendor.service || "—"}
+                  </td>
+                  <td className="p-4 font-mono text-gray-700">
+                    {vendor.contact_number || "—"}
+                  </td>
+                  <td className="p-4 text-gray-700">
+                    {vendor.location || "—"}
+                  </td>
+                  <td className="p-4 text-gray-500 max-w-xs truncate">
+                    {vendor.remarks || "—"}
+                  </td>
+                  <td className="p-4">
+                    <div className="flex items-center justify-center gap-3">
+                      <button
+                        onClick={() => openVendorModal(vendor)}
+                        className="text-fuchsia-600 font-bold hover:underline"
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        onClick={() => deleteVendor(vendor.id)}
+                        className="text-red-500 font-bold hover:underline"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
+{activePage === "packages" && (
+  <div className="p-6">
+    <h1 className="text-3xl font-black text-fuchsia-950 mb-6">
+      Our Packages
+    </h1>
+
+    <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/40">
+      <p className="text-gray-500">
+        Package PDF storage section will be added here.
+      </p>
+    </div>
+  </div>
+)}
+
         {selectedRemark && (
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
             <div className="bg-white rounded-2xl w-full max-w-sm p-5 shadow-2xl border border-gray-100">
@@ -2818,6 +3094,111 @@ export default function Dashboard() {
             </div>
           </div>
         )}
+
+        {isVendorModalOpen && (
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start md:items-center justify-center p-4 z-[9999] overflow-y-auto">
+    <div className="bg-white rounded-3xl w-full max-w-lg p-5 shadow-2xl border border-gray-100 my-6">
+      <div className="flex items-center justify-between border-b pb-3 mb-4">
+        <h2 className="text-xl font-black text-gray-900">
+          {vendorForm.id ? "Edit Vendor" : "Add Vendor"}
+        </h2>
+
+        <button
+          type="button"
+          onClick={() => setIsVendorModalOpen(false)}
+          className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold"
+        >
+          ✕
+        </button>
+      </div>
+
+      <form onSubmit={handleVendorSubmit} className="space-y-4">
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+            Name *
+          </label>
+          <input
+            type="text"
+            name="name"
+            required
+            value={vendorForm.name}
+            onChange={handleVendorChange}
+            className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+            Service
+          </label>
+          <input
+            type="text"
+            name="service"
+            value={vendorForm.service}
+            onChange={handleVendorChange}
+            className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+            Contact Number
+          </label>
+          <input
+            type="text"
+            name="contact_number"
+            value={vendorForm.contact_number}
+            onChange={handleVendorChange}
+            className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+            Location
+          </label>
+          <input
+            type="text"
+            name="location"
+            value={vendorForm.location}
+            onChange={handleVendorChange}
+            className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+            Remarks
+          </label>
+          <textarea
+            name="remarks"
+            rows="3"
+            value={vendorForm.remarks}
+            onChange={handleVendorChange}
+            className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+          />
+        </div>
+
+        <div className="flex justify-end gap-3 pt-4 border-t">
+          <button
+            type="button"
+            onClick={() => setIsVendorModalOpen(false)}
+            className="px-4 py-2 rounded-xl border text-gray-600 font-bold"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            className="px-5 py-2 rounded-xl bg-fuchsia-300 hover:bg-fuchsia-400 text-black font-black"
+          >
+            {vendorForm.id ? "Update Vendor" : "Save Vendor"}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
 
         <WindowsFlagFix />
       </div>
