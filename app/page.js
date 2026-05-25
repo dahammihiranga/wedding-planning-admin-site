@@ -360,13 +360,52 @@ const [loginLoading, setLoginLoading] = useState(false);
 useEffect(() => {
   setMounted(true);
 
+  useEffect(() => {
+  if (!isLoggedIn) return;
+
+  const AUTO_LOGOUT_TIME = 60 * 60 * 1000; // 1 hour
+
+  const logoutTimer = setTimeout(() => {
+    localStorage.removeItem("chathu_admin_logged_in");
+
+    setLoginData({
+      username: "",
+      password: "",
+    });
+
+    setLoginError("");
+
+    setIsLoggedIn(false);
+
+    triggerNotification(
+      "Session expired. Logged out automatically for security.",
+      "delete"
+    );
+  }, AUTO_LOGOUT_TIME);
+
+  return () => clearTimeout(logoutTimer);
+}, [isLoggedIn]);
+
   const savedLogin = localStorage.getItem(
     "chathu_admin_logged_in"
   );
 
-  if (savedLogin === "true") {
-    setIsLoggedIn(true);
-  }
+  const loginTime = localStorage.getItem(
+  "chathu_admin_login_time"
+);
+
+const ONE_HOUR = 60 * 60 * 1000;
+
+if (
+  savedLogin === "true" &&
+  loginTime &&
+  Date.now() - Number(loginTime) < ONE_HOUR
+) {
+  setIsLoggedIn(true);
+} else {
+  localStorage.removeItem("chathu_admin_logged_in");
+  localStorage.removeItem("chathu_admin_login_time");
+}
 
   const savedTrash = localStorage.getItem(
     "chathu_trash_bin"
@@ -779,6 +818,10 @@ const urgentUpcomingWeddings = data.filter((item) => {
       loginData.password === ADMIN_PASSWORD
     ) {
       localStorage.setItem("chathu_admin_logged_in", "true");
+      localStorage.setItem(
+  "chathu_admin_login_time",
+  Date.now().toString()
+);
       setIsLoggedIn(true);
       setLoginData({ username: "", password: "" });
     } else {
