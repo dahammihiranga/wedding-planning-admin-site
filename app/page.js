@@ -869,31 +869,27 @@ const handleVendorSubmit = async (e) => {
   e.preventDefault();
 
   if (!vendorForm.name.trim()) {
-    alert("Vendor name is required");
+    triggerNotification("Vendor name is required.", "delete");
     return;
   }
 
+  const isUpdate = Boolean(vendorForm.id);
+
   try {
-    if (vendorForm.id) {
-      await axios.put(
-        `/api/vendors?id=${vendorForm.id}`,
-        vendorForm
-      );
+    if (isUpdate) {
+      await axios.put(`/api/vendors?id=${vendorForm.id}`, vendorForm);
     } else {
-      await axios.post(
-        "/api/vendors",
-        vendorForm
-      );
+      await axios.post("/api/vendors", vendorForm);
     }
 
     await fetchVendors();
 
     triggerNotification(
-  vendorForm.id
-    ? `${vendorForm.name} vendor details updated successfully.`
-    : `${vendorForm.name} added to vendors successfully.`,
-  "success"
-);
+      isUpdate
+        ? `Changes applied to ${vendorForm.name}'s vendor file.`
+        : `New vendor ${vendorForm.name} has been added successfully! ✨`,
+      "success"
+    );
 
     setIsVendorModalOpen(false);
 
@@ -905,33 +901,31 @@ const handleVendorSubmit = async (e) => {
       location: "",
       remarks: "",
     });
-
   } catch (error) {
     console.error("Vendor save error:", error);
+    triggerNotification("Vendor save failed. Please try again.", "delete");
   }
 };
 
 const deleteVendor = async (id) => {
+  const vendor = vendors.find((v) => v.id === id);
   const confirmed = window.confirm(
-    "Delete this vendor?"
+    `Delete ${vendor?.name || "this vendor"}?`
   );
 
   if (!confirmed) return;
 
   try {
-    await axios.delete(
-      `/api/vendors?id=${id}`
-    );
-
-    fetchVendors();
+    await axios.delete(`/api/vendors?id=${id}`);
+    await fetchVendors();
 
     triggerNotification(
-  "Vendor deleted successfully.",
-  "delete"
-);
-
+      `${vendor?.name || "Vendor"} deleted successfully.`,
+      "delete"
+    );
   } catch (error) {
     console.error(error);
+    triggerNotification("Vendor delete failed. Please try again.", "delete");
   }
 };
 
@@ -1080,10 +1074,8 @@ const fetchVendors = async () => {
 </div>
 
       <div className="relative z-10 flex-1 overflow-x-hidden pb-10">
-        {/* HIGH VISIBILITY FLOATING INTERACTIVE TOAST BARS */}
-        {activePage === "dashboard" && (
-          <>
-        {toast.show && (
+  {/* HIGH VISIBILITY FLOATING INTERACTIVE TOAST BARS */}
+  {toast.show && (
           <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4 pointer-events-auto">
             <div
               className={`border backdrop-blur-xl p-4 rounded-2xl flex items-center gap-4 shadow-[0_20px_50px_rgba(0,0,0,0.15)] transition-all animate-notification ${
@@ -1125,6 +1117,8 @@ const fetchVendors = async () => {
             </div>
           </div>
         )}
+        {activePage === "dashboard" && (
+  <>
 
         <header
           className="text-emerald-950 shadow-xl backdrop-blur-xl p-4 sticky top-0 z-10 flex items-center justify-between border-b border-white/30"
@@ -3061,20 +3055,34 @@ const fetchVendors = async () => {
                   </td>
                   <td className="p-4 text-center">
                     <div className="flex items-center justify-center gap-3">
-                      <button
-                        onClick={() => openVendorModal(vendor)}
-                        className="text-fuchsia-600 font-bold hover:underline"
-                      >
-                        Edit
-                      </button>
+  <button
+    onClick={() => openVendorModal(vendor)}
+    className="text-fuchsia-600 font-bold hover:underline"
+  >
+    Edit
+  </button>
 
-                      <button
-                        onClick={() => deleteVendor(vendor.id)}
-                        className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
-                      >
-                        🗑️
-                      </button>
-                    </div>
+  <button
+    onClick={() => deleteVendor(vendor.id)}
+    className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
+    title="Delete Vendor"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+      stroke="currentColor"
+      className="w-4 h-4"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+      />
+    </svg>
+  </button>
+</div>
                   </td>
                 </tr>
               ))}
