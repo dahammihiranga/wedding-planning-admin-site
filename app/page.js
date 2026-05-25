@@ -288,6 +288,7 @@ export default function Dashboard() {
     useState(false);
   const [currentSLTime, setCurrentSLTime] = useState("");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [selectedRemark, setSelectedRemark] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -938,62 +939,62 @@ export default function Dashboard() {
         </div>
 
         <div className="md:hidden max-w-[94%] mx-auto mt-4">
-  <div className="flex items-center gap-2">
-    <input
-      type="text"
-      placeholder="Search by name, date or contact..."
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      className="flex-1 p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-    />
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              placeholder="Search by name, date or contact..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="flex-1 p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+            />
 
-    <button
-  type="button"
-  onClick={() => setIsMobileFilterOpen(true)}
-  className="w-12 h-12 rounded-2xl bg-white/85 backdrop-blur-xl border border-white/50 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-200"
->
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="w-5 h-5 text-gray-700"
-  >
-    <line x1="4" y1="21" x2="4" y2="14"></line>
-    <line x1="4" y1="10" x2="4" y2="3"></line>
-    <line x1="12" y1="21" x2="12" y2="12"></line>
-    <line x1="12" y1="8" x2="12" y2="3"></line>
-    <line x1="20" y1="21" x2="20" y2="16"></line>
-    <line x1="20" y1="12" x2="20" y2="3"></line>
+            <button
+              type="button"
+              onClick={() => setIsMobileFilterOpen(true)}
+              className="w-12 h-12 rounded-2xl bg-white/85 backdrop-blur-xl border border-white/50 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-200"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-5 h-5 text-gray-700"
+              >
+                <line x1="4" y1="21" x2="4" y2="14"></line>
+                <line x1="4" y1="10" x2="4" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12" y2="3"></line>
+                <line x1="20" y1="21" x2="20" y2="16"></line>
+                <line x1="20" y1="12" x2="20" y2="3"></line>
 
-    <line x1="1" y1="14" x2="7" y2="14"></line>
-    <line x1="9" y1="8" x2="15" y2="8"></line>
-    <line x1="17" y1="16" x2="23" y2="16"></line>
-  </svg>
-</button>
-  </div>
+                <line x1="1" y1="14" x2="7" y2="14"></line>
+                <line x1="9" y1="8" x2="15" y2="8"></line>
+                <line x1="17" y1="16" x2="23" y2="16"></line>
+              </svg>
+            </button>
+          </div>
 
-  <div className="mt-3">
-  <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1 px-1">
-    Search by wedding date(mm/dd/yyyy)
-  </label>
+          <div className="mt-3">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1 px-1">
+              Search by wedding date(mm/dd/yyyy)
+            </label>
 
-  <input
-    type="date"
-    value={filters.weddingDate}
-    onChange={(e) =>
-      setFilters({
-        ...filters,
-        weddingDate: e.target.value,
-      })
-    }
-    className="w-full p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-  />
-</div>
-</div>
+            <input
+              type="date"
+              value={filters.weddingDate}
+              onChange={(e) =>
+                setFilters({
+                  ...filters,
+                  weddingDate: e.target.value,
+                })
+              }
+              className="w-full p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+            />
+          </div>
+        </div>
 
         <div className="max-w-[98%] mx-auto mt-4 flex justify-start gap-2 bg-white/30 backdrop-blur-lg border border-white/30 rounded-2xl p-3 shadow-lg">
           <button
@@ -1012,69 +1013,69 @@ export default function Dashboard() {
         </div>
 
         {/* DASHBOARD TAB SEGMENT CONSOLE NAVIGATION BAR */}
-<div className="max-w-[98%] mx-auto mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 md:border-b bg-white/50 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none rounded-3xl md:rounded-none p-3 md:p-0 shadow-xl md:shadow-none border border-white/40 md:border-0">
-  <div className="grid grid-cols-1 gap-2 w-full md:flex md:flex-wrap">
-    <button
-      onClick={() => setActiveTab("all")}
-      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
-        activeTab === "all"
-          ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
-          : "bg-white/60 text-gray-500 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-700"
-      }`}
-    >
-      ❤️ Active Wedding Inquiries
-    </button>
+        <div className="max-w-[98%] mx-auto mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 md:border-b bg-white/50 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none rounded-3xl md:rounded-none p-3 md:p-0 shadow-xl md:shadow-none border border-white/40 md:border-0">
+          <div className="grid grid-cols-1 gap-2 w-full md:flex md:flex-wrap">
+            <button
+              onClick={() => setActiveTab("all")}
+              className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
+                activeTab === "all"
+                  ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
+                  : "bg-white/60 text-gray-500 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-700"
+              }`}
+            >
+              ❤️ Active Wedding Inquiries
+            </button>
 
-    <button
-      onClick={() => setActiveTab("completed")}
-      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
-        activeTab === "completed"
-          ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
-          : "bg-white/60 text-gray-500 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-700"
-      }`}
-    >
-      ✨ Completed Weddings
-    </button>
+            <button
+              onClick={() => setActiveTab("completed")}
+              className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
+                activeTab === "completed"
+                  ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
+                  : "bg-white/60 text-gray-500 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-700"
+              }`}
+            >
+              ✨ Completed Weddings
+            </button>
 
-    <button
-      onClick={() => setActiveTab("trash")}
-      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
-        activeTab === "trash"
-          ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-amber-50/40 md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
-          : "bg-white/60 text-gray-400 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-600"
-      }`}
-    >
-      🗑️ Deleted Records
-      {deletedRecords.length > 0 && (
-        <span
-          className={`text-[10px] px-1.5 py-0.5 rounded-full font-black animate-pulse ${
-            activeTab === "trash"
-              ? "bg-white text-amber-700 md:bg-amber-600 md:text-white"
-              : "bg-amber-600 text-white"
-          }`}
-        >
-          {deletedRecords.length}
-        </span>
-      )}
-    </button>
-  </div>
+            <button
+              onClick={() => setActiveTab("trash")}
+              className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
+                activeTab === "trash"
+                  ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-amber-50/40 md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
+                  : "bg-white/60 text-gray-400 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-600"
+              }`}
+            >
+              🗑️ Deleted Records
+              {deletedRecords.length > 0 && (
+                <span
+                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-black animate-pulse ${
+                    activeTab === "trash"
+                      ? "bg-white text-amber-700 md:bg-amber-600 md:text-white"
+                      : "bg-amber-600 text-white"
+                  }`}
+                >
+                  {deletedRecords.length}
+                </span>
+              )}
+            </button>
+          </div>
 
-  {activeTab === "trash" && deletedRecords.length > 0 && (
-    <button
-      onClick={() =>
-        setDeleteModal({
-          show: true,
-          id: null,
-          name: "All Trash Folders",
-          type: "all",
-        })
-      }
-      className="w-full md:w-auto mb-0 md:mb-0 bg-gradient-to-r from-red-600 to-rose-700 text-white text-xs font-black px-4 py-3 md:py-2 rounded-2xl md:rounded-xl shadow-md shadow-red-100 hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-1.5"
-    >
-      💥 Clear All Deleted Records
-    </button>
-  )}
-</div>
+          {activeTab === "trash" && deletedRecords.length > 0 && (
+            <button
+              onClick={() =>
+                setDeleteModal({
+                  show: true,
+                  id: null,
+                  name: "All Trash Folders",
+                  type: "all",
+                })
+              }
+              className="w-full md:w-auto mb-0 md:mb-0 bg-gradient-to-r from-red-600 to-rose-700 text-white text-xs font-black px-4 py-3 md:py-2 rounded-2xl md:rounded-xl shadow-md shadow-red-100 hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-1.5"
+            >
+              💥 Clear All Deleted Records
+            </button>
+          )}
+        </div>
 
         <main className="max-w-[98%] mx-auto mt-4">
           {filteredRecordsDisplay.length === 0 ? (
@@ -1432,9 +1433,15 @@ export default function Dashboard() {
                       </div>
 
                       <div className="flex justify-between items-center pt-0.5">
-                        <span className="text-xs text-gray-400 italic truncate max-w-[45%]">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setSelectedRemark(item.remarks || "No remarks")
+                          }
+                          className="text-xs text-gray-500 italic truncate max-w-[45%] text-left"
+                        >
                           💡 {item.remarks || "No remarks"}
-                        </span>
+                        </button>
 
                         {activeTab === "trash" ? (
                           <div className="flex items-center gap-1.5">
@@ -2195,174 +2202,196 @@ export default function Dashboard() {
         )}
 
         {isMobileFilterOpen && (
-  <div className="md:hidden fixed inset-0 z-[9998] bg-black/40 backdrop-blur-sm flex items-end">
-    <div className="w-full bg-white rounded-t-[2rem] p-5 shadow-2xl max-h-[82vh] overflow-y-auto">
-      <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-5" />
+          <div className="md:hidden fixed inset-0 z-[9998] bg-black/40 backdrop-blur-sm flex items-end">
+            <div className="w-full bg-white rounded-t-[2rem] p-5 shadow-2xl max-h-[82vh] overflow-y-auto">
+              <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-5" />
 
-      <div className="flex items-center justify-between mb-5">
-        <h3 className="text-lg font-bold text-gray-900">
-          Filters
-        </h3>
+              <div className="flex items-center justify-between mb-5">
+                <h3 className="text-lg font-bold text-gray-900">Filters</h3>
 
-        <button
-          type="button"
-          onClick={() => setIsMobileFilterOpen(false)}
-          className="text-gray-400 font-bold text-xl"
-        >
-          ✕
-        </button>
-      </div>
+                <button
+                  type="button"
+                  onClick={() => setIsMobileFilterOpen(false)}
+                  className="text-gray-400 font-bold text-xl"
+                >
+                  ✕
+                </button>
+              </div>
 
-      <div className="space-y-4">
-        <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-            Date From
-          </label>
-          <input
-            type="date"
-            value={filters.weddingDateFrom}
-            onChange={(e) =>
-              setFilters({
-                ...filters,
-                weddingDateFrom: e.target.value,
-              })
-            }
-            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-          />
-        </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Date From
+                  </label>
+                  <input
+                    type="date"
+                    value={filters.weddingDateFrom}
+                    onChange={(e) =>
+                      setFilters({
+                        ...filters,
+                        weddingDateFrom: e.target.value,
+                      })
+                    }
+                    className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                  />
+                </div>
 
-        <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-            Date To
-          </label>
-          <input
-            type="date"
-            value={filters.weddingDateTo}
-            onChange={(e) =>
-              setFilters({
-                ...filters,
-                weddingDateTo: e.target.value,
-              })
-            }
-            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-          />
-        </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Date To
+                  </label>
+                  <input
+                    type="date"
+                    value={filters.weddingDateTo}
+                    onChange={(e) =>
+                      setFilters({
+                        ...filters,
+                        weddingDateTo: e.target.value,
+                      })
+                    }
+                    className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                  />
+                </div>
 
-        <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-            Month
-          </label>
-          <input
-            type="month"
-            value={filters.weddingMonth}
-            onChange={(e) =>
-              setFilters({
-                ...filters,
-                weddingMonth: e.target.value,
-              })
-            }
-            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-          />
-        </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Month
+                  </label>
+                  <input
+                    type="month"
+                    value={filters.weddingMonth}
+                    onChange={(e) =>
+                      setFilters({
+                        ...filters,
+                        weddingMonth: e.target.value,
+                      })
+                    }
+                    className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                  />
+                </div>
 
-        <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
-            Service Types
-          </label>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
+                    Service Types
+                  </label>
 
-          <div className="flex flex-wrap gap-2">
-            {SERVICE_TYPE_OPTIONS.map((service) => (
-              <label
-                key={service}
-                className={`px-3 py-2 rounded-2xl text-xs font-bold border cursor-pointer ${
-                  filters.serviceType?.includes(service)
-                    ? "bg-emerald-600 text-white border-emerald-600"
-                    : "bg-gray-50 text-gray-600 border-gray-100"
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  className="hidden"
-                  checked={filters.serviceType?.includes(service)}
-                  onChange={(e) => {
-                    const current = filters.serviceType || [];
+                  <div className="flex flex-wrap gap-2">
+                    {SERVICE_TYPE_OPTIONS.map((service) => (
+                      <label
+                        key={service}
+                        className={`px-3 py-2 rounded-2xl text-xs font-bold border cursor-pointer ${
+                          filters.serviceType?.includes(service)
+                            ? "bg-emerald-600 text-white border-emerald-600"
+                            : "bg-gray-50 text-gray-600 border-gray-100"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          className="hidden"
+                          checked={filters.serviceType?.includes(service)}
+                          onChange={(e) => {
+                            const current = filters.serviceType || [];
 
-                    setFilters({
-                      ...filters,
-                      serviceType: e.target.checked
-                        ? [...current, service]
-                        : current.filter((s) => s !== service),
-                    });
-                  }}
-                />
-                {service}
-              </label>
-            ))}
+                            setFilters({
+                              ...filters,
+                              serviceType: e.target.checked
+                                ? [...current, service]
+                                : current.filter((s) => s !== service),
+                            });
+                          }}
+                        />
+                        {service}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Wedding Type
+                  </label>
+                  <select
+                    value={filters.weddingType}
+                    onChange={(e) =>
+                      setFilters({
+                        ...filters,
+                        weddingType: e.target.value,
+                      })
+                    }
+                    className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                  >
+                    <option value="">All Wedding Types</option>
+                    <option value="One day">One day</option>
+                    <option value="Two days">Two days</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Status
+                  </label>
+                  <select
+                    value={filters.status}
+                    onChange={(e) =>
+                      setFilters({
+                        ...filters,
+                        status: e.target.value,
+                      })
+                    }
+                    className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                  >
+                    <option value="">All Status</option>
+                    <option value="Inquiry">Inquiry</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Completed">Completed</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={clearSearchAndFilters}
+                  className="p-3 rounded-2xl border border-gray-300 text-gray-700 font-bold"
+                >
+                  Reset
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsMobileFilterOpen(false)}
+                  className="p-3 rounded-2xl bg-emerald-700 text-white font-bold"
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
-        <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-            Wedding Type
-          </label>
-          <select
-            value={filters.weddingType}
-            onChange={(e) =>
-              setFilters({
-                ...filters,
-                weddingType: e.target.value,
-              })
-            }
-            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-          >
-            <option value="">All Wedding Types</option>
-            <option value="One day">One day</option>
-            <option value="Two days">Two days</option>
-          </select>
-        </div>
+        {selectedRemark && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+            <div className="bg-white rounded-2xl w-full max-w-sm p-5 shadow-2xl border border-gray-100">
+              <h3 className="text-base font-bold text-gray-900 mb-3">
+                Remarks
+              </h3>
 
-        <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-            Status
-          </label>
-          <select
-            value={filters.status}
-            onChange={(e) =>
-              setFilters({
-                ...filters,
-                status: e.target.value,
-              })
-            }
-            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-          >
-            <option value="">All Status</option>
-            <option value="Inquiry">Inquiry</option>
-            <option value="Confirmed">Confirmed</option>
-            <option value="Completed">Completed</option>
-          </select>
-        </div>
-      </div>
+              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                {selectedRemark}
+              </p>
 
-      <div className="grid grid-cols-2 gap-3 mt-6">
-        <button
-          type="button"
-          onClick={clearSearchAndFilters}
-          className="p-3 rounded-2xl border border-gray-300 text-gray-700 font-bold"
-        >
-          Reset
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setIsMobileFilterOpen(false)}
-          className="p-3 rounded-2xl bg-emerald-700 text-white font-bold"
-        >
-          Apply
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+              <div className="flex justify-end mt-5">
+                <button
+                  type="button"
+                  onClick={() => setSelectedRemark(null)}
+                  className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-bold"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <WindowsFlagFix />
       </div>
