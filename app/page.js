@@ -179,10 +179,6 @@ const StatusDropdown = ({ currentStatus, onStatusChange }) => {
         setIsOpen(false);
       }
     };
-    const savedLogin = localStorage.getItem("chathu_admin_logged_in");
-if (savedLogin === "true") {
-  setIsLoggedIn(true);
-}
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -361,13 +357,25 @@ const [loginLoading, setLoginLoading] = useState(false);
 
   const API_URL = "/api/inquiries";
 
-  useEffect(() => {
-    setMounted(true);
-    const savedTrash = localStorage.getItem("chathu_trash_bin");
-    if (savedTrash) {
-      setDeletedRecords(JSON.parse(savedTrash));
-    }
-  }, []);
+useEffect(() => {
+  setMounted(true);
+
+  const savedLogin = localStorage.getItem(
+    "chathu_admin_logged_in"
+  );
+
+  if (savedLogin === "true") {
+    setIsLoggedIn(true);
+  }
+
+  const savedTrash = localStorage.getItem(
+    "chathu_trash_bin"
+  );
+
+  if (savedTrash) {
+    setDeletedRecords(JSON.parse(savedTrash));
+  }
+}, []);
 
   useEffect(() => {
     const updateSLTime = () => {
