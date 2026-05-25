@@ -763,11 +763,11 @@ export default function Dashboard() {
             />
 
             <div>
-              <h1 className="text-xl font-bold tracking-wide text-emerald-950">
+              <h1 className="text-xl font-bold tracking-wide text-fuchsia-950">
                 Chathu Wedding Planners
               </h1>
 
-              <p className="text-xs text-emerald-900 mt-0.5 uppercase tracking-wider">
+              <p className="text-xs text-fuchsia-900 mt-0.5 uppercase tracking-wider">
                 {activeTab === "all"
                   ? "ACTIVE WEDDING INQUIRIES"
                   : activeTab === "completed"
@@ -778,10 +778,10 @@ export default function Dashboard() {
           </div>
 
           <div className="text-right leading-tight ml-2">
-            <p className="text-[9px] md:text-[10px] uppercase tracking-wider font-bold text-emerald-900">
+            <p className="text-[9px] md:text-[10px] uppercase tracking-wider font-bold text-fuchsia-900">
               Sri Lanka
             </p>
-            <p className="text-[10px] md:text-sm font-bold text-emerald-950 whitespace-nowrap">
+            <p className="text-[10px] md:text-sm font-bold text-fuchsia-950 whitespace-nowrap">
               {currentSLTime}
             </p>
           </div>
@@ -794,7 +794,7 @@ export default function Dashboard() {
               placeholder="Search by couple name, wedding date or contact no..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="md:col-span-2 w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+              className="md:col-span-2 w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
             />
 
             <input
@@ -806,7 +806,7 @@ export default function Dashboard() {
                   weddingDateFrom: e.target.value,
                 })
               }
-              className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
               title="Wedding date from"
             />
 
@@ -819,7 +819,7 @@ export default function Dashboard() {
                   weddingDateTo: e.target.value,
                 })
               }
-              className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
               title="Wedding date to"
             />
 
@@ -832,7 +832,7 @@ export default function Dashboard() {
                   weddingMonth: e.target.value,
                 })
               }
-              className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
               title="Filter by month"
             />
 
@@ -842,7 +842,7 @@ export default function Dashboard() {
                 onClick={() =>
                   setIsFilterServiceDropdownOpen(!isFilterServiceDropdownOpen)
                 }
-                className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none text-left flex items-center justify-between focus:ring-2 focus:ring-emerald-500"
+                className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none text-left flex items-center justify-between focus:ring-2 focus:ring-fuchsia-300"
               >
                 <span className="truncate">
                   {filters.serviceType?.length > 0
@@ -897,7 +897,7 @@ export default function Dashboard() {
                   weddingType: e.target.value,
                 })
               }
-              className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
             >
               <option value="">All Wedding Types</option>
               <option value="One day">One day</option>
@@ -914,7 +914,7 @@ export default function Dashboard() {
                   status: e.target.value,
                 })
               }
-              className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
             >
               <option value="">All Status</option>
               <option value="Inquiry">Inquiry</option>
@@ -944,7 +944,7 @@ export default function Dashboard() {
       placeholder="Search by name, date or contact..."
       value={searchTerm}
       onChange={(e) => setSearchTerm(e.target.value)}
-      className="flex-1 p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+      className="flex-1 p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
     />
 
     <button
@@ -990,7 +990,7 @@ export default function Dashboard() {
         weddingDate: e.target.value,
       })
     }
-    className="w-full p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+    className="w-full p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
   />
 </div>
 </div>
@@ -998,63 +998,83 @@ export default function Dashboard() {
         <div className="max-w-[98%] mx-auto mt-4 flex justify-start gap-2 bg-white/30 backdrop-blur-lg border border-white/30 rounded-2xl p-3 shadow-lg">
           <button
             onClick={openAddModal}
-            className="bg-white text-emerald-700 border border-emerald-200 font-semibold px-4 py-2 rounded-lg shadow hover:bg-emerald-50 transition text-sm"
+            className="bg-white text-fuchsia-500 border border-fuchsia-200 font-semibold px-4 py-2 rounded-lg shadow hover:bg-fuchsia-50 transition text-sm"
           >
             + New Inquiry
           </button>
 
           <button
             onClick={() => setIsCalendarOpen(true)}
-            className="bg-emerald-700 text-white font-semibold px-4 py-2 rounded-lg shadow hover:bg-emerald-800 transition text-sm"
+            className="bg-fuchsia-200 text-black font-semibold px-4 py-2 rounded-lg shadow hover:bg-fuchsia-300 transition text-sm"
           >
             📅 Calendar
           </button>
         </div>
 
         {/* DASHBOARD TAB SEGMENT CONSOLE NAVIGATION BAR */}
-        <div className="max-w-[98%] mx-auto mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200">
-          <div className="flex flex-wrap">
-            <button
-              onClick={() => setActiveTab("all")}
-              className={`py-3 px-5 font-semibold text-sm transition-all border-b-2 ${activeTab === "all" ? "border-emerald-600 text-emerald-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}
-            >
-              💚 Active Wedding Inquiries
-            </button>
-            <button
-              onClick={() => setActiveTab("completed")}
-              className={`py-3 px-5 font-semibold text-sm transition-all border-b-2 ${activeTab === "completed" ? "border-emerald-600 text-emerald-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}
-            >
-              ✨ Completed Weddings
-            </button>
-            <button
-              onClick={() => setActiveTab("trash")}
-              className={`py-3 px-5 font-semibold text-sm transition-all border-b-2 flex items-center gap-1.5 ${activeTab === "trash" ? "border-amber-600 text-amber-700 font-bold bg-amber-50/40" : "border-transparent text-gray-400 hover:text-gray-600"}`}
-            >
-              🗑️ Deleted Records
-              {deletedRecords.length > 0 && (
-                <span className="bg-amber-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-black animate-pulse">
-                  {deletedRecords.length}
-                </span>
-              )}
-            </button>
-          </div>
+<div className="max-w-[98%] mx-auto mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 md:border-b bg-white/50 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none rounded-3xl md:rounded-none p-3 md:p-0 shadow-xl md:shadow-none border border-white/40 md:border-0">
+  <div className="grid grid-cols-1 gap-2 w-full md:flex md:flex-wrap">
+    <button
+      onClick={() => setActiveTab("all")}
+      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-sm transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
+        activeTab === "all"
+          ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
+          : "bg-white/60 text-gray-500 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-700"
+      }`}
+    >
+      ❤️ Active Wedding Inquiries
+    </button>
 
-          {activeTab === "trash" && deletedRecords.length > 0 && (
-            <button
-              onClick={() =>
-                setDeleteModal({
-                  show: true,
-                  id: null,
-                  name: "All Trash Folders",
-                  type: "all",
-                })
-              }
-              className="mb-2 md:mb-0 bg-gradient-to-r from-red-600 to-rose-700 text-white text-xs font-black px-4 py-2 rounded-xl shadow-md shadow-red-100 hover:brightness-110 active:scale-95 transition flex items-center gap-1.5 self-start"
-            >
-              💥 Clear All Deleted Records
-            </button>
-          )}
-        </div>
+    <button
+      onClick={() => setActiveTab("completed")}
+      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-sm transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
+        activeTab === "completed"
+          ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
+          : "bg-white/60 text-gray-500 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-700"
+      }`}
+    >
+      ✨ Completed Weddings
+    </button>
+
+    <button
+      onClick={() => setActiveTab("trash")}
+      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-sm transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
+        activeTab === "trash"
+          ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-amber-50/40 md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
+          : "bg-white/60 text-gray-400 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-600"
+      }`}
+    >
+      🗑️ Deleted Records
+      {deletedRecords.length > 0 && (
+        <span
+          className={`text-[10px] px-1.5 py-0.5 rounded-full font-black animate-pulse ${
+            activeTab === "trash"
+              ? "bg-white text-amber-700 md:bg-amber-600 md:text-white"
+              : "bg-amber-600 text-white"
+          }`}
+        >
+          {deletedRecords.length}
+        </span>
+      )}
+    </button>
+  </div>
+
+  {activeTab === "trash" && deletedRecords.length > 0 && (
+    <button
+      onClick={() =>
+        setDeleteModal({
+          show: true,
+          id: null,
+          name: "All Trash Folders",
+          type: "all",
+        })
+      }
+      className="w-full md:w-auto mb-0 md:mb-0 bg-gradient-to-r from-red-600 to-rose-700 text-white text-xs font-black px-4 py-3 md:py-2 rounded-2xl md:rounded-xl shadow-md shadow-red-100 hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-1.5"
+    >
+      💥 Clear All Deleted Records
+    </button>
+  )}
+</div>
 
         <main className="max-w-[98%] mx-auto mt-4">
           {filteredRecordsDisplay.length === 0 ? (
@@ -1471,8 +1491,8 @@ export default function Dashboard() {
 
         {/* INPUT / EDIT DIALOG FORM MODAL */}
         {isModalOpen && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start md:items-center justify-center p-3 md:p-4 z-[9999] overflow-y-auto">
-            <div className="bg-white rounded-2xl w-full max-w-lg p-4 md:p-6 shadow-2xl space-y-4 my-4 md:my-8 border border-gray-100 max-h-[92vh] overflow-y-auto">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start md:items-center justify-center p-3 md:p-4 z-[9999] overflow-y-auto pb-[env(safe-area-inset-bottom)]">
+            <div className="bg-white rounded-2xl w-full max-w-lg p-4 md:p-6 shadow-2xl space-y-4 my-4 md:my-8 border border-gray-100 max-h-[92vh] overflow-y-auto pb-28 md:pb-6">
               <h2 className="text-lg font-bold text-gray-900 border-b pb-2">
                 {formData.id ? "Modify Wedding File" : "Add New Wedding Record"}
               </h2>
@@ -1488,7 +1508,7 @@ export default function Dashboard() {
                       required
                       value={formData.couple_name}
                       onChange={handleInputChange}
-                      className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
+                      className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                     />
                   </div>
                   <div>
@@ -1520,7 +1540,7 @@ export default function Dashboard() {
                       name="wedding_date"
                       value={formData.wedding_date}
                       onChange={handleInputChange}
-                      className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm bg-white"
+                      className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm bg-white"
                     />
                   </div>
                   <div>
@@ -1555,7 +1575,7 @@ export default function Dashboard() {
                         placeholder="Or type..."
                         value={formData.guest_count}
                         onChange={handleInputChange}
-                        className="w-1/2 p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
+                        className="w-1/2 p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                       />
                     </div>
                   </div>
@@ -1570,7 +1590,7 @@ export default function Dashboard() {
                     name="hotel"
                     value={formData.hotel}
                     onChange={handleInputChange}
-                    className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
+                    className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                   />
                 </div>
 
@@ -1693,9 +1713,9 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-fuchsia-50/50 p-3 rounded-xl border border-fuchsia-100">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-emerald-800 mb-1">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
                       Package Price (LKR)
                     </label>
                     <input
@@ -1703,12 +1723,12 @@ export default function Dashboard() {
                       name="package_price"
                       value={formData.package_price}
                       onChange={handleInputChange}
-                      className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
+                      className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-emerald-800 mb-1">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
                       Discount Rate (%)
                     </label>
                     <div className="relative">
@@ -1717,7 +1737,7 @@ export default function Dashboard() {
                         name="discount_rate"
                         value={formData.discount_rate}
                         onChange={handleInputChange}
-                        className="w-full p-2.5 pr-8 bg-white border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
+                        className="w-full p-2.5 pr-8 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">
                         %
@@ -1726,7 +1746,7 @@ export default function Dashboard() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-emerald-800 mb-1">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
                       Agreed Price (LKR)
                     </label>
                     <input
@@ -1734,12 +1754,12 @@ export default function Dashboard() {
                       name="agreed_price"
                       value={formData.agreed_price}
                       readOnly
-                      className="w-full p-2.5 bg-gray-100 border rounded-lg outline-none text-sm font-bold text-emerald-800"
+                      className="w-full p-2.5 bg-gray-100 border rounded-lg outline-none text-sm font-bold text-fuchsia-800"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-emerald-800 mb-1">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
                       Advance Paid (LKR)
                     </label>
                     <input
@@ -1747,12 +1767,12 @@ export default function Dashboard() {
                       name="advance_paid"
                       value={formData.advance_paid}
                       onChange={handleInputChange}
-                      className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
+                      className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-emerald-800 mb-1">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
                       Advance Paid Date
                     </label>
                     <input
@@ -1760,7 +1780,7 @@ export default function Dashboard() {
                       name="advance_paid_date"
                       value={formData.advance_paid_date || ""}
                       onChange={handleInputChange}
-                      className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
+                      className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                     />
                   </div>
                 </div>
@@ -1774,7 +1794,7 @@ export default function Dashboard() {
                     name="contact_no"
                     value={formData.contact_no}
                     onChange={handleInputChange}
-                    className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
+                    className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                   />
                 </div>
 
@@ -1787,11 +1807,11 @@ export default function Dashboard() {
                     rows="2"
                     value={formData.remarks}
                     onChange={handleInputChange}
-                    className="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                    className="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-fuchsia-300 outline-none"
                   ></textarea>
                 </div>
 
-                <div className="flex justify-end gap-2 pt-2 border-t">
+                <div className="flex justify-end gap-3 pt-4 pb-6 md:pb-0 border-t">
                   <button
                     type="button"
                     onClick={() => setIsModalOpen(false)}
@@ -1801,7 +1821,7 @@ export default function Dashboard() {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 bg-emerald-600 text-white rounded-lg font-bold hover:bg-emerald-700 text-sm"
+                    className="px-5 py-2 bg-fuchsia-200 text-black rounded-lg font-bold hover:bg-fuchsia-300 text-sm"
                   >
                     Save Record
                   </button>
@@ -1951,7 +1971,7 @@ export default function Dashboard() {
                                 );
                               }
                             }}
-                            className="w-full md:w-44 p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                            className="w-full md:w-44 p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300 bg-white"
                           />
                         </div>
 
@@ -1966,7 +1986,7 @@ export default function Dashboard() {
                             onChange={(e) =>
                               setManualCalendarDate(e.target.value)
                             }
-                            className="w-full md:w-44 p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                            className="w-full md:w-44 p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300 bg-white"
                           />
                         </div>
 
@@ -2207,7 +2227,7 @@ export default function Dashboard() {
                 weddingDateFrom: e.target.value,
               })
             }
-            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
           />
         </div>
 
@@ -2224,7 +2244,7 @@ export default function Dashboard() {
                 weddingDateTo: e.target.value,
               })
             }
-            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
           />
         </div>
 
@@ -2241,7 +2261,7 @@ export default function Dashboard() {
                 weddingMonth: e.target.value,
               })
             }
-            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
           />
         </div>
 
@@ -2293,7 +2313,7 @@ export default function Dashboard() {
                 weddingType: e.target.value,
               })
             }
-            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
           >
             <option value="">All Wedding Types</option>
             <option value="One day">One day</option>
@@ -2313,7 +2333,7 @@ export default function Dashboard() {
                 status: e.target.value,
               })
             }
-            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
           >
             <option value="">All Status</option>
             <option value="Inquiry">Inquiry</option>
