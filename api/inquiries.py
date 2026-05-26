@@ -205,12 +205,12 @@ async def update_inquiry(id: int, data: dict):
         agreed_price=?,
         advance_paid=?,
         advance_paid_date=?,
+        paid_amount=?,
+        paid_date=?,
         pending_payment=?,
         status=?,
         remarks=?,
-        country=?,
-        paid_amount=?,
-        paid_date=?,
+        country=?
     WHERE id=?
 """, [
     couple_name,
