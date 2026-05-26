@@ -839,8 +839,8 @@ export default function Dashboard() {
     setLoginError("");
 
     setTimeout(() => {
-      const ADMIN_USERNAME = "admin";
-      const ADMIN_PASSWORD = "12345";
+      const ADMIN_USERNAME = "a";
+      const ADMIN_PASSWORD = "a";
 
       if (
         loginData.username === ADMIN_USERNAME &&
@@ -1078,103 +1078,9 @@ const filteredVendors = vendors.filter((vendor) => {
       }}
     >
       <div className="absolute inset-0 bg-white/75 backdrop-blur-[2px] pointer-events-none"></div>
-
-      <div className="hidden md:flex w-72 min-h-screen bg-white/70 backdrop-blur-2xl border-r border-white/40 flex-col p-5 shadow-xl sticky top-0 z-20">
-        <div className="mb-10">
-          <img
-            src="/official Logo.png"
-            className="w-16 h-16 object-contain mb-3"
-          />
-
-          <h1 className="text-2xl font-black text-fuchsia-950">
-            Chathu Wedding
-          </h1>
-
-          <p className="text-sm text-fuchsia-900/70">CRM System</p>
-        </div>
-
-        <div className="space-y-2">
-          <button
-            onClick={() => setActivePage("dashboard")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "dashboard" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
-          >
-            🏠 Dashboard
-          </button>
-
-          <button
-            onClick={() => {
-              setActivePage("customers");
-              setActiveTab("allRecords");
-            }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "customers" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
-          >
-            👰 Customers
-          </button>
-
-          <button
-            onClick={() => setActivePage("vendors")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "vendors" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
-          >
-            🤝 Vendors
-          </button>
-
-          <button
-            onClick={() => setActivePage("packages")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "packages" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
-          >
-            📦 Our Packages
-          </button>
-        </div>
-      </div>
-
-      <div className="relative z-10 flex-1 overflow-x-hidden pb-10">
-        {/* HIGH VISIBILITY FLOATING INTERACTIVE TOAST BARS */}
-        {toast.show && (
-          <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4 pointer-events-auto">
-            <div
-              className={`border backdrop-blur-xl p-4 rounded-2xl flex items-center gap-4 shadow-[0_20px_50px_rgba(0,0,0,0.15)] transition-all animate-notification ${
-                toast.type === "delete"
-                  ? "bg-rose-950/95 border-rose-500/40 text-rose-50"
-                  : "bg-emerald-950/95 border-emerald-500/40 text-emerald-50"
-              }`}
-            >
-              <div
-                className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold shrink-0 relative overflow-hidden ${
-                  toast.type === "delete"
-                    ? "bg-rose-500/20 text-rose-400"
-                    : "bg-emerald-500/20 text-emerald-400"
-                }`}
-              >
-                <span className="absolute inset-0 opacity-20 blur-sm animate-pulse-glow bg-current" />
-                <span className="relative z-10">
-                  {toast.type === "delete" ? "🗑️" : "✨"}
-                </span>
-              </div>
-              <div className="flex-1">
-                <h4 className="text-xs uppercase tracking-widest font-black opacity-60">
-                  {toast.type === "delete"
-                    ? "System Notice"
-                    : "Success Operation"}
-                </h4>
-                <p className="text-sm font-medium mt-0.5 leading-relaxed tracking-wide">
-                  {toast.message}
-                </p>
-              </div>
-              <button
-                onClick={() =>
-                  setToast({ show: false, message: "", type: "success" })
-                }
-                className="text-white/40 hover:text-white/90 p-1 text-xs font-bold font-mono"
-              >
-                ✕
-              </button>
-            </div>
-          </div>
-        )}
-        {activePage === "dashboard" && (
-          <>
-            <header
-              className="text-emerald-950 shadow-xl backdrop-blur-xl p-4 sticky top-0 z-10 flex items-center justify-between border-b border-white/30"
+      <div className="relative z-10 flex flex-col w-full">
+        <header
+              className="w-full text-emerald-950 shadow-xl backdrop-blur-xl p-4 sticky top-0 z-[999] flex items-center justify-between border-b border-white/30"
               style={{
                 backgroundImage: "url('/header-nav-img.jpg')",
                 backgroundSize: "cover",
@@ -1239,6 +1145,98 @@ const filteredVendors = vendors.filter((vendor) => {
                 </button>
               </div>
             </header>
+
+
+      
+      <div className="flex flex-1 min-h-0">
+
+      <div className="hidden md:flex w-72 h-[calc(100vh-88px)] sticky top-[88px] bg-white/70 backdrop-blur-2xl border-r border-white/40 flex-col p-5 shadow-xl overflow-y-auto">
+        <div className="mb-10">
+          
+
+        </div>
+
+        <div className="space-y-2">
+          <button
+            onClick={() => setActivePage("dashboard")}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "dashboard" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
+          >
+            🏠 Dashboard
+          </button>
+
+          <button
+            onClick={() => {
+              setActivePage("customers");
+              setActiveTab("allRecords");
+            }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "customers" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
+          >
+            👰 Customers
+          </button>
+
+          <button
+            onClick={() => setActivePage("vendors")}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "vendors" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
+          >
+            🤝 Vendors
+          </button>
+
+          <button
+            onClick={() => setActivePage("packages")}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "packages" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
+          >
+            📦 Our Packages
+          </button>
+        </div>
+      </div>
+
+      <div className="relative z-10 flex-1 overflow-x-hidden pb-10">
+        {/* HIGH VISIBILITY FLOATING INTERACTIVE TOAST BARS */}
+        {toast.show && (
+          <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[99999] w-full max-w-md px-4 pointer-events-auto">
+            <div
+              className={`border backdrop-blur-xl p-4 rounded-2xl flex items-center gap-4 shadow-[0_20px_50px_rgba(0,0,0,0.15)] transition-all animate-notification ${
+                toast.type === "delete"
+                  ? "bg-rose-950/95 border-rose-500/40 text-rose-50"
+                  : "bg-emerald-950/95 border-emerald-500/40 text-emerald-50"
+              }`}
+            >
+              <div
+                className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold shrink-0 relative overflow-hidden ${
+                  toast.type === "delete"
+                    ? "bg-rose-500/20 text-rose-400"
+                    : "bg-emerald-500/20 text-emerald-400"
+                }`}
+              >
+                <span className="absolute inset-0 opacity-20 blur-sm animate-pulse-glow bg-current" />
+                <span className="relative z-10">
+                  {toast.type === "delete" ? "🗑️" : "✨"}
+                </span>
+              </div>
+              <div className="flex-1">
+                <h4 className="text-xs uppercase tracking-widest font-black opacity-60">
+                  {toast.type === "delete"
+                    ? "System Notice"
+                    : "Success Operation"}
+                </h4>
+                <p className="text-sm font-medium mt-0.5 leading-relaxed tracking-wide">
+                  {toast.message}
+                </p>
+              </div>
+              <button
+                onClick={() =>
+                  setToast({ show: false, message: "", type: "success" })
+                }
+                className="text-white/40 hover:text-white/90 p-1 text-xs font-bold font-mono"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
+        {activePage === "dashboard" && (
+          <>
+            
 
             <div className="hidden md:block max-w-[98%] mx-auto mt-4 bg-white border border-gray-100 rounded-2xl shadow-sm p-4">
               <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
@@ -3409,6 +3407,8 @@ const filteredVendors = vendors.filter((vendor) => {
         )}
 
         <WindowsFlagFix />
+      </div>
+      </div>
       </div>
     </div>
   );
