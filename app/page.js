@@ -313,6 +313,8 @@ export default function Dashboard() {
   const [vendorLoading, setVendorLoading] = useState(false);
   const [customerSearch, setCustomerSearch] = useState("");
   const [vendorSearch, setVendorSearch] = useState("");
+  const [paymentSearch, setPaymentSearch] = useState("");
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -979,6 +981,54 @@ export default function Dashboard() {
     );
   });
 
+  const paymentRecords = data.filter((item) => Number(item.agreed_price || 0) > 0);
+
+const totalReceived = paymentRecords.reduce(
+  (sum, item) => sum + Number(item.advance_paid || 0),
+  0
+);
+
+const totalPending = paymentRecords.reduce(
+  (sum, item) => sum + Number(item.pending_payment || 0),
+  0
+);
+
+const fullyPaidRecords = paymentRecords.filter(
+  (item) => Number(item.pending_payment || 0) <= 0
+);
+
+const partiallyPaidRecords = paymentRecords.filter(
+  (item) =>
+    Number(item.advance_paid || 0) > 0 &&
+    Number(item.pending_payment || 0) > 0
+);
+
+const pendingPaymentRecords = paymentRecords.filter(
+  (item) => Number(item.advance_paid || 0) === 0
+);
+
+const filteredPayments = paymentRecords.filter((item) => {
+  const search = paymentSearch.toLowerCase().trim();
+
+  const paymentStatus =
+    Number(item.pending_payment || 0) <= 0
+      ? "Fully Paid"
+      : Number(item.advance_paid || 0) > 0
+        ? "Partially Paid"
+        : "Pending";
+
+  const matchesSearch =
+    !search ||
+    item.couple_name?.toLowerCase().includes(search) ||
+    item.contact_no?.toLowerCase().includes(search) ||
+    item.wedding_date?.toLowerCase().includes(search);
+
+  const matchesStatus =
+    !paymentStatusFilter || paymentStatus === paymentStatusFilter;
+
+  return matchesSearch && matchesStatus;
+});
+
   if (!mounted) return <div className="min-h-screen bg-gray-50" />;
 
   if (!isLoggedIn) {
@@ -1174,6 +1224,20 @@ export default function Dashboard() {
               >
                 🤝 Vendors
               </button>
+
+              <button
+  onClick={() => {
+    setActivePage("payments");
+    setActiveTab("allRecords");
+  }}
+  className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${
+    activePage === "payments"
+      ? "bg-emerald-100 text-emerald-800"
+      : "hover:bg-white/60 text-gray-700"
+  }`}
+>
+  💳 Payments
+</button>
 
               <button
                 onClick={() => setActivePage("packages")}
@@ -2509,6 +2573,192 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
+
+            {activePage === "payments" && (
+  <div className="p-4 md:p-6">
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      <div>
+        <h1 className="text-2xl md:text-3xl font-black text-fuchsia-950">
+          💳 Payments
+        </h1>
+        <p className="text-sm text-fuchsia-900/70 mt-1 font-semibold">
+          View received, pending, partially paid and fully paid wedding payments
+        </p>
+      </div>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+      <div className="bg-emerald-50/80 border border-emerald-100 rounded-3xl p-5 shadow">
+        <p className="text-xs font-black uppercase text-emerald-700">
+          Total Received
+        </p>
+        <h2 className="text-2xl font-black text-emerald-700 mt-2">
+          LKR {totalReceived.toLocaleString("en-LK")}
+        </h2>
+        <p className="text-xs text-gray-500 mt-1">
+          {paymentRecords.length} payment records
+        </p>
+      </div>
+
+      <div className="bg-orange-50/80 border border-orange-100 rounded-3xl p-5 shadow">
+        <p className="text-xs font-black uppercase text-orange-700">
+          Pending Payments
+        </p>
+        <h2 className="text-2xl font-black text-orange-700 mt-2">
+          LKR {totalPending.toLocaleString("en-LK")}
+        </h2>
+        <p className="text-xs text-gray-500 mt-1">
+          {pendingPaymentRecords.length} pending
+        </p>
+      </div>
+
+      <div className="bg-blue-50/80 border border-blue-100 rounded-3xl p-5 shadow">
+        <p className="text-xs font-black uppercase text-blue-700">
+          Partially Paid
+        </p>
+        <h2 className="text-2xl font-black text-blue-700 mt-2">
+          {partiallyPaidRecords.length}
+        </h2>
+        <p className="text-xs text-gray-500 mt-1">
+          Advance received, balance pending
+        </p>
+      </div>
+
+      <div className="bg-fuchsia-50/80 border border-fuchsia-100 rounded-3xl p-5 shadow">
+        <p className="text-xs font-black uppercase text-fuchsia-700">
+          Fully Paid
+        </p>
+        <h2 className="text-2xl font-black text-fuchsia-700 mt-2">
+          {fullyPaidRecords.length}
+        </h2>
+        <p className="text-xs text-gray-500 mt-1">
+          Completed payments
+        </p>
+      </div>
+    </div>
+
+    <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 p-4 mb-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <input
+          type="text"
+          placeholder="Search by couple name, contact number or wedding date..."
+          value={paymentSearch}
+          onChange={(e) => setPaymentSearch(e.target.value)}
+          className="md:col-span-2 w-full p-3 rounded-xl border border-fuchsia-100 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold"
+        />
+
+        <select
+          value={paymentStatusFilter}
+          onChange={(e) => setPaymentStatusFilter(e.target.value)}
+          className="w-full p-3 bg-white border border-fuchsia-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300 font-semibold"
+        >
+          <option value="">All Payment Status</option>
+          <option value="Fully Paid">Fully Paid</option>
+          <option value="Partially Paid">Partially Paid</option>
+          <option value="Pending">Pending</option>
+        </select>
+      </div>
+    </div>
+
+    <div className="bg-white/85 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
+      {filteredPayments.length === 0 ? (
+        <div className="p-12 text-center">
+          <div className="text-4xl mb-3">💳</div>
+          <p className="text-gray-400 text-sm font-bold">
+            No payment records found.
+          </p>
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-max">
+            <thead>
+              <tr className="bg-fuchsia-50 text-fuchsia-900 uppercase text-xs md:text-[15px] font-black border-b border-gray-200">
+                <th className="p-4">#</th>
+                <th className="p-4">Couple</th>
+                <th className="p-4">Wedding Date</th>
+                <th className="p-4 text-right">Package</th>
+                <th className="p-4 text-right">Agreed</th>
+                <th className="p-4 text-right">Paid</th>
+                <th className="p-4 text-right">Pending</th>
+                <th className="p-4 text-center">Payment Status</th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-gray-100 bg-white md:text-sm">
+              {filteredPayments.map((item, index) => {
+                const pending = Number(item.pending_payment || 0);
+                const paid = Number(item.advance_paid || 0);
+
+                const paymentStatus =
+                  pending <= 0
+                    ? "Fully Paid"
+                    : paid > 0
+                      ? "Partially Paid"
+                      : "Pending";
+
+                return (
+                  <tr key={item.id} className="hover:bg-fuchsia-50/40 transition">
+                    <td className="p-4 text-gray-400 font-bold">
+                      {index + 1}
+                    </td>
+
+                    <td className="p-4">
+                      <p className="font-black text-gray-900">
+                        {item.couple_name}
+                      </p>
+                      <p className="text-xs text-gray-400 font-semibold">
+                        {item.contact_no || "No contact"}
+                      </p>
+                    </td>
+
+                    <td className="p-4 font-semibold text-gray-700">
+                      {item.wedding_date || "—"}
+                    </td>
+
+                    <td className="p-4 text-right font-mono font-bold">
+                      {Number(item.package_price || 0).toLocaleString("en-LK")}
+                    </td>
+
+                    <td className="p-4 text-right font-mono font-bold text-gray-900">
+                      {Number(item.agreed_price || 0).toLocaleString("en-LK")}
+                    </td>
+
+                    <td className="p-4 text-right font-mono font-bold text-emerald-700">
+                      {paid.toLocaleString("en-LK")}
+                      {item.advance_paid_date && (
+                        <div className="text-[10px] text-gray-400 font-sans">
+                          {item.advance_paid_date}
+                        </div>
+                      )}
+                    </td>
+
+                    <td className="p-4 text-right font-mono font-bold text-red-600">
+                      {pending.toLocaleString("en-LK")}
+                    </td>
+
+                    <td className="p-4 text-center">
+                      <span
+                        className={`px-3 py-1 rounded-xl text-xs font-black border ${
+                          paymentStatus === "Fully Paid"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : paymentStatus === "Partially Paid"
+                              ? "bg-orange-50 text-orange-700 border-orange-200"
+                              : "bg-red-50 text-red-700 border-red-200"
+                        }`}
+                      >
+                        {paymentStatus}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  </div>
+)}
 
             {activePage === "packages" && (
               <div className="p-6">
