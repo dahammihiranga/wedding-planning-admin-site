@@ -30,3 +30,49 @@ body {
     font-family: "Twemoji Country Flags", ui-sans-serif, system-ui, sans-serif;
   }
 }
+
+/* ===== GLOBAL FONT SIZES ===== */
+
+.fs-page-title {
+  @apply text-3xl md:text-4xl font-black;
+}
+
+.fs-section-title {
+  @apply text-xl md:text-2xl font-black;
+}
+
+.fs-card-title {
+  @apply text-sm md:text-base font-bold;
+}
+
+.fs-card-value {
+  @apply text-2xl md:text-3xl font-black;
+}
+
+.fs-table-header {
+  @apply text-[13px] md:text-[15px] font-black uppercase tracking-wide;
+}
+
+.fs-table-cell {
+  @apply text-[14px] md:text-[16px] font-semibold;
+}
+
+.fs-label {
+  @apply text-[11px] md:text-xs font-black uppercase tracking-wider;
+}
+
+.fs-input {
+  @apply text-[14px] md:text-[15px] font-semibold;
+}
+
+.fs-small {
+  @apply text-xs md:text-sm font-semibold;
+}
+
+.fs-button {
+  @apply text-sm md:text-base font-bold;
+}
+
+.fs-sidebar {
+  @apply text-sm md:text-base font-bold;
+}

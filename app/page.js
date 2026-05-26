@@ -694,15 +694,15 @@ export default function Dashboard() {
         guest_count: "",
         contact_no: "",
         bridesmaid_option: "",
-        package_price: 0,
-        discount_rate: 0,
-        agreed_price: 0,
-        advance_paid: 0,
+        package_price: "",
+        discount_rate: "",
+        agreed_price: "",
+        advance_paid: "",
         status: "Inquiry",
         remarks: "",
         country: "Local",
         advance_paid_date: "",
-        paid_amount: 0,
+        paid_amount: "",
         paid_date: "",
         new_payment: "",
       });
@@ -747,6 +747,27 @@ export default function Dashboard() {
       }
     } catch (err) {
       console.error("Error saving data", err);
+    }
+  };
+
+  const clearPriceFields = () => {
+    const updatedForm = {
+      ...formData,
+      package_price: "",
+      discount_rate: "",
+      agreed_price: "",
+      advance_paid: "",
+      advance_paid_date: "",
+      paid_amount: "",
+      paid_date: "",
+      new_payment: "",
+      pending_payment: "",
+    };
+
+    setFormData(updatedForm);
+
+    if (!updatedForm.id) {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(updatedForm));
     }
   };
 
@@ -3141,6 +3162,19 @@ export default function Dashboard() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-fuchsia-50/50 p-3 rounded-xl border border-fuchsia-100">
+                <div className="flex items-center justify-between col-span-2 mb-1">
+                  <h3 className="text-xs font-black uppercase tracking-wider text-fuchsia-700">
+                    Price Details
+                  </h3>
+
+                  <button
+                    type="button"
+                    onClick={clearPriceFields}
+                    className="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 border border-rose-100 text-[11px] font-black hover:bg-rose-100 transition"
+                  >
+                    Clear Prices
+                  </button>
+                </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
                     Package Price (LKR)
@@ -3148,6 +3182,7 @@ export default function Dashboard() {
                   <input
                     type="number"
                     name="package_price"
+                    placeholder="Enter package price"
                     value={formData.package_price}
                     onChange={handleInputChange}
                     className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
@@ -3162,6 +3197,7 @@ export default function Dashboard() {
                     <input
                       type="number"
                       name="discount_rate"
+                      placeholder="Enter discount %"
                       value={formData.discount_rate}
                       onChange={handleInputChange}
                       className="w-full p-2.5 pr-8 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
@@ -3179,6 +3215,7 @@ export default function Dashboard() {
                   <input
                     type="number"
                     name="agreed_price"
+                    placeholder="Final agreed price"
                     value={formData.agreed_price}
                     readOnly
                     className="w-full p-2.5 bg-gray-100 border rounded-lg outline-none text-sm font-bold text-fuchsia-800"
@@ -3192,6 +3229,7 @@ export default function Dashboard() {
                   <input
                     type="number"
                     name="advance_paid"
+                    placeholder="Booking advance"
                     value={formData.advance_paid}
                     onChange={handleInputChange}
                     className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
@@ -3217,6 +3255,7 @@ export default function Dashboard() {
                   <input
                     type="number"
                     name="paid_amount"
+                    placeholder="Total received"
                     value={formData.paid_amount}
                     readOnly
                     className="w-full p-3 border rounded-xl bg-gray-50 text-gray-500 outline-none"
@@ -3296,15 +3335,15 @@ export default function Dashboard() {
                       guest_count: "",
                       contact_no: "",
                       bridesmaid_option: "",
-                      package_price: 0,
-                      discount_rate: 0,
-                      agreed_price: 0,
-                      advance_paid: 0,
+                      package_price: "",
+                      discount_rate: "",
+                      agreed_price: "",
+                      advance_paid: "",
                       status: "Inquiry",
                       remarks: "",
                       country: "Local",
                       advance_paid_date: "",
-                      paid_amount: 0,
+                      paid_amount: "",
                       paid_date: "",
                       new_payment: "",
                     });
