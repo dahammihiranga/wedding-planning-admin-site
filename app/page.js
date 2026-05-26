@@ -372,6 +372,7 @@ export default function Dashboard() {
     paid_date: "",
     new_payment: "",
     discount_type: "percentage",
+    transport_cost: "",
   });
 
   const API_URL = "/api/inquiries";
@@ -518,10 +519,12 @@ export default function Dashboard() {
     if (
       name === "package_price" ||
       name === "discount_rate" ||
-      name === "discount_type"
+      name === "discount_type" ||
+      name === "transport_cost"
     ) {
       const packagePrice = parseFloat(updatedForm.package_price) || 0;
       const discountValue = parseFloat(updatedForm.discount_rate) || 0;
+      const transportCost = parseFloat(updatedForm.transport_cost) || 0;
 
       let agreedPrice = packagePrice;
 
@@ -531,7 +534,7 @@ export default function Dashboard() {
         agreedPrice = packagePrice - discountValue;
       }
 
-      updatedForm.agreed_price = Math.max(agreedPrice, 0);
+      updatedForm.agreed_price = Math.max(agreedPrice, 0) + transportCost;
     }
 
     if (name === "advance_paid") {
@@ -737,6 +740,7 @@ export default function Dashboard() {
         paid_date: "",
         new_payment: "",
         discount_type: "percentage",
+        transport_cost: "",
       });
     }
 
@@ -820,6 +824,7 @@ export default function Dashboard() {
       paid_date: "",
       new_payment: "",
       pending_payment: "",
+      transport_cost: "",
     };
 
     setFormData(updatedForm);
@@ -3306,6 +3311,21 @@ export default function Dashboard() {
                       </option>
                     </select>
                   </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
+                    Transport Cost
+                  </label>
+
+                  <input
+                    type="number"
+                    name="transport_cost"
+                    value={formData.transport_cost}
+                    onChange={handleInputChange}
+                    placeholder="Enter transport cost"
+                    className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                  />
                 </div>
 
                 <div>

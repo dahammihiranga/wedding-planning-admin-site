@@ -87,13 +87,14 @@ async def create_inquiry(data: dict):
         package_price = float(data.get("package_price") or 0)
         discount_rate = float(data.get("discount_rate") or 0)
         discount_type = data.get("discount_type") or "percentage"
+        transport_cost = float(data.get("transport_cost") or 0)
 
         if discount_type == "fixed":
             agreed_price = package_price - discount_rate
         else:
             agreed_price = package_price - ((package_price * discount_rate) / 100)
 
-        agreed_price = max(agreed_price, 0)
+        agreed_price = max(agreed_price, 0) + transport_cost
         advance_paid = float(data.get("advance_paid") or 0)
         paid_amount = float(data.get("paid_amount") or 0)
 
@@ -129,9 +130,10 @@ async def create_inquiry(data: dict):
             advance_paid_date,
             paid_amount,
             paid_date,
-            discount_type
+            discount_type,
+            transport_cost
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
         client.execute(
@@ -157,6 +159,7 @@ async def create_inquiry(data: dict):
                 paid_amount,
                 data.get("paid_date") or None,
                 data.get("discount_type") or "percentage",
+                transport_cost,
             ],
         )
 
@@ -183,13 +186,14 @@ async def update_inquiry(id: int, data: dict):
         package_price = float(data.get("package_price") or 0)
         discount_rate = float(data.get("discount_rate") or 0)
         discount_type = data.get("discount_type") or "percentage"
+        transport_cost = float(data.get("transport_cost") or 0)
 
         if discount_type == "fixed":
             agreed_price = package_price - discount_rate
         else:
             agreed_price = package_price - ((package_price * discount_rate) / 100)
 
-        agreed_price = max(agreed_price, 0)
+        agreed_price = max(agreed_price, 0) + transport_cost
         advance_paid = float(data.get("advance_paid") or 0)
         paid_amount = float(data.get("paid_amount") or 0)
         if paid_amount < advance_paid:
@@ -216,6 +220,7 @@ async def update_inquiry(id: int, data: dict):
         package_price=?,
         discount_rate=?,
         discount_type=?,
+        transport_cost=?,
         agreed_price=?,
         advance_paid=?,
         advance_paid_date=?,
@@ -239,6 +244,7 @@ async def update_inquiry(id: int, data: dict):
                 package_price,
                 discount_rate,
                 data.get("discount_type") or "percentage",
+                transport_cost,
                 agreed_price,
                 advance_paid,
                 data.get("advance_paid_date") or None,
@@ -279,5 +285,6 @@ async def delete_inquiry(id: int):
         client.close()
 
         return {"success": False, "error": str(e)}
+
 
 handler = app
