@@ -2897,43 +2897,38 @@ export default function Dashboard() {
                                   </div>
 
                                   <div className="mt-2 space-y-1 text-[10px]">
-                                    {transactions.length > 0 ? (
-                                      transactions.map((payment) => (
-                                        <div
-                                          key={payment.id}
-                                          className="rounded-lg bg-emerald-50 border border-emerald-100 px-2 py-1 text-left"
-                                        >
-                                          <div className="font-black text-emerald-700">
-                                            {payment.payment_type}: Rs.{" "}
-                                            {Number(
-                                              payment.amount || 0,
-                                            ).toLocaleString("en-LK")}
-                                          </div>
-
-                                          <div className="text-gray-400 font-semibold">
-                                            {payment.payment_date || "No date"}
-                                          </div>
+                                    {Number(item.advance_paid || 0) > 0 && (
+                                      <div className="rounded-lg bg-amber-50 border border-amber-100 px-2 py-1 text-left">
+                                        <div className="font-black text-amber-700">
+                                          Booking Advance: Rs.{" "}
+                                          {Number(
+                                            item.advance_paid || 0,
+                                          ).toLocaleString("en-LK")}
                                         </div>
-                                      ))
-                                    ) : (
-                                      <>
-                                        {Number(item.advance_paid || 0) > 0 && (
-                                          <div className="text-amber-600 font-bold">
-                                            Booking Advance: Rs.{" "}
-                                            {Number(
-                                              item.advance_paid || 0,
-                                            ).toLocaleString("en-LK")}
-                                          </div>
-                                        )}
 
-                                        {item.advance_paid_date && (
-                                          <div className="text-gray-400">
-                                            Advance Date:{" "}
-                                            {item.advance_paid_date}
-                                          </div>
-                                        )}
-                                      </>
+                                        <div className="text-gray-400 font-semibold">
+                                          {item.advance_paid_date || "No date"}
+                                        </div>
+                                      </div>
                                     )}
+
+                                    {transactions.map((payment) => (
+                                      <div
+                                        key={payment.id}
+                                        className="rounded-lg bg-emerald-50 border border-emerald-100 px-2 py-1 text-left"
+                                      >
+                                        <div className="font-black text-emerald-700">
+                                          Partial Payment: Rs.{" "}
+                                          {Number(
+                                            payment.amount || 0,
+                                          ).toLocaleString("en-LK")}
+                                        </div>
+
+                                        <div className="text-gray-400 font-semibold">
+                                          {payment.payment_date || "No date"}
+                                        </div>
+                                      </div>
+                                    ))}
                                   </div>
                                 </td>
 

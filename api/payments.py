@@ -59,10 +59,7 @@ async def add_payment(data: dict):
         payment_type = data.get("payment_type") or "Partial"
 
         if amount <= 0:
-            return {
-                "success": False,
-                "error": "Payment amount must be greater than 0",
-            }
+            return {"success": False, "error": "Payment amount must be greater than 0"}
 
         client.execute(
             """
@@ -79,7 +76,7 @@ async def add_payment(data: dict):
 
         inquiry_result = client.execute(
             """
-            SELECT agreed_price, paid_amount
+            SELECT agreed_price, advance_paid
             FROM inquiries
             WHERE id = ?
             """,
@@ -91,9 +88,20 @@ async def add_payment(data: dict):
             return {"success": False, "error": "Inquiry not found"}
 
         agreed_price = float(inquiry_result.rows[0][0] or 0)
-        current_paid = float(inquiry_result.rows[0][1] or 0)
+        advance_paid = float(inquiry_result.rows[0][1] or 0)
 
-        total_paid = current_paid + amount
+        partial_result = client.execute(
+            """
+            SELECT COALESCE(SUM(amount), 0)
+            FROM payment_transactions
+            WHERE inquiry_id = ?
+            """,
+            [inquiry_id],
+        )
+
+        total_partial_paid = float(partial_result.rows[0][0] or 0)
+
+        total_paid = advance_paid + total_partial_paid
         pending_payment = max(agreed_price - total_paid, 0)
 
         client.execute(
