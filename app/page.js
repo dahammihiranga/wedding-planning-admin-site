@@ -1230,56 +1230,80 @@ export default function Dashboard() {
             )}
             {activePage === "dashboard" && (
               <>
-                <div className="hidden md:block max-w-[98%] mx-auto mt-4 bg-white border border-gray-100 rounded-2xl shadow-sm p-4">
-                  <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-                    <input
-                      type="text"
-                      placeholder="Search by couple name, wedding date or contact no..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="md:col-span-2 w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                    />
+                <div className="hidden md:block relative z-[100] max-w-[98%] mx-auto mt-4 bg-white/90 backdrop-blur-xl border border-gray-100 rounded-2xl shadow-sm p-3 overflow-visible">
+                  <div className="flex items-center gap-3 w-full">
+                    <div className="flex-[1.8] min-w-[260px]">
+  <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
+    Search
+  </label>
 
-                    <input
-                      type="date"
-                      value={filters.weddingDateFrom}
-                      onChange={(e) =>
-                        setFilters({
-                          ...filters,
-                          weddingDateFrom: e.target.value,
-                        })
-                      }
-                      className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                      title="Wedding date from"
-                    />
+  <input
+    type="text"
+    placeholder="Search by couple name, wedding date or contact no..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+  />
+</div>
 
-                    <input
-                      type="date"
-                      value={filters.weddingDateTo}
-                      onChange={(e) =>
-                        setFilters({
-                          ...filters,
-                          weddingDateTo: e.target.value,
-                        })
-                      }
-                      className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                      title="Wedding date to"
-                    />
+                    <div className="w-[150px]">
+  <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
+    Wedding Date From
+  </label>
 
-                    <input
-                      type="month"
-                      value={filters.weddingMonth}
-                      onChange={(e) =>
-                        setFilters({
-                          ...filters,
-                          weddingMonth: e.target.value,
-                        })
-                      }
-                      className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                      title="Filter by month"
-                    />
+  <input
+    type="date"
+    value={filters.weddingDateFrom}
+    onChange={(e) =>
+      setFilters({
+        ...filters,
+        weddingDateFrom: e.target.value,
+      })
+    }
+    className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+  />
+</div>
 
-                    <div className="relative">
+                    <div className="w-[150px]">
+  <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
+    Wedding Date To
+  </label>
+
+  <input
+    type="date"
+    value={filters.weddingDateTo}
+    onChange={(e) =>
+      setFilters({
+        ...filters,
+        weddingDateTo: e.target.value,
+      })
+    }
+    className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+  />
+</div>
+
+                    <div className="w-[150px]">
+  <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
+    Search By Month
+  </label>
+
+  <input
+    type="month"
+    value={filters.weddingMonth}
+    onChange={(e) =>
+      setFilters({
+        ...filters,
+        weddingMonth: e.target.value,
+      })
+    }
+    className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+  />
+</div>
+
+                    <div className="relative w-[190px]">
+                      <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
+    Service Types
+  </label>
                       <button
                         type="button"
                         onClick={() =>
@@ -1291,14 +1315,14 @@ export default function Dashboard() {
                       >
                         <span className="truncate">
                           {filters.serviceType?.length > 0
-                            ? `${filters.serviceType.length} service type(s) selected`
+                            ? `${filters.serviceType.length} service(s)`
                             : "All Service Types"}
                         </span>
                         <span className="text-gray-400">▾</span>
                       </button>
 
                       {isFilterServiceDropdownOpen && (
-                        <div className="absolute z-[1000] mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl p-2 space-y-1">
+                        <div className="absolute left-0 top-full z-[99999] mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl p-2 space-y-1">
                           {SERVICE_TYPE_OPTIONS.map((service) => (
                             <label
                               key={service}
@@ -1310,33 +1334,12 @@ export default function Dashboard() {
                                 onChange={(e) => {
                                   const current = filters.serviceType || [];
 
-                                  if (e.target.checked) {
-                                    const updatedForm = {
-                                      ...formData,
-                                      service_type: [...current, service],
-                                    };
-
-                                    setFormData(updatedForm);
-
-                                    localStorage.setItem(
-                                      DRAFT_KEY,
-                                      JSON.stringify(updatedForm),
-                                    );
-                                  } else {
-                                    const updatedForm = {
-                                      ...formData,
-                                      service_type: current.filter(
-                                        (s) => s !== service,
-                                      ),
-                                    };
-
-                                    setFormData(updatedForm);
-
-                                    localStorage.setItem(
-                                      DRAFT_KEY,
-                                      JSON.stringify(updatedForm),
-                                    );
-                                  }
+                                  setFilters({
+                                    ...filters,
+                                    serviceType: e.target.checked
+                                      ? [...current, service]
+                                      : current.filter((s) => s !== service),
+                                  });
                                 }}
                                 className="accent-emerald-600"
                               />
@@ -1350,6 +1353,10 @@ export default function Dashboard() {
                       )}
                     </div>
 
+                      <div className="w-[160px]">
+  <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
+    Wedding Types
+  </label>
                     <select
                       value={filters.weddingType}
                       onChange={(e) =>
@@ -1358,15 +1365,18 @@ export default function Dashboard() {
                           weddingType: e.target.value,
                         })
                       }
-                      className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                      className="w-[160px] p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
                     >
                       <option value="">All Wedding Types</option>
                       <option value="One day">One day</option>
                       <option value="Two days">Two days</option>
                     </select>
-                  </div>
+                    </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mt-3">
+                      <div className="w-[135px]">
+  <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
+    Status
+  </label>
                     <select
                       value={filters.status}
                       onChange={(e) =>
@@ -1375,26 +1385,27 @@ export default function Dashboard() {
                           status: e.target.value,
                         })
                       }
-                      className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                      className="w-[135px] p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
                     >
                       <option value="">All Status</option>
                       <option value="Inquiry">Inquiry</option>
                       <option value="Confirmed">Confirmed</option>
                       <option value="Completed">Completed</option>
                     </select>
+                    </div>
 
                     <button
                       type="button"
                       onClick={clearSearchAndFilters}
-                      className="px-4 py-2.5 rounded-xl bg-gray-100 text-gray-700 text-sm font-bold hover:bg-gray-200 transition"
+                      className="w-[130px] px-4 py-2.5 rounded-xl bg-gray-100 text-gray-700 text-sm font-bold hover:bg-gray-200 transition mt-5"
                     >
-                      Clear Filters
+                      Clear
                     </button>
 
-                    <div className="md:col-span-3 flex items-center justify-end text-xs font-bold text-gray-400">
+                    {/* <div className="ml-auto whitespace-nowrap text-xs font-bold text-gray-400">
                       Showing {filteredRecordsDisplay.length} of{" "}
-                      {activeRecordsDisplay.length} records
-                    </div>
+                      {activeRecordsDisplay.length}
+                    </div> */}
                   </div>
                 </div>
 
@@ -2089,11 +2100,6 @@ export default function Dashboard() {
                   )}
                 </main>
 
-                
-                
-
-                
-
                 {isMobileFilterOpen && (
                   <div className="md:hidden fixed inset-0 z-[9998] bg-black/40 backdrop-blur-sm flex items-end">
                     <div className="w-full bg-white rounded-t-[2rem] p-5 shadow-2xl max-h-[82vh] overflow-y-auto">
@@ -2267,8 +2273,6 @@ export default function Dashboard() {
                 )}
               </>
             )}
-
-            
 
             {activePage === "customers" && (
               <div className="p-4 md:p-6">
@@ -2520,626 +2524,896 @@ export default function Dashboard() {
               </div>
             )}
 
-            
-
-            
-
             <WindowsFlagFix />
           </div>
         </div>
       </div>
-            {/* INPUT / EDIT DIALOG FORM MODAL */}
-            {isModalOpen && (
-                  <div className="fixed inset-0 bg-black/55 backdrop-blur-md flex items-start md:items-center justify-center p-3 md:p-4 z-[999999] overflow-y-auto pb-[env(safe-area-inset-bottom)]">
-                    <div className="relative z-[1000000] bg-white rounded-2xl w-full max-w-lg p-4 md:p-6 shadow-2xl space-y-4 my-4 md:my-8 border border-gray-100 max-h-[92vh] overflow-y-auto pb-28 md:pb-6">
-                      <div className="flex items-center justify-between border-b pb-3">
-                        <h2 className="text-lg font-bold text-gray-900">
-                          {formData.id
-                            ? "Modify Wedding File"
-                            : "Add New Wedding Record"}
-                        </h2>
+      {/* INPUT / EDIT DIALOG FORM MODAL */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/55 backdrop-blur-md flex items-start md:items-center justify-center p-3 md:p-4 z-[999999] overflow-y-auto pb-[env(safe-area-inset-bottom)]">
+          <div className="relative z-[1000000] bg-white rounded-2xl w-full max-w-lg p-4 md:p-6 shadow-2xl space-y-4 my-4 md:my-8 border border-gray-100 max-h-[92vh] overflow-y-auto pb-28 md:pb-6">
+            <div className="flex items-center justify-between border-b pb-3">
+              <h2 className="text-lg font-bold text-gray-900">
+                {formData.id ? "Modify Wedding File" : "Add New Wedding Record"}
+              </h2>
 
-                        <button
-                          type="button"
-                          onClick={() => setIsModalOpen(false)}
-                          className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition flex items-center justify-center text-lg font-bold active:scale-95"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                      <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
-                          <div className="col-span-2">
-                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                              Couple Name *
-                            </label>
-                            <input
-                              type="text"
-                              name="couple_name"
-                              required
-                              value={formData.couple_name}
-                              onChange={handleInputChange}
-                              className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                              Country
-                            </label>
-                            <select
-                              name="country"
-                              value={formData.country}
-                              onChange={handleInputChange}
-                              className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none font-medium text-gray-700"
-                            >
-                              {COUNTRIES.map((c) => (
-                                <option key={c.code} value={c.code}>
-                                  {c.flag} {c.code}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition flex items-center justify-center text-lg font-bold active:scale-95"
+              >
+                ✕
+              </button>
+            </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+                <div className="col-span-2">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Couple Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="couple_name"
+                    required
+                    value={formData.couple_name}
+                    onChange={handleInputChange}
+                    className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Country
+                  </label>
+                  <select
+                    name="country"
+                    value={formData.country}
+                    onChange={handleInputChange}
+                    className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none font-medium text-gray-700"
+                  >
+                    {COUNTRIES.map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.flag} {c.code}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                              Wedding Date
-                            </label>
-                            <input
-                              type="date"
-                              name="wedding_date"
-                              value={formData.wedding_date}
-                              onChange={handleInputChange}
-                              className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm bg-white"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                              Guest Count
-                            </label>
-                            <div className="flex gap-1">
-                              <select
-                                name="guest_count"
-                                value={
-                                  [100, 150, 200, 250, 300, 350, 400].includes(
-                                    Number(formData.guest_count),
-                                  )
-                                    ? formData.guest_count
-                                    : ""
-                                }
-                                onChange={handleInputChange}
-                                className="w-1/2 p-2.5 bg-white border rounded-lg text-sm outline-none"
-                              >
-                                <option value="">Select count</option>
-                                <option value="100">100</option>
-                                <option value="150">150</option>
-                                <option value="200">200</option>
-                                <option value="250">250</option>
-                                <option value="300">300</option>
-                                <option value="350">350</option>
-                                <option value="400">400</option>
-                              </select>
-                              <input
-                                type="number"
-                                name="guest_count"
-                                placeholder="Or type..."
-                                value={formData.guest_count}
-                                onChange={handleInputChange}
-                                className="w-1/2 p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                            Hotel / Venue
-                          </label>
-                          <input
-                            type="text"
-                            name="hotel"
-                            value={formData.hotel}
-                            onChange={handleInputChange}
-                            className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="relative">
-                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                              Service Type
-                            </label>
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setIsServiceDropdownOpen(!isServiceDropdownOpen)
-                              }
-                              className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none text-left flex items-center justify-between"
-                            >
-                              <span className="truncate">
-                                {Array.isArray(formData.service_type) &&
-                                formData.service_type.length > 0
-                                  ? formData.service_type.join(", ")
-                                  : "Please select service type"}
-                              </span>
-
-                              <span className="text-gray-400">▾</span>
-                            </button>
-
-                            {isServiceDropdownOpen && (
-                              <div className="absolute z-[10000] mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl p-2 space-y-1">
-                                {SERVICE_TYPE_OPTIONS.map((service) => (
-                                  <label
-                                    key={service}
-                                    className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-emerald-50 cursor-pointer text-sm"
-                                  >
-                                    <input
-                                      type="checkbox"
-                                      checked={
-                                        Array.isArray(formData.service_type) &&
-                                        formData.service_type.includes(service)
-                                      }
-                                      onChange={(e) => {
-                                        const current = Array.isArray(
-                                          formData.service_type,
-                                        )
-                                          ? formData.service_type
-                                          : [];
-
-                                        if (e.target.checked) {
-                                          const updatedForm = {
-                                            ...formData,
-                                            service_type: [...current, service],
-                                          };
-
-                                          setFormData(updatedForm);
-
-                                          if (!updatedForm.id) {
-                                            localStorage.setItem(
-                                              DRAFT_KEY,
-                                              JSON.stringify(updatedForm),
-                                            );
-                                          }
-                                        } else {
-                                          const updatedForm = {
-                                            ...formData,
-                                            service_type: current.filter(
-                                              (s) => s !== service,
-                                            ),
-                                          };
-
-                                          setFormData(updatedForm);
-
-                                          if (!updatedForm.id) {
-                                            localStorage.setItem(
-                                              DRAFT_KEY,
-                                              JSON.stringify(updatedForm),
-                                            );
-                                          }
-                                        }
-                                      }}
-                                      className="accent-emerald-600"
-                                    />
-
-                                    <span className="font-medium text-gray-700">
-                                      {service}
-                                    </span>
-                                  </label>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                              Wedding Type
-                            </label>
-                            <select
-                              name="wedding_type"
-                              value={formData.wedding_type}
-                              onChange={handleInputChange}
-                              className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
-                            >
-                              <option value="One day">One day</option>
-                              <option value="Two days">Two days</option>
-                            </select>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                              Bridesmaid
-                            </label>
-                            <select
-                              name="bridesmaid_option"
-                              value={formData.bridesmaid_option}
-                              onChange={handleInputChange}
-                              className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
-                            >
-                              <option value="">Please select</option>
-                              <option value="Without bridesmaid">
-                                Without bridesmaid
-                              </option>
-                              <option value="With bridesmaid">
-                                With bridesmaid
-                              </option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                              Status
-                            </label>
-                            <select
-                              name="status"
-                              value={formData.status}
-                              onChange={handleInputChange}
-                              className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
-                            >
-                              <option value="Inquiry">Inquiry</option>
-                              <option value="Confirmed">Confirmed</option>
-                              <option value="Completed">Completed</option>
-                            </select>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-fuchsia-50/50 p-3 rounded-xl border border-fuchsia-100">
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
-                              Package Price (LKR)
-                            </label>
-                            <input
-                              type="number"
-                              name="package_price"
-                              value={formData.package_price}
-                              onChange={handleInputChange}
-                              className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
-                              Discount Rate (%)
-                            </label>
-                            <div className="relative">
-                              <input
-                                type="number"
-                                name="discount_rate"
-                                value={formData.discount_rate}
-                                onChange={handleInputChange}
-                                className="w-full p-2.5 pr-8 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                              />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">
-                                %
-                              </span>
-                            </div>
-                          </div>
-
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
-                              Agreed Price (LKR)
-                            </label>
-                            <input
-                              type="number"
-                              name="agreed_price"
-                              value={formData.agreed_price}
-                              readOnly
-                              className="w-full p-2.5 bg-gray-100 border rounded-lg outline-none text-sm font-bold text-fuchsia-800"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
-                              Advance Paid (LKR)
-                            </label>
-                            <input
-                              type="number"
-                              name="advance_paid"
-                              value={formData.advance_paid}
-                              onChange={handleInputChange}
-                              className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
-                              Advance Paid Date
-                            </label>
-                            <input
-                              type="date"
-                              name="advance_paid_date"
-                              value={formData.advance_paid_date || ""}
-                              onChange={handleInputChange}
-                              className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                            Contact No.
-                          </label>
-                          <input
-                            type="text"
-                            name="contact_no"
-                            value={formData.contact_no}
-                            onChange={handleInputChange}
-                            className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                            Remarks
-                          </label>
-                          <textarea
-                            name="remarks"
-                            rows="2"
-                            value={formData.remarks}
-                            onChange={handleInputChange}
-                            className="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-fuchsia-300 outline-none"
-                          ></textarea>
-                        </div>
-
-                        <div className="flex justify-end gap-3 pt-4 pb-6 md:pb-0 border-t">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              localStorage.removeItem(DRAFT_KEY);
-
-                              setFormData({
-                                id: null,
-                                couple_name: "",
-                                wedding_date: "",
-                                hotel: "",
-                                service_type: [],
-                                wedding_type: "One day",
-                                guest_count: "",
-                                contact_no: "",
-                                bridesmaid_option: "",
-                                package_price: 0,
-                                discount_rate: 0,
-                                agreed_price: 0,
-                                advance_paid: 0,
-                                status: "Inquiry",
-                                remarks: "",
-                                country: "Local",
-                                advance_paid_date: "",
-                              });
-
-                              triggerNotification(
-                                "All inquiry fields cleared successfully.",
-                                "delete",
-                              );
-                            }}
-                            className="px-4 py-2 border border-rose-200 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 text-sm font-semibold transition"
-                          >
-                            Clear All
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setIsModalOpen(false)}
-                            className="px-4 py-2 border rounded-lg text-gray-600 hover:bg-gray-50 text-sm font-semibold"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="submit"
-                            className="px-5 py-2 bg-fuchsia-200 text-black rounded-lg font-bold hover:bg-fuchsia-300 text-sm"
-                          >
-                            Save Record
-                          </button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                )}
-
-                {isVendorModalOpen && (
-              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start md:items-center justify-center p-4 z-[9999] overflow-y-auto">
-                <div className="bg-white rounded-3xl w-full max-w-lg p-5 shadow-2xl border border-gray-100 my-6">
-                  <div className="flex items-center justify-between border-b pb-3 mb-4">
-                    <h2 className="text-xl font-black text-gray-900">
-                      {vendorForm.id ? "Edit Vendor" : "Add Vendor"}
-                    </h2>
-
-                    <button
-                      type="button"
-                      onClick={() => setIsVendorModalOpen(false)}
-                      className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold"
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Wedding Date
+                  </label>
+                  <input
+                    type="date"
+                    name="wedding_date"
+                    value={formData.wedding_date}
+                    onChange={handleInputChange}
+                    className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Guest Count
+                  </label>
+                  <div className="flex gap-1">
+                    <select
+                      name="guest_count"
+                      value={
+                        [100, 150, 200, 250, 300, 350, 400].includes(
+                          Number(formData.guest_count),
+                        )
+                          ? formData.guest_count
+                          : ""
+                      }
+                      onChange={handleInputChange}
+                      className="w-1/2 p-2.5 bg-white border rounded-lg text-sm outline-none"
                     >
-                      ✕
-                    </button>
+                      <option value="">Select count</option>
+                      <option value="100">100</option>
+                      <option value="150">150</option>
+                      <option value="200">200</option>
+                      <option value="250">250</option>
+                      <option value="300">300</option>
+                      <option value="350">350</option>
+                      <option value="400">400</option>
+                    </select>
+                    <input
+                      type="number"
+                      name="guest_count"
+                      placeholder="Or type..."
+                      value={formData.guest_count}
+                      onChange={handleInputChange}
+                      className="w-1/2 p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                    />
                   </div>
+                </div>
+              </div>
 
-                  <form onSubmit={handleVendorSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                  Hotel / Venue
+                </label>
+                <input
+                  type="text"
+                  name="hotel"
+                  value={formData.hotel}
+                  onChange={handleInputChange}
+                  className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="relative">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Service Type
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setIsServiceDropdownOpen(!isServiceDropdownOpen)
+                    }
+                    className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none text-left flex items-center justify-between"
+                  >
+                    <span className="truncate">
+                      {Array.isArray(formData.service_type) &&
+                      formData.service_type.length > 0
+                        ? formData.service_type.join(", ")
+                        : "Please select service type"}
+                    </span>
+
+                    <span className="text-gray-400">▾</span>
+                  </button>
+
+                  {isServiceDropdownOpen && (
+                    <div className="absolute z-[10000] mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl p-2 space-y-1">
+                      {SERVICE_TYPE_OPTIONS.map((service) => (
+                        <label
+                          key={service}
+                          className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-emerald-50 cursor-pointer text-sm"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={
+                              Array.isArray(formData.service_type) &&
+                              formData.service_type.includes(service)
+                            }
+                            onChange={(e) => {
+                              const current = Array.isArray(
+                                formData.service_type,
+                              )
+                                ? formData.service_type
+                                : [];
+
+                              if (e.target.checked) {
+                                const updatedForm = {
+                                  ...formData,
+                                  service_type: [...current, service],
+                                };
+
+                                setFormData(updatedForm);
+
+                                if (!updatedForm.id) {
+                                  localStorage.setItem(
+                                    DRAFT_KEY,
+                                    JSON.stringify(updatedForm),
+                                  );
+                                }
+                              } else {
+                                const updatedForm = {
+                                  ...formData,
+                                  service_type: current.filter(
+                                    (s) => s !== service,
+                                  ),
+                                };
+
+                                setFormData(updatedForm);
+
+                                if (!updatedForm.id) {
+                                  localStorage.setItem(
+                                    DRAFT_KEY,
+                                    JSON.stringify(updatedForm),
+                                  );
+                                }
+                              }
+                            }}
+                            className="accent-emerald-600"
+                          />
+
+                          <span className="font-medium text-gray-700">
+                            {service}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Wedding Type
+                  </label>
+                  <select
+                    name="wedding_type"
+                    value={formData.wedding_type}
+                    onChange={handleInputChange}
+                    className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
+                  >
+                    <option value="One day">One day</option>
+                    <option value="Two days">Two days</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Bridesmaid
+                  </label>
+                  <select
+                    name="bridesmaid_option"
+                    value={formData.bridesmaid_option}
+                    onChange={handleInputChange}
+                    className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
+                  >
+                    <option value="">Please select</option>
+                    <option value="Without bridesmaid">
+                      Without bridesmaid
+                    </option>
+                    <option value="With bridesmaid">With bridesmaid</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Status
+                  </label>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleInputChange}
+                    className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
+                  >
+                    <option value="Inquiry">Inquiry</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Completed">Completed</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-fuchsia-50/50 p-3 rounded-xl border border-fuchsia-100">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
+                    Package Price (LKR)
+                  </label>
+                  <input
+                    type="number"
+                    name="package_price"
+                    value={formData.package_price}
+                    onChange={handleInputChange}
+                    className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
+                    Discount Rate (%)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      name="discount_rate"
+                      value={formData.discount_rate}
+                      onChange={handleInputChange}
+                      className="w-full p-2.5 pr-8 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">
+                      %
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
+                    Agreed Price (LKR)
+                  </label>
+                  <input
+                    type="number"
+                    name="agreed_price"
+                    value={formData.agreed_price}
+                    readOnly
+                    className="w-full p-2.5 bg-gray-100 border rounded-lg outline-none text-sm font-bold text-fuchsia-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
+                    Advance Paid (LKR)
+                  </label>
+                  <input
+                    type="number"
+                    name="advance_paid"
+                    value={formData.advance_paid}
+                    onChange={handleInputChange}
+                    className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
+                    Advance Paid Date
+                  </label>
+                  <input
+                    type="date"
+                    name="advance_paid_date"
+                    value={formData.advance_paid_date || ""}
+                    onChange={handleInputChange}
+                    className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                  Contact No.
+                </label>
+                <input
+                  type="text"
+                  name="contact_no"
+                  value={formData.contact_no}
+                  onChange={handleInputChange}
+                  className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                  Remarks
+                </label>
+                <textarea
+                  name="remarks"
+                  rows="2"
+                  value={formData.remarks}
+                  onChange={handleInputChange}
+                  className="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-fuchsia-300 outline-none"
+                ></textarea>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 pb-6 md:pb-0 border-t">
+                <button
+                  type="button"
+                  onClick={() => {
+                    localStorage.removeItem(DRAFT_KEY);
+
+                    setFormData({
+                      id: null,
+                      couple_name: "",
+                      wedding_date: "",
+                      hotel: "",
+                      service_type: [],
+                      wedding_type: "One day",
+                      guest_count: "",
+                      contact_no: "",
+                      bridesmaid_option: "",
+                      package_price: 0,
+                      discount_rate: 0,
+                      agreed_price: 0,
+                      advance_paid: 0,
+                      status: "Inquiry",
+                      remarks: "",
+                      country: "Local",
+                      advance_paid_date: "",
+                    });
+
+                    triggerNotification(
+                      "All inquiry fields cleared successfully.",
+                      "delete",
+                    );
+                  }}
+                  className="px-4 py-2 border border-rose-200 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 text-sm font-semibold transition"
+                >
+                  Clear All
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 border rounded-lg text-gray-600 hover:bg-gray-50 text-sm font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-fuchsia-200 text-black rounded-lg font-bold hover:bg-fuchsia-300 text-sm"
+                >
+                  Save Record
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {isVendorModalOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start md:items-center justify-center p-4 z-[9999] overflow-y-auto">
+          <div className="bg-white rounded-3xl w-full max-w-lg p-5 shadow-2xl border border-gray-100 my-6">
+            <div className="flex items-center justify-between border-b pb-3 mb-4">
+              <h2 className="text-xl font-black text-gray-900">
+                {vendorForm.id ? "Edit Vendor" : "Add Vendor"}
+              </h2>
+
+              <button
+                type="button"
+                onClick={() => setIsVendorModalOpen(false)}
+                className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleVendorSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                  Name *
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  value={vendorForm.name}
+                  onChange={handleVendorChange}
+                  className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                  Service
+                </label>
+                <input
+                  type="text"
+                  name="service"
+                  value={vendorForm.service}
+                  onChange={handleVendorChange}
+                  className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                  Contact Number
+                </label>
+                <input
+                  type="text"
+                  name="contact_number"
+                  value={vendorForm.contact_number}
+                  onChange={handleVendorChange}
+                  className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  name="location"
+                  value={vendorForm.location}
+                  onChange={handleVendorChange}
+                  className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                  Remarks
+                </label>
+                <textarea
+                  name="remarks"
+                  rows="3"
+                  value={vendorForm.remarks}
+                  onChange={handleVendorChange}
+                  className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <button
+                  type="button"
+                  onClick={() => setIsVendorModalOpen(false)}
+                  className="px-4 py-2 rounded-xl border text-gray-600 font-bold"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-fuchsia-300 hover:bg-fuchsia-400 text-black font-black"
+                >
+                  {vendorForm.id ? "Update Vendor" : "Save Vendor"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {deleteModal.show && (
+        <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-md flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl text-center space-y-4 border border-rose-100">
+            <div
+              className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto text-3xl font-bold relative ${
+                deleteModal.type === "soft"
+                  ? "bg-amber-50 text-amber-600"
+                  : "bg-rose-50 text-rose-600"
+              }`}
+            >
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-2xl bg-current opacity-10" />
+              {deleteModal.type === "soft" ? "📁" : "⚠️"}
+            </div>
+            <div>
+              <h3 className="text-xl font-extrabold text-gray-900 tracking-wide">
+                {deleteModal.type === "soft"
+                  ? "Move to Deleted Records?"
+                  : deleteModal.type === "all"
+                    ? "Empty Entire Trash Bin?"
+                    : deleteModal.type === "vendor"
+                      ? "Delete Vendor?"
+                      : "Confirm Permanent Deletion"}
+              </h3>
+              <p className="text-sm text-gray-500 mt-2 px-2 leading-relaxed">
+                {deleteModal.type === "soft" && (
+                  <>
+                    Are you sure you want to remove{" "}
+                    <strong>"{deleteModal.name}"</strong> from your tracking
+                    screens? You can restore them anytime from the Deleted
+                    Records tab.
+                  </>
+                )}
+                {deleteModal.type === "permanent" && (
+                  <>
+                    This will permanently scrub the database files for{" "}
+                    <strong>"{deleteModal.name}"</strong>. This action is
+                    irreversible.
+                  </>
+                )}
+                {deleteModal.type === "all" && (
+                  <>
+                    This will instantly wipe and erase{" "}
+                    <strong>all {deletedRecords.length} files</strong> inside
+                    your trash database list completely. This cannot be undone.
+                  </>
+                )}
+              </p>
+            </div>
+            <div className="flex gap-3 justify-center pt-2">
+              <button
+                onClick={() =>
+                  setDeleteModal({
+                    show: false,
+                    id: null,
+                    name: "",
+                    type: "soft",
+                  })
+                }
+                className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs tracking-wider uppercase transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteAction}
+                className={`px-6 py-2.5 text-white font-black rounded-xl text-xs tracking-wider uppercase shadow-lg transition ${
+                  deleteModal.type === "soft"
+                    ? "bg-amber-600 shadow-amber-100 hover:bg-amber-700"
+                    : "bg-rose-600 shadow-rose-100 hover:bg-rose-700"
+                }`}
+              >
+                {deleteModal.type === "soft"
+                  ? "Yes, Move to Trash"
+                  : deleteModal.type === "all"
+                    ? "Yes, Purge Everything"
+                    : deleteModal.type === "vendor"
+                      ? "Yes, Delete Vendor"
+                      : "Yes, Delete Permanently"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {selectedRemark && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+          <div className="relative z-[1000000] bg-white rounded-2xl w-full max-w-sm p-5 shadow-2xl border border-gray-100">
+            <h3 className="text-base font-bold text-gray-900 mb-3">Remarks</h3>
+
+            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+              {selectedRemark}
+            </p>
+
+            <div className="flex justify-end mt-5">
+              <button
+                type="button"
+                onClick={() => setSelectedRemark(null)}
+                className="px-4 py-2 rounded-xl bg-fuchsia-200 text-white text-sm font-bold"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* DYNAMIC CONFIRMATION DIALOG MODAL */}
+
+      {isCalendarOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="relative z-[1000000] bg-white rounded-2xl w-full max-w-6xl h-[92vh] p-3 md:p-5 shadow-2xl border border-gray-100 flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between border-b pb-3 mb-4">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">
+                  Wedding Inquiry Calendar
+                </h2>
+                <p className="text-xs text-gray-500">
+                  Showing inquiries with wedding dates only
+                </p>
+              </div>
+
+              <button
+                onClick={() => setIsCalendarOpen(false)}
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm font-bold text-gray-700"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="flex-1 min-h-[520px] md:min-h-0 rounded-2xl overflow-auto border border-gray-100 shadow-inner bg-white p-2 md:p-3 calendar-premium">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+                <div className="bg-gradient-to-r from-emerald-50 to-white border border-emerald-100 rounded-2xl p-4 mb-4 shadow-sm">
+                  <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                        Name *
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        required
-                        value={vendorForm.name}
-                        onChange={handleVendorChange}
-                        className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-                      />
+                      <h3 className="text-sm font-black text-emerald-800 uppercase tracking-wider">
+                        Calendar Navigator
+                      </h3>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Jump quickly to future wedding enquiry dates.
+                      </p>
                     </div>
 
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                        Service
-                      </label>
-                      <input
-                        type="text"
-                        name="service"
-                        value={vendorForm.service}
-                        onChange={handleVendorChange}
-                        className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-                      />
-                    </div>
+                    <div className="flex flex-col md:flex-row gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-gray-500 mb-1">
+                          Date Picker
+                        </label>
+                        <input
+                          type="date"
+                          value={moment(calendarDate).format("YYYY-MM-DD")}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (!value) return;
 
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                        Contact Number
-                      </label>
-                      <input
-                        type="text"
-                        name="contact_number"
-                        value={vendorForm.contact_number}
-                        onChange={handleVendorChange}
-                        className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-                      />
-                    </div>
+                            const selectedDate = moment(
+                              value,
+                              "YYYY-MM-DD",
+                              true,
+                            );
 
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                        Location
-                      </label>
-                      <input
-                        type="text"
-                        name="location"
-                        value={vendorForm.location}
-                        onChange={handleVendorChange}
-                        className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-                      />
-                    </div>
+                            if (selectedDate.isValid()) {
+                              setCalendarDate(selectedDate.toDate());
+                              setManualCalendarDate(
+                                selectedDate.format("YYYY-MM-DD"),
+                              );
+                            }
+                          }}
+                          className="w-full md:w-44 p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300 bg-white"
+                        />
+                      </div>
 
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                        Remarks
-                      </label>
-                      <textarea
-                        name="remarks"
-                        rows="3"
-                        value={vendorForm.remarks}
-                        onChange={handleVendorChange}
-                        className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-                      />
-                    </div>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-500 mb-1">
+                          Type Date Manually
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="YYYY-MM-DD"
+                          value={manualCalendarDate}
+                          onChange={(e) =>
+                            setManualCalendarDate(e.target.value)
+                          }
+                          className="w-full md:w-44 p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300 bg-white"
+                        />
+                      </div>
 
-                    <div className="flex justify-end gap-3 pt-4 border-t">
                       <button
                         type="button"
-                        onClick={() => setIsVendorModalOpen(false)}
-                        className="px-4 py-2 rounded-xl border text-gray-600 font-bold"
+                        onClick={() => {
+                          const selectedDate = moment(
+                            manualCalendarDate,
+                            "YYYY-MM-DD",
+                            true,
+                          );
+
+                          if (selectedDate.isValid()) {
+                            setCalendarDate(selectedDate.toDate());
+                          } else {
+                            triggerNotification(
+                              "Please enter date as YYYY-MM-DD",
+                              "delete",
+                            );
+                          }
+                        }}
+                        className="px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-black hover:bg-emerald-700 transition"
                       >
-                        Cancel
+                        Go
                       </button>
 
                       <button
-                        type="submit"
-                        className="px-5 py-2 rounded-xl bg-fuchsia-300 hover:bg-fuchsia-400 text-black font-black"
+                        type="button"
+                        onClick={() => {
+                          const today = new Date();
+                          setCalendarDate(today);
+                          setManualCalendarDate(
+                            moment(today).format("YYYY-MM-DD"),
+                          );
+                        }}
+                        className="px-4 py-2.5 rounded-xl bg-gray-100 text-gray-700 text-sm font-black hover:bg-gray-200 transition"
                       >
-                        {vendorForm.id ? "Update Vendor" : "Save Vendor"}
+                        Today
                       </button>
                     </div>
-                  </form>
-                </div>
-              </div>
-            )}
-
-            {deleteModal.show && (
-              <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-md flex items-center justify-center p-4 z-50">
-                <div className="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl text-center space-y-4 border border-rose-100">
-                  <div
-                    className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto text-3xl font-bold relative ${
-                      deleteModal.type === "soft"
-                        ? "bg-amber-50 text-amber-600"
-                        : "bg-rose-50 text-rose-600"
-                    }`}
-                  >
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-2xl bg-current opacity-10" />
-                    {deleteModal.type === "soft" ? "📁" : "⚠️"}
                   </div>
-                  <div>
-                    <h3 className="text-xl font-extrabold text-gray-900 tracking-wide">
-                      {deleteModal.type === "soft"
-                        ? "Move to Deleted Records?"
-                        : deleteModal.type === "all"
-                          ? "Empty Entire Trash Bin?"
-                          : deleteModal.type === "vendor"
-                            ? "Delete Vendor?"
-                            : "Confirm Permanent Deletion"}
-                    </h3>
-                    <p className="text-sm text-gray-500 mt-2 px-2 leading-relaxed">
-                      {deleteModal.type === "soft" && (
-                        <>
-                          Are you sure you want to remove{" "}
-                          <strong>"{deleteModal.name}"</strong> from your
-                          tracking screens? You can restore them anytime from
-                          the Deleted Records tab.
-                        </>
-                      )}
-                      {deleteModal.type === "permanent" && (
-                        <>
-                          This will permanently scrub the database files for{" "}
-                          <strong>"{deleteModal.name}"</strong>. This action is
-                          irreversible.
-                        </>
-                      )}
-                      {deleteModal.type === "all" && (
-                        <>
-                          This will instantly wipe and erase{" "}
-                          <strong>all {deletedRecords.length} files</strong>{" "}
-                          inside your trash database list completely. This
-                          cannot be undone.
-                        </>
-                      )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setCalendarDate(new Date())}
+                  className="px-4 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 text-sm font-bold hover:bg-emerald-100 transition"
+                >
+                  Today
+                </button>
+              </div>
+              <Calendar
+                localizer={localizer}
+                events={calendarEvents}
+                startAccessor="start"
+                endAccessor="end"
+                titleAccessor="title"
+                views={["month", "week", "day", "agenda"]}
+                defaultView="month"
+                date={
+                  calendarDate instanceof Date && !isNaN(calendarDate)
+                    ? calendarDate
+                    : new Date()
+                }
+                onNavigate={(date) => {
+                  if (date instanceof Date && !isNaN(date)) {
+                    setCalendarDate(date);
+                  }
+                }}
+                selectable
+                onSelectSlot={(slotInfo) => {
+                  const selectedDate = moment(slotInfo.start).format(
+                    "YYYY-MM-DD",
+                  );
+
+                  setFormData({
+                    id: null,
+                    couple_name: "",
+                    wedding_date: selectedDate,
+                    hotel: "",
+                    service_type: [],
+                    wedding_type: "One day",
+                    guest_count: "",
+                    contact_no: "",
+                    bridesmaid_option: "",
+                    package_price: 0,
+                    discount_rate: 0,
+                    agreed_price: 0,
+                    advance_paid: 0,
+                    status: "Inquiry",
+                    remarks: "",
+                    country: "Local",
+                  });
+                  localStorage.setItem(DRAFT_KEY, JSON.stringify(updatedForm));
+
+                  setIsModalOpen(true);
+                }}
+                popup
+                style={{ height: "520px", minWidth: "720px" }}
+                onSelectEvent={(event) => {
+                  setSelectedCalendarEvent(event.resource);
+                }}
+              />
+            </div>
+            {selectedCalendarEvent && (
+              <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+                <div className="relative z-[1000000] bg-white rounded-2xl w-full max-w-md shadow-2xl border border-gray-100 overflow-hidden">
+                  <div className="bg-emerald-700 px-5 py-4 text-white">
+                    <h2 className="text-xl font-bold">
+                      {selectedCalendarEvent.couple_name}
+                    </h2>
+
+                    <p className="text-emerald-100 text-sm mt-1">
+                      Wedding Details
                     </p>
                   </div>
-                  <div className="flex gap-3 justify-center pt-2">
-                    <button
-                      onClick={() =>
-                        setDeleteModal({
-                          show: false,
-                          id: null,
-                          name: "",
-                          type: "soft",
-                        })
-                      }
-                      className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs tracking-wider uppercase transition"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={confirmDeleteAction}
-                      className={`px-6 py-2.5 text-white font-black rounded-xl text-xs tracking-wider uppercase shadow-lg transition ${
-                        deleteModal.type === "soft"
-                          ? "bg-amber-600 shadow-amber-100 hover:bg-amber-700"
-                          : "bg-rose-600 shadow-rose-100 hover:bg-rose-700"
-                      }`}
-                    >
-                      {deleteModal.type === "soft"
-                        ? "Yes, Move to Trash"
-                        : deleteModal.type === "all"
-                          ? "Yes, Purge Everything"
-                          : deleteModal.type === "vendor"
-                            ? "Yes, Delete Vendor"
-                            : "Yes, Delete Permanently"}
-                    </button>
+
+                  <div className="p-5 space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-gray-400 font-semibold">
+                          Wedding Date
+                        </p>
+
+                        <p className="font-semibold text-gray-800">
+                          {selectedCalendarEvent.wedding_date || "-"}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-xs text-gray-400 font-semibold">
+                          Guest Count
+                        </p>
+
+                        <p className="font-semibold text-gray-800">
+                          {selectedCalendarEvent.guest_count || "-"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-gray-400 font-semibold">
+                        Hotel
+                      </p>
+
+                      <p className="font-semibold text-gray-800">
+                        {selectedCalendarEvent.hotel || "-"}
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-gray-400 font-semibold">
+                          Service Type
+                        </p>
+
+                        <p className="font-semibold text-gray-800">
+                          {selectedCalendarEvent.service_type || "-"}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-xs text-gray-400 font-semibold">
+                          Wedding Type
+                        </p>
+
+                        <p className="font-semibold text-gray-800">
+                          {selectedCalendarEvent.wedding_type || "-"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-gray-400 font-semibold">
+                        Contact Number
+                      </p>
+
+                      <p className="font-semibold text-gray-800">
+                        {selectedCalendarEvent.contact_no || "-"}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-gray-400 font-semibold">
+                        Status
+                      </p>
+
+                      <span className="inline-flex px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 mt-1">
+                        {selectedCalendarEvent.status || "-"}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </div>
-            )}
-            {selectedRemark && (
-              <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
-                <div className="relative z-[1000000] bg-white rounded-2xl w-full max-w-sm p-5 shadow-2xl border border-gray-100">
-                  <h3 className="text-base font-bold text-gray-900 mb-3">
-                    Remarks
-                  </h3>
 
-                  <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                    {selectedRemark}
-                  </p>
-
-                  <div className="flex justify-end mt-5">
+                  <div className="border-t p-4 flex justify-end">
                     <button
-                      type="button"
-                      onClick={() => setSelectedRemark(null)}
-                      className="px-4 py-2 rounded-xl bg-fuchsia-200 text-white text-sm font-bold"
+                      onClick={() => setSelectedCalendarEvent(null)}
+                      className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm"
                     >
                       Close
                     </button>
@@ -3147,295 +3421,9 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
-            {/* DYNAMIC CONFIRMATION DIALOG MODAL */}
-
-                {isCalendarOpen && (
-                  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-                    <div className="relative z-[1000000] bg-white rounded-2xl w-full max-w-6xl h-[92vh] p-3 md:p-5 shadow-2xl border border-gray-100 flex flex-col overflow-hidden">
-                      <div className="flex items-center justify-between border-b pb-3 mb-4">
-                        <div>
-                          <h2 className="text-lg font-bold text-gray-900">
-                            Wedding Inquiry Calendar
-                          </h2>
-                          <p className="text-xs text-gray-500">
-                            Showing inquiries with wedding dates only
-                          </p>
-                        </div>
-
-                        <button
-                          onClick={() => setIsCalendarOpen(false)}
-                          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm font-bold text-gray-700"
-                        >
-                          Close
-                        </button>
-                      </div>
-
-                      <div className="flex-1 min-h-[520px] md:min-h-0 rounded-2xl overflow-auto border border-gray-100 shadow-inner bg-white p-2 md:p-3 calendar-premium">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
-                          <div className="bg-gradient-to-r from-emerald-50 to-white border border-emerald-100 rounded-2xl p-4 mb-4 shadow-sm">
-                            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-                              <div>
-                                <h3 className="text-sm font-black text-emerald-800 uppercase tracking-wider">
-                                  Calendar Navigator
-                                </h3>
-                                <p className="text-xs text-gray-500 mt-1">
-                                  Jump quickly to future wedding enquiry dates.
-                                </p>
-                              </div>
-
-                              <div className="flex flex-col md:flex-row gap-3">
-                                <div>
-                                  <label className="block text-xs font-bold text-gray-500 mb-1">
-                                    Date Picker
-                                  </label>
-                                  <input
-                                    type="date"
-                                    value={moment(calendarDate).format(
-                                      "YYYY-MM-DD",
-                                    )}
-                                    onChange={(e) => {
-                                      const value = e.target.value;
-                                      if (!value) return;
-
-                                      const selectedDate = moment(
-                                        value,
-                                        "YYYY-MM-DD",
-                                        true,
-                                      );
-
-                                      if (selectedDate.isValid()) {
-                                        setCalendarDate(selectedDate.toDate());
-                                        setManualCalendarDate(
-                                          selectedDate.format("YYYY-MM-DD"),
-                                        );
-                                      }
-                                    }}
-                                    className="w-full md:w-44 p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300 bg-white"
-                                  />
-                                </div>
-
-                                <div>
-                                  <label className="block text-xs font-bold text-gray-500 mb-1">
-                                    Type Date Manually
-                                  </label>
-                                  <input
-                                    type="text"
-                                    placeholder="YYYY-MM-DD"
-                                    value={manualCalendarDate}
-                                    onChange={(e) =>
-                                      setManualCalendarDate(e.target.value)
-                                    }
-                                    className="w-full md:w-44 p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300 bg-white"
-                                  />
-                                </div>
-
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const selectedDate = moment(
-                                      manualCalendarDate,
-                                      "YYYY-MM-DD",
-                                      true,
-                                    );
-
-                                    if (selectedDate.isValid()) {
-                                      setCalendarDate(selectedDate.toDate());
-                                    } else {
-                                      triggerNotification(
-                                        "Please enter date as YYYY-MM-DD",
-                                        "delete",
-                                      );
-                                    }
-                                  }}
-                                  className="px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-black hover:bg-emerald-700 transition"
-                                >
-                                  Go
-                                </button>
-
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const today = new Date();
-                                    setCalendarDate(today);
-                                    setManualCalendarDate(
-                                      moment(today).format("YYYY-MM-DD"),
-                                    );
-                                  }}
-                                  className="px-4 py-2.5 rounded-xl bg-gray-100 text-gray-700 text-sm font-black hover:bg-gray-200 transition"
-                                >
-                                  Today
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => setCalendarDate(new Date())}
-                            className="px-4 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 text-sm font-bold hover:bg-emerald-100 transition"
-                          >
-                            Today
-                          </button>
-                        </div>
-                        <Calendar
-                          localizer={localizer}
-                          events={calendarEvents}
-                          startAccessor="start"
-                          endAccessor="end"
-                          titleAccessor="title"
-                          views={["month", "week", "day", "agenda"]}
-                          defaultView="month"
-                          date={
-                            calendarDate instanceof Date && !isNaN(calendarDate)
-                              ? calendarDate
-                              : new Date()
-                          }
-                          onNavigate={(date) => {
-                            if (date instanceof Date && !isNaN(date)) {
-                              setCalendarDate(date);
-                            }
-                          }}
-                          selectable
-                          onSelectSlot={(slotInfo) => {
-                            const selectedDate = moment(slotInfo.start).format(
-                              "YYYY-MM-DD",
-                            );
-
-                            setFormData({
-                              id: null,
-                              couple_name: "",
-                              wedding_date: selectedDate,
-                              hotel: "",
-                              service_type: [],
-                              wedding_type: "One day",
-                              guest_count: "",
-                              contact_no: "",
-                              bridesmaid_option: "",
-                              package_price: 0,
-                              discount_rate: 0,
-                              agreed_price: 0,
-                              advance_paid: 0,
-                              status: "Inquiry",
-                              remarks: "",
-                              country: "Local",
-                            });
-                            localStorage.setItem(
-                              DRAFT_KEY,
-                              JSON.stringify(updatedForm),
-                            );
-
-                            setIsModalOpen(true);
-                          }}
-                          popup
-                          style={{ height: "520px", minWidth: "720px" }}
-                          onSelectEvent={(event) => {
-                            setSelectedCalendarEvent(event.resource);
-                          }}
-                        />
-                      </div>
-                      {selectedCalendarEvent && (
-                        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
-                          <div className="relative z-[1000000] bg-white rounded-2xl w-full max-w-md shadow-2xl border border-gray-100 overflow-hidden">
-                            <div className="bg-emerald-700 px-5 py-4 text-white">
-                              <h2 className="text-xl font-bold">
-                                {selectedCalendarEvent.couple_name}
-                              </h2>
-
-                              <p className="text-emerald-100 text-sm mt-1">
-                                Wedding Details
-                              </p>
-                            </div>
-
-                            <div className="p-5 space-y-4">
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                  <p className="text-xs text-gray-400 font-semibold">
-                                    Wedding Date
-                                  </p>
-
-                                  <p className="font-semibold text-gray-800">
-                                    {selectedCalendarEvent.wedding_date || "-"}
-                                  </p>
-                                </div>
-
-                                <div>
-                                  <p className="text-xs text-gray-400 font-semibold">
-                                    Guest Count
-                                  </p>
-
-                                  <p className="font-semibold text-gray-800">
-                                    {selectedCalendarEvent.guest_count || "-"}
-                                  </p>
-                                </div>
-                              </div>
-
-                              <div>
-                                <p className="text-xs text-gray-400 font-semibold">
-                                  Hotel
-                                </p>
-
-                                <p className="font-semibold text-gray-800">
-                                  {selectedCalendarEvent.hotel || "-"}
-                                </p>
-                              </div>
-
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                  <p className="text-xs text-gray-400 font-semibold">
-                                    Service Type
-                                  </p>
-
-                                  <p className="font-semibold text-gray-800">
-                                    {selectedCalendarEvent.service_type || "-"}
-                                  </p>
-                                </div>
-
-                                <div>
-                                  <p className="text-xs text-gray-400 font-semibold">
-                                    Wedding Type
-                                  </p>
-
-                                  <p className="font-semibold text-gray-800">
-                                    {selectedCalendarEvent.wedding_type || "-"}
-                                  </p>
-                                </div>
-                              </div>
-
-                              <div>
-                                <p className="text-xs text-gray-400 font-semibold">
-                                  Contact Number
-                                </p>
-
-                                <p className="font-semibold text-gray-800">
-                                  {selectedCalendarEvent.contact_no || "-"}
-                                </p>
-                              </div>
-
-                              <div>
-                                <p className="text-xs text-gray-400 font-semibold">
-                                  Status
-                                </p>
-
-                                <span className="inline-flex px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 mt-1">
-                                  {selectedCalendarEvent.status || "-"}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="border-t p-4 flex justify-end">
-                              <button
-                                onClick={() => setSelectedCalendarEvent(null)}
-                                className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm"
-                              >
-                                Close
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
