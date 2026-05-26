@@ -95,8 +95,12 @@ async def create_inquiry(data: dict):
         agreed_price = package_price - ((package_price * discount_rate) / 100)
         advance_paid = float(data.get("advance_paid") or 0)
         paid_amount = float(data.get("paid_amount") or 0)
-        total_paid = advance_paid + paid_amount
-        pending_payment = agreed_price - total_paid
+
+        # Paid amount means total received, so it should never be less than advance
+        if paid_amount < advance_paid:
+            paid_amount = advance_paid
+
+        pending_payment = agreed_price - paid_amount
 
         guest_count_raw = data.get("guest_count")
         guest_count = int(guest_count_raw) if guest_count_raw not in [None, ""] else None

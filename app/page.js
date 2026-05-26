@@ -506,6 +506,26 @@ export default function Dashboard() {
         packagePrice - (packagePrice * discountRate) / 100;
     }
 
+    if (name === "advance_paid") {
+  const advancePaid = parseFloat(updatedForm.advance_paid) || 0;
+  const paidAmount = parseFloat(updatedForm.paid_amount) || 0;
+
+  if (paidAmount < advancePaid) {
+    updatedForm.paid_amount = advancePaid;
+  }
+}
+
+if (
+  name === "agreed_price" ||
+  name === "advance_paid" ||
+  name === "paid_amount"
+) {
+  const agreedPrice = parseFloat(updatedForm.agreed_price) || 0;
+  const paidAmount = parseFloat(updatedForm.paid_amount) || 0;
+
+  updatedForm.pending_payment = agreedPrice - paidAmount;
+}
+
     setFormData(updatedForm);
 
     if (!updatedForm.id) {
@@ -990,10 +1010,9 @@ export default function Dashboard() {
   );
 
   const totalReceived = paymentRecords.reduce(
-    (sum, item) =>
-      sum + Number(item.advance_paid || 0) + Number(item.paid_amount || 0),
-    0,
-  );
+  (sum, item) => sum + Number(item.paid_amount || 0),
+  0,
+);
 
   const totalPending = paymentRecords.reduce(
     (sum, item) => sum + Number(item.pending_payment || 0),
@@ -1006,14 +1025,14 @@ export default function Dashboard() {
 
   const partiallyPaidRecords = paymentRecords.filter((item) => {
     const totalPaid =
-      Number(item.advance_paid || 0) + Number(item.paid_amount || 0);
+      Number(item.paid_amount || 0)
 
     return totalPaid > 0 && Number(item.pending_payment || 0) > 0;
   });
 
   const pendingPaymentRecords = paymentRecords.filter((item) => {
     const totalPaid =
-      Number(item.advance_paid || 0) + Number(item.paid_amount || 0);
+      Number(item.paid_amount || 0)
 
     return totalPaid === 0;
   });
@@ -1022,7 +1041,7 @@ export default function Dashboard() {
     const search = paymentSearch.toLowerCase().trim();
 
     const totalPaid =
-      Number(item.advance_paid || 0) + Number(item.paid_amount || 0);
+      Number(item.paid_amount || 0)
 
     const paymentStatus =
       Number(item.pending_payment || 0) <= 0
