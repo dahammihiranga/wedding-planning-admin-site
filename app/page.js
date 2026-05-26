@@ -367,6 +367,8 @@ export default function Dashboard() {
     remarks: "",
     country: "Local",
     advance_paid_date: "",
+    paid_amount: 0,
+    paid_date: "",
   });
 
   const API_URL = "/api/inquiries";
@@ -680,6 +682,8 @@ export default function Dashboard() {
         remarks: "",
         country: "Local",
         advance_paid_date: "",
+        paid_amount: 0,
+        paid_date: "",
       });
     }
 
@@ -984,7 +988,10 @@ export default function Dashboard() {
   const paymentRecords = data.filter((item) => Number(item.agreed_price || 0) > 0);
 
 const totalReceived = paymentRecords.reduce(
-  (sum, item) => sum + Number(item.advance_paid || 0),
+  (sum, item) =>
+    sum +
+    Number(item.advance_paid || 0) +
+    Number(item.paid_amount || 0),
   0
 );
 
@@ -997,25 +1004,35 @@ const fullyPaidRecords = paymentRecords.filter(
   (item) => Number(item.pending_payment || 0) <= 0
 );
 
-const partiallyPaidRecords = paymentRecords.filter(
-  (item) =>
-    Number(item.advance_paid || 0) > 0 &&
-    Number(item.pending_payment || 0) > 0
-);
+const partiallyPaidRecords = paymentRecords.filter((item) => {
+  const totalPaid =
+    Number(item.advance_paid || 0) +
+    Number(item.paid_amount || 0);
 
-const pendingPaymentRecords = paymentRecords.filter(
-  (item) => Number(item.advance_paid || 0) === 0
-);
+  return totalPaid > 0 && Number(item.pending_payment || 0) > 0;
+});
+
+const pendingPaymentRecords = paymentRecords.filter((item) => {
+  const totalPaid =
+    Number(item.advance_paid || 0) +
+    Number(item.paid_amount || 0);
+
+  return totalPaid === 0;
+});
 
 const filteredPayments = paymentRecords.filter((item) => {
   const search = paymentSearch.toLowerCase().trim();
 
-  const paymentStatus =
-    Number(item.pending_payment || 0) <= 0
-      ? "Fully Paid"
-      : Number(item.advance_paid || 0) > 0
-        ? "Partially Paid"
-        : "Pending";
+  const totalPaid =
+  Number(item.advance_paid || 0) +
+  Number(item.paid_amount || 0);
+
+const paymentStatus =
+  Number(item.pending_payment || 0) <= 0
+    ? "Fully Paid"
+    : totalPaid > 0
+      ? "Partially Paid"
+      : "Pending";
 
   const matchesSearch =
     !search ||
@@ -2687,7 +2704,10 @@ const filteredPayments = paymentRecords.filter((item) => {
             <tbody className="divide-y divide-gray-100 bg-white md:text-sm">
               {filteredPayments.map((item, index) => {
                 const pending = Number(item.pending_payment || 0);
-                const paid = Number(item.advance_paid || 0);
+
+const paid =
+  Number(item.advance_paid || 0) +
+  Number(item.paid_amount || 0);
 
                 const paymentStatus =
                   pending <= 0
@@ -2724,13 +2744,27 @@ const filteredPayments = paymentRecords.filter((item) => {
                     </td>
 
                     <td className="p-4 text-right font-mono font-bold text-emerald-700">
-                      {paid.toLocaleString("en-LK")}
-                      {item.advance_paid_date && (
-                        <div className="text-[10px] text-gray-400 font-sans">
-                          {item.advance_paid_date}
-                        </div>
-                      )}
-                    </td>
+  {paid.toLocaleString("en-LK")}
+
+  {item.advance_paid_date && (
+    <div className="text-[10px] text-gray-400 font-sans">
+      Advance: {item.advance_paid_date}
+    </div>
+  )}
+
+  {item.paid_amount > 0 && (
+    <div className="text-[10px] text-emerald-600 font-bold mt-1">
+      Full Paid:{" "}
+      {Number(item.paid_amount).toLocaleString("en-LK")}
+    </div>
+  )}
+
+  {item.paid_date && (
+    <div className="text-[10px] text-gray-400 font-sans">
+      Paid Date: {item.paid_date}
+    </div>
+  )}
+</td>
 
                     <td className="p-4 text-right font-mono font-bold text-red-600">
                       {pending.toLocaleString("en-LK")}
@@ -3100,6 +3134,31 @@ const filteredPayments = paymentRecords.filter((item) => {
                     className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                   />
                 </div>
+                <div>
+  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+    Paid Amount (LKR)
+  </label>
+  <input
+    type="number"
+    name="paid_amount"
+    value={formData.paid_amount}
+    onChange={handleInputChange}
+    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+  />
+</div>
+
+<div>
+  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+    Paid Date
+  </label>
+  <input
+    type="date"
+    name="paid_date"
+    value={formData.paid_date}
+    onChange={handleInputChange}
+    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+  />
+</div>
               </div>
 
               <div>
@@ -3152,6 +3211,8 @@ const filteredPayments = paymentRecords.filter((item) => {
                       remarks: "",
                       country: "Local",
                       advance_paid_date: "",
+                      paid_amount: 0,
+                      paid_date: "",
                     });
 
                     triggerNotification(

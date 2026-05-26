@@ -94,7 +94,9 @@ async def create_inquiry(data: dict):
         discount_rate = float(data.get("discount_rate") or 0)
         agreed_price = package_price - ((package_price * discount_rate) / 100)
         advance_paid = float(data.get("advance_paid") or 0)
-        pending_payment = agreed_price - advance_paid
+        paid_amount = float(data.get("paid_amount") or 0)
+        total_paid = advance_paid + paid_amount
+        pending_payment = agreed_price - total_paid
 
         guest_count_raw = data.get("guest_count")
         guest_count = int(guest_count_raw) if guest_count_raw not in [None, ""] else None
@@ -117,9 +119,11 @@ async def create_inquiry(data: dict):
             status,
             remarks,
             country,
-            advance_paid_date
+            advance_paid_date,
+            paid_amount,
+            paid_date
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
         client.execute(
@@ -141,7 +145,9 @@ async def create_inquiry(data: dict):
                 data.get("status") or "Inquiry",
                 data.get("remarks") or None,
                 data.get("country") or "Local",
-                data.get("advance_paid_date") or None
+                data.get("advance_paid_date") or None,
+                paid_amount,
+                data.get("paid_date") or None
             ]
         )
 
@@ -177,7 +183,9 @@ async def update_inquiry(id: int, data: dict):
         discount_rate = float(data.get("discount_rate") or 0)
         agreed_price = package_price - ((package_price * discount_rate) / 100)
         advance_paid = float(data.get("advance_paid") or 0)
-        pending_payment = agreed_price - advance_paid
+        paid_amount = float(data.get("paid_amount") or 0)
+        total_paid = advance_paid + paid_amount
+        pending_payment = agreed_price - total_paid
 
         guest_count_raw = data.get("guest_count")
         guest_count = int(guest_count_raw) if guest_count_raw not in [None, ""] else None
@@ -200,7 +208,9 @@ async def update_inquiry(id: int, data: dict):
         pending_payment=?,
         status=?,
         remarks=?,
-        country=?
+        country=?,
+        paid_amount=?,
+        paid_date=?,
     WHERE id=?
 """, [
     couple_name,
@@ -216,6 +226,8 @@ async def update_inquiry(id: int, data: dict):
     agreed_price,
     advance_paid,
     data.get("advance_paid_date") or None,
+    paid_amount,
+    data.get("paid_date") or None,
     pending_payment,
     data.get("status") or "Inquiry",
     data.get("remarks") or None,
