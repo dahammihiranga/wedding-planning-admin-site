@@ -121,9 +121,10 @@ async def create_inquiry(data: dict):
             country,
             advance_paid_date,
             paid_amount,
-            paid_date
+            paid_date,
+            discount_type
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
         client.execute(
@@ -148,6 +149,7 @@ async def create_inquiry(data: dict):
                 data.get("advance_paid_date") or None,
                 paid_amount,
                 data.get("paid_date") or None,
+                data.get("discount_type") or "percentage"
             ],
         )
 
@@ -197,6 +199,7 @@ async def update_inquiry(id: int, data: dict):
         bridesmaid_option=?,
         package_price=?,
         discount_rate=?,
+        discount_type=?,
         agreed_price=?,
         advance_paid=?,
         advance_paid_date=?,
@@ -219,6 +222,7 @@ async def update_inquiry(id: int, data: dict):
                 data.get("bridesmaid_option") or "-",
                 package_price,
                 discount_rate,
+                data.get("discount_type") or "percentage",
                 agreed_price,
                 advance_paid,
                 data.get("advance_paid_date") or None,
