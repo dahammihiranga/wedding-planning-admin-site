@@ -1102,6 +1102,8 @@ export default function Dashboard() {
     0,
   );
 
+  const totalBusiness = totalReceived + totalPending;
+
   const fullyPaidRecords = paymentRecords.filter(
     (item) => Number(item.pending_payment || 0) <= 0,
   );
@@ -2764,7 +2766,20 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-5">
+                  <div className="bg-fuchsia-50/80 border border-fuchsia-100 rounded-3xl p-5 shadow">
+  <p className="text-xs font-black uppercase text-fuchsia-700">
+    Total Business
+  </p>
+
+  <h2 className="text-2xl font-black text-fuchsia-700 mt-2">
+    LKR {totalBusiness.toLocaleString("en-LK")}
+  </h2>
+
+  <p className="text-xs text-gray-500 mt-1">
+    Received + pending payments
+  </p>
+</div>
                   <div className="bg-emerald-50/80 border border-emerald-100 rounded-3xl p-5 shadow">
                     <p className="text-xs font-black uppercase text-emerald-700">
                       Total Received
