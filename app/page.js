@@ -278,7 +278,6 @@ export default function Dashboard() {
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
   const [data, setData] = useState([]);
-  const [allWeddingRecords, setAllWeddingRecords] = useState([]);
   const [deletedRecords, setDeletedRecords] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tappedCountry, setTappedCountry] = useState(null);
@@ -465,8 +464,6 @@ export default function Dashboard() {
 
       const trashIds = deletedRecords.map((item) => item.id);
       const nonDeletedData = json.filter((item) => !trashIds.includes(item.id));
-
-      setAllWeddingRecords(nonDeletedData);
 
       if (activeTab === "allRecords") {
         setData(nonDeletedData);
@@ -886,7 +883,7 @@ export default function Dashboard() {
     );
   });
 
-  const upcomingWeddings = allWeddingRecords.filter((item) => {
+  const upcomingWeddings = data.filter((item) => {
     if (item.status !== "Confirmed" || !item.wedding_date) {
       return false;
     }
@@ -899,7 +896,7 @@ export default function Dashboard() {
     return daysLeft >= 0 && daysLeft <= 14;
   });
 
-  const urgentUpcomingWeddings = allWeddingRecords.filter((item) => {
+  const urgentUpcomingWeddings = data.filter((item) => {
     if (item.status !== "Confirmed" || !item.wedding_date) {
       return false;
     }
@@ -1310,26 +1307,6 @@ export default function Dashboard() {
             </button>
           </div>
         </header>
-
-        {upcomingWeddings.length > 0 && (
-          <div className="relative z-[900] w-full bg-rose-50/95 border-b border-rose-200 px-4 py-3 shadow-sm">
-            <div className="max-w-[98%] mx-auto flex flex-wrap items-center gap-2">
-              <span className="font-black text-rose-700 text-sm">
-                🔔 Wedding Alerts:
-              </span>
-
-              <span className="px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-black">
-                {upcomingWeddings.length} within 14 days
-              </span>
-
-              {urgentUpcomingWeddings.length > 0 && (
-                <span className="px-3 py-1 rounded-full bg-red-600 text-white text-xs font-black animate-pulse">
-                  🚨 {urgentUpcomingWeddings.length} within 7 days
-                </span>
-              )}
-            </div>
-          </div>
-        )}
 
         <div className="flex flex-1 min-h-0">
           <div className="hidden md:flex w-72 h-[calc(100vh-88px)] sticky top-[88px] bg-white/70 backdrop-blur-2xl border-r border-white/40 flex-col p-5 shadow-xl overflow-y-auto">
@@ -2768,18 +2745,18 @@ export default function Dashboard() {
 
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-5">
                   <div className="bg-fuchsia-50/80 border border-fuchsia-100 rounded-3xl p-5 shadow">
-  <p className="text-xs font-black uppercase text-fuchsia-700">
-    Total Business
-  </p>
+                    <p className="text-xs font-black uppercase text-fuchsia-700">
+                      Total Business
+                    </p>
 
-  <h2 className="text-2xl font-black text-fuchsia-700 mt-2">
-    LKR {totalBusiness.toLocaleString("en-LK")}
-  </h2>
+                    <h2 className="text-2xl font-black text-fuchsia-700 mt-2">
+                      LKR {totalBusiness.toLocaleString("en-LK")}
+                    </h2>
 
-  <p className="text-xs text-gray-500 mt-1">
-    Received + pending payments
-  </p>
-</div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Received + pending payments
+                    </p>
+                  </div>
                   <div className="bg-emerald-50/80 border border-emerald-100 rounded-3xl p-5 shadow">
                     <p className="text-xs font-black uppercase text-emerald-700">
                       Total Received
