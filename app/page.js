@@ -985,66 +985,63 @@ export default function Dashboard() {
     );
   });
 
-  const paymentRecords = data.filter((item) => Number(item.agreed_price || 0) > 0);
+  const paymentRecords = data.filter(
+    (item) => Number(item.agreed_price || 0) > 0,
+  );
 
-const totalReceived = paymentRecords.reduce(
-  (sum, item) =>
-    sum +
-    Number(item.advance_paid || 0) +
-    Number(item.paid_amount || 0),
-  0
-);
+  const totalReceived = paymentRecords.reduce(
+    (sum, item) =>
+      sum + Number(item.advance_paid || 0) + Number(item.paid_amount || 0),
+    0,
+  );
 
-const totalPending = paymentRecords.reduce(
-  (sum, item) => sum + Number(item.pending_payment || 0),
-  0
-);
+  const totalPending = paymentRecords.reduce(
+    (sum, item) => sum + Number(item.pending_payment || 0),
+    0,
+  );
 
-const fullyPaidRecords = paymentRecords.filter(
-  (item) => Number(item.pending_payment || 0) <= 0
-);
+  const fullyPaidRecords = paymentRecords.filter(
+    (item) => Number(item.pending_payment || 0) <= 0,
+  );
 
-const partiallyPaidRecords = paymentRecords.filter((item) => {
-  const totalPaid =
-    Number(item.advance_paid || 0) +
-    Number(item.paid_amount || 0);
+  const partiallyPaidRecords = paymentRecords.filter((item) => {
+    const totalPaid =
+      Number(item.advance_paid || 0) + Number(item.paid_amount || 0);
 
-  return totalPaid > 0 && Number(item.pending_payment || 0) > 0;
-});
+    return totalPaid > 0 && Number(item.pending_payment || 0) > 0;
+  });
 
-const pendingPaymentRecords = paymentRecords.filter((item) => {
-  const totalPaid =
-    Number(item.advance_paid || 0) +
-    Number(item.paid_amount || 0);
+  const pendingPaymentRecords = paymentRecords.filter((item) => {
+    const totalPaid =
+      Number(item.advance_paid || 0) + Number(item.paid_amount || 0);
 
-  return totalPaid === 0;
-});
+    return totalPaid === 0;
+  });
 
-const filteredPayments = paymentRecords.filter((item) => {
-  const search = paymentSearch.toLowerCase().trim();
+  const filteredPayments = paymentRecords.filter((item) => {
+    const search = paymentSearch.toLowerCase().trim();
 
-  const totalPaid =
-  Number(item.advance_paid || 0) +
-  Number(item.paid_amount || 0);
+    const totalPaid =
+      Number(item.advance_paid || 0) + Number(item.paid_amount || 0);
 
-const paymentStatus =
-  Number(item.pending_payment || 0) <= 0
-    ? "Fully Paid"
-    : totalPaid > 0
-      ? "Partially Paid"
-      : "Pending";
+    const paymentStatus =
+      Number(item.pending_payment || 0) <= 0
+        ? "Fully Paid"
+        : totalPaid > 0
+          ? "Partially Paid"
+          : "Pending";
 
-  const matchesSearch =
-    !search ||
-    item.couple_name?.toLowerCase().includes(search) ||
-    item.contact_no?.toLowerCase().includes(search) ||
-    item.wedding_date?.toLowerCase().includes(search);
+    const matchesSearch =
+      !search ||
+      item.couple_name?.toLowerCase().includes(search) ||
+      item.contact_no?.toLowerCase().includes(search) ||
+      item.wedding_date?.toLowerCase().includes(search);
 
-  const matchesStatus =
-    !paymentStatusFilter || paymentStatus === paymentStatusFilter;
+    const matchesStatus =
+      !paymentStatusFilter || paymentStatus === paymentStatusFilter;
 
-  return matchesSearch && matchesStatus;
-});
+    return matchesSearch && matchesStatus;
+  });
 
   if (!mounted) return <div className="min-h-screen bg-gray-50" />;
 
@@ -1243,18 +1240,18 @@ const paymentStatus =
               </button>
 
               <button
-  onClick={() => {
-    setActivePage("payments");
-    setActiveTab("allRecords");
-  }}
-  className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${
-    activePage === "payments"
-      ? "bg-emerald-100 text-emerald-800"
-      : "hover:bg-white/60 text-gray-700"
-  }`}
->
-  💳 Payments
-</button>
+                onClick={() => {
+                  setActivePage("payments");
+                  setActiveTab("allRecords");
+                }}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${
+                  activePage === "payments"
+                    ? "bg-emerald-100 text-emerald-800"
+                    : "hover:bg-white/60 text-gray-700"
+                }`}
+              >
+                💳 Payments
+              </button>
 
               <button
                 onClick={() => setActivePage("packages")}
@@ -1314,77 +1311,77 @@ const paymentStatus =
                 <div className="hidden md:block relative z-[100] max-w-[98%] mx-auto mt-4 bg-white/90 backdrop-blur-xl border border-gray-100 rounded-2xl shadow-sm p-3 overflow-visible">
                   <div className="flex items-center gap-3 w-full">
                     <div className="flex-[1.8] min-w-[260px]">
-  <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
-    Search
-  </label>
+                      <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
+                        Search
+                      </label>
 
-  <input
-    type="text"
-    placeholder="Search by couple name, wedding date or contact no..."
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-  />
-</div>
-
-                    <div className="w-[150px]">
-  <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
-    Wedding Date From
-  </label>
-
-  <input
-    type="date"
-    value={filters.weddingDateFrom}
-    onChange={(e) =>
-      setFilters({
-        ...filters,
-        weddingDateFrom: e.target.value,
-      })
-    }
-    className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-  />
-</div>
+                      <input
+                        type="text"
+                        placeholder="Search by couple name, wedding date or contact no..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                      />
+                    </div>
 
                     <div className="w-[150px]">
-  <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
-    Wedding Date To
-  </label>
+                      <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
+                        Wedding Date From
+                      </label>
 
-  <input
-    type="date"
-    value={filters.weddingDateTo}
-    onChange={(e) =>
-      setFilters({
-        ...filters,
-        weddingDateTo: e.target.value,
-      })
-    }
-    className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-  />
-</div>
+                      <input
+                        type="date"
+                        value={filters.weddingDateFrom}
+                        onChange={(e) =>
+                          setFilters({
+                            ...filters,
+                            weddingDateFrom: e.target.value,
+                          })
+                        }
+                        className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                      />
+                    </div>
 
                     <div className="w-[150px]">
-  <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
-    Search By Month
-  </label>
+                      <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
+                        Wedding Date To
+                      </label>
 
-  <input
-    type="month"
-    value={filters.weddingMonth}
-    onChange={(e) =>
-      setFilters({
-        ...filters,
-        weddingMonth: e.target.value,
-      })
-    }
-    className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-  />
-</div>
+                      <input
+                        type="date"
+                        value={filters.weddingDateTo}
+                        onChange={(e) =>
+                          setFilters({
+                            ...filters,
+                            weddingDateTo: e.target.value,
+                          })
+                        }
+                        className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                      />
+                    </div>
+
+                    <div className="w-[150px]">
+                      <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
+                        Search By Month
+                      </label>
+
+                      <input
+                        type="month"
+                        value={filters.weddingMonth}
+                        onChange={(e) =>
+                          setFilters({
+                            ...filters,
+                            weddingMonth: e.target.value,
+                          })
+                        }
+                        className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                      />
+                    </div>
 
                     <div className="relative w-[190px]">
                       <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
-    Service Types
-  </label>
+                        Service Types
+                      </label>
                       <button
                         type="button"
                         onClick={() =>
@@ -1434,45 +1431,45 @@ const paymentStatus =
                       )}
                     </div>
 
-                      <div className="w-[160px]">
-  <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
-    Wedding Types
-  </label>
-                    <select
-                      value={filters.weddingType}
-                      onChange={(e) =>
-                        setFilters({
-                          ...filters,
-                          weddingType: e.target.value,
-                        })
-                      }
-                      className="w-[160px] p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                    >
-                      <option value="">All Wedding Types</option>
-                      <option value="One day">One day</option>
-                      <option value="Two days">Two days</option>
-                    </select>
+                    <div className="w-[160px]">
+                      <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
+                        Wedding Types
+                      </label>
+                      <select
+                        value={filters.weddingType}
+                        onChange={(e) =>
+                          setFilters({
+                            ...filters,
+                            weddingType: e.target.value,
+                          })
+                        }
+                        className="w-[160px] p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                      >
+                        <option value="">All Wedding Types</option>
+                        <option value="One day">One day</option>
+                        <option value="Two days">Two days</option>
+                      </select>
                     </div>
 
-                      <div className="w-[135px]">
-  <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
-    Status
-  </label>
-                    <select
-                      value={filters.status}
-                      onChange={(e) =>
-                        setFilters({
-                          ...filters,
-                          status: e.target.value,
-                        })
-                      }
-                      className="w-[135px] p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                    >
-                      <option value="">All Status</option>
-                      <option value="Inquiry">Inquiry</option>
-                      <option value="Confirmed">Confirmed</option>
-                      <option value="Completed">Completed</option>
-                    </select>
+                    <div className="w-[135px]">
+                      <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1 px-1">
+                        Status
+                      </label>
+                      <select
+                        value={filters.status}
+                        onChange={(e) =>
+                          setFilters({
+                            ...filters,
+                            status: e.target.value,
+                          })
+                        }
+                        className="w-[135px] p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                      >
+                        <option value="">All Status</option>
+                        <option value="Inquiry">Inquiry</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Completed">Completed</option>
+                      </select>
                     </div>
 
                     <button
@@ -1779,6 +1776,9 @@ const paymentStatus =
                               <th className="p-3 text-right bg-inherit">
                                 Pending Balance
                               </th>
+                              <th className="p-3 text-right bg-inherit">
+                                Paid Amount
+                              </th>
                               <th className="p-3 text-center bg-inherit">
                                 Status
                               </th>
@@ -1897,6 +1897,24 @@ const paymentStatus =
                                           },
                                         )
                                       : "0.00"}
+                                  </td>
+
+                                  <td className="p-3 text-right font-mono font-bold text-emerald-700">
+                                    <div>
+                                      {item.paid_amount
+                                        ? Number(
+                                            item.paid_amount,
+                                          ).toLocaleString("en-LK", {
+                                            minimumFractionDigits: 2,
+                                          })
+                                        : "0.00"}
+                                    </div>
+
+                                    {item.paid_date && (
+                                      <div className="text-[10px] text-gray-400 font-sans mt-0.5">
+                                        ({item.paid_date})
+                                      </div>
+                                    )}
                                   </td>
 
                                   <td className="p-3 text-center">
@@ -2592,207 +2610,217 @@ const paymentStatus =
             )}
 
             {activePage === "payments" && (
-  <div className="p-4 md:p-6">
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-      <div>
-        <h1 className="text-2xl md:text-3xl font-black text-fuchsia-950">
-          💳 Payments
-        </h1>
-        <p className="text-sm text-fuchsia-900/70 mt-1 font-semibold">
-          View received, pending, partially paid and fully paid wedding payments
-        </p>
-      </div>
-    </div>
+              <div className="p-4 md:p-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                  <div>
+                    <h1 className="text-2xl md:text-3xl font-black text-fuchsia-950">
+                      💳 Payments
+                    </h1>
+                    <p className="text-sm text-fuchsia-900/70 mt-1 font-semibold">
+                      View received, pending, partially paid and fully paid
+                      wedding payments
+                    </p>
+                  </div>
+                </div>
 
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
-      <div className="bg-emerald-50/80 border border-emerald-100 rounded-3xl p-5 shadow">
-        <p className="text-xs font-black uppercase text-emerald-700">
-          Total Received
-        </p>
-        <h2 className="text-2xl font-black text-emerald-700 mt-2">
-          LKR {totalReceived.toLocaleString("en-LK")}
-        </h2>
-        <p className="text-xs text-gray-500 mt-1">
-          {paymentRecords.length} payment records
-        </p>
-      </div>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+                  <div className="bg-emerald-50/80 border border-emerald-100 rounded-3xl p-5 shadow">
+                    <p className="text-xs font-black uppercase text-emerald-700">
+                      Total Received
+                    </p>
+                    <h2 className="text-2xl font-black text-emerald-700 mt-2">
+                      LKR {totalReceived.toLocaleString("en-LK")}
+                    </h2>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {paymentRecords.length} payment records
+                    </p>
+                  </div>
 
-      <div className="bg-orange-50/80 border border-orange-100 rounded-3xl p-5 shadow">
-        <p className="text-xs font-black uppercase text-orange-700">
-          Pending Payments
-        </p>
-        <h2 className="text-2xl font-black text-orange-700 mt-2">
-          LKR {totalPending.toLocaleString("en-LK")}
-        </h2>
-        <p className="text-xs text-gray-500 mt-1">
-          {pendingPaymentRecords.length} pending
-        </p>
-      </div>
+                  <div className="bg-orange-50/80 border border-orange-100 rounded-3xl p-5 shadow">
+                    <p className="text-xs font-black uppercase text-orange-700">
+                      Pending Payments
+                    </p>
+                    <h2 className="text-2xl font-black text-orange-700 mt-2">
+                      LKR {totalPending.toLocaleString("en-LK")}
+                    </h2>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {pendingPaymentRecords.length} pending
+                    </p>
+                  </div>
 
-      <div className="bg-blue-50/80 border border-blue-100 rounded-3xl p-5 shadow">
-        <p className="text-xs font-black uppercase text-blue-700">
-          Partially Paid
-        </p>
-        <h2 className="text-2xl font-black text-blue-700 mt-2">
-          {partiallyPaidRecords.length}
-        </h2>
-        <p className="text-xs text-gray-500 mt-1">
-          Advance received, balance pending
-        </p>
-      </div>
+                  <div className="bg-blue-50/80 border border-blue-100 rounded-3xl p-5 shadow">
+                    <p className="text-xs font-black uppercase text-blue-700">
+                      Partially Paid
+                    </p>
+                    <h2 className="text-2xl font-black text-blue-700 mt-2">
+                      {partiallyPaidRecords.length}
+                    </h2>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Advance received, balance pending
+                    </p>
+                  </div>
 
-      <div className="bg-fuchsia-50/80 border border-fuchsia-100 rounded-3xl p-5 shadow">
-        <p className="text-xs font-black uppercase text-fuchsia-700">
-          Fully Paid
-        </p>
-        <h2 className="text-2xl font-black text-fuchsia-700 mt-2">
-          {fullyPaidRecords.length}
-        </h2>
-        <p className="text-xs text-gray-500 mt-1">
-          Completed payments
-        </p>
-      </div>
-    </div>
+                  <div className="bg-fuchsia-50/80 border border-fuchsia-100 rounded-3xl p-5 shadow">
+                    <p className="text-xs font-black uppercase text-fuchsia-700">
+                      Fully Paid
+                    </p>
+                    <h2 className="text-2xl font-black text-fuchsia-700 mt-2">
+                      {fullyPaidRecords.length}
+                    </h2>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Completed payments
+                    </p>
+                  </div>
+                </div>
 
-    <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 p-4 mb-5">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <input
-          type="text"
-          placeholder="Search by couple name, contact number or wedding date..."
-          value={paymentSearch}
-          onChange={(e) => setPaymentSearch(e.target.value)}
-          className="md:col-span-2 w-full p-3 rounded-xl border border-fuchsia-100 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold"
-        />
+                <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 p-4 mb-5">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <input
+                      type="text"
+                      placeholder="Search by couple name, contact number or wedding date..."
+                      value={paymentSearch}
+                      onChange={(e) => setPaymentSearch(e.target.value)}
+                      className="md:col-span-2 w-full p-3 rounded-xl border border-fuchsia-100 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold"
+                    />
 
-        <select
-          value={paymentStatusFilter}
-          onChange={(e) => setPaymentStatusFilter(e.target.value)}
-          className="w-full p-3 bg-white border border-fuchsia-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300 font-semibold"
-        >
-          <option value="">All Payment Status</option>
-          <option value="Fully Paid">Fully Paid</option>
-          <option value="Partially Paid">Partially Paid</option>
-          <option value="Pending">Pending</option>
-        </select>
-      </div>
-    </div>
+                    <select
+                      value={paymentStatusFilter}
+                      onChange={(e) => setPaymentStatusFilter(e.target.value)}
+                      className="w-full p-3 bg-white border border-fuchsia-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300 font-semibold"
+                    >
+                      <option value="">All Payment Status</option>
+                      <option value="Fully Paid">Fully Paid</option>
+                      <option value="Partially Paid">Partially Paid</option>
+                      <option value="Pending">Pending</option>
+                    </select>
+                  </div>
+                </div>
 
-    <div className="bg-white/85 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
-      {filteredPayments.length === 0 ? (
-        <div className="p-12 text-center">
-          <div className="text-4xl mb-3">💳</div>
-          <p className="text-gray-400 text-sm font-bold">
-            No payment records found.
-          </p>
-        </div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-max">
-            <thead>
-              <tr className="bg-fuchsia-50 text-fuchsia-900 uppercase text-xs md:text-[15px] font-black border-b border-gray-200">
-                <th className="p-4">#</th>
-                <th className="p-4">Couple</th>
-                <th className="p-4">Wedding Date</th>
-                <th className="p-4 text-right">Package</th>
-                <th className="p-4 text-right">Agreed</th>
-                <th className="p-4 text-right">Paid</th>
-                <th className="p-4 text-right">Pending</th>
-                <th className="p-4 text-center">Payment Status</th>
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-gray-100 bg-white md:text-sm">
-              {filteredPayments.map((item, index) => {
-                const pending = Number(item.pending_payment || 0);
-
-const paid =
-  Number(item.advance_paid || 0) +
-  Number(item.paid_amount || 0);
-
-                const paymentStatus =
-                  pending <= 0
-                    ? "Fully Paid"
-                    : paid > 0
-                      ? "Partially Paid"
-                      : "Pending";
-
-                return (
-                  <tr key={item.id} className="hover:bg-fuchsia-50/40 transition">
-                    <td className="p-4 text-gray-400 font-bold">
-                      {index + 1}
-                    </td>
-
-                    <td className="p-4">
-                      <p className="font-black text-gray-900">
-                        {item.couple_name}
+                <div className="bg-white/85 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
+                  {filteredPayments.length === 0 ? (
+                    <div className="p-12 text-center">
+                      <div className="text-4xl mb-3">💳</div>
+                      <p className="text-gray-400 text-sm font-bold">
+                        No payment records found.
                       </p>
-                      <p className="text-xs text-gray-400 font-semibold">
-                        {item.contact_no || "No contact"}
-                      </p>
-                    </td>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse min-w-max">
+                        <thead>
+                          <tr className="bg-fuchsia-50 text-fuchsia-900 uppercase text-xs md:text-[15px] font-black border-b border-gray-200">
+                            <th className="p-4">#</th>
+                            <th className="p-4">Couple</th>
+                            <th className="p-4">Wedding Date</th>
+                            <th className="p-4 text-right">Package</th>
+                            <th className="p-4 text-right">Agreed</th>
+                            <th className="p-4 text-right">Paid</th>
+                            <th className="p-4 text-right">Pending</th>
+                            <th className="p-4 text-center">Payment Status</th>
+                          </tr>
+                        </thead>
 
-                    <td className="p-4 font-semibold text-gray-700">
-                      {item.wedding_date || "—"}
-                    </td>
+                        <tbody className="divide-y divide-gray-100 bg-white md:text-sm">
+                          {filteredPayments.map((item, index) => {
+                            const pending = Number(item.pending_payment || 0);
 
-                    <td className="p-4 text-right font-mono font-bold">
-                      {Number(item.package_price || 0).toLocaleString("en-LK")}
-                    </td>
+                            const paid =
+                              Number(item.advance_paid || 0) +
+                              Number(item.paid_amount || 0);
 
-                    <td className="p-4 text-right font-mono font-bold text-gray-900">
-                      {Number(item.agreed_price || 0).toLocaleString("en-LK")}
-                    </td>
+                            const paymentStatus =
+                              pending <= 0
+                                ? "Fully Paid"
+                                : paid > 0
+                                  ? "Partially Paid"
+                                  : "Pending";
 
-                    <td className="p-4 text-right font-mono font-bold text-emerald-700">
-  {paid.toLocaleString("en-LK")}
+                            return (
+                              <tr
+                                key={item.id}
+                                className="hover:bg-fuchsia-50/40 transition"
+                              >
+                                <td className="p-4 text-gray-400 font-bold">
+                                  {index + 1}
+                                </td>
 
-  {item.advance_paid_date && (
-    <div className="text-[10px] text-gray-400 font-sans">
-      Advance: {item.advance_paid_date}
-    </div>
-  )}
+                                <td className="p-4">
+                                  <p className="font-black text-gray-900">
+                                    {item.couple_name}
+                                  </p>
+                                  <p className="text-xs text-gray-400 font-semibold">
+                                    {item.contact_no || "No contact"}
+                                  </p>
+                                </td>
 
-  {item.paid_amount > 0 && (
-    <div className="text-[10px] text-emerald-600 font-bold mt-1">
-      Full Paid:{" "}
-      {Number(item.paid_amount).toLocaleString("en-LK")}
-    </div>
-  )}
+                                <td className="p-4 font-semibold text-gray-700">
+                                  {item.wedding_date || "—"}
+                                </td>
 
-  {item.paid_date && (
-    <div className="text-[10px] text-gray-400 font-sans">
-      Paid Date: {item.paid_date}
-    </div>
-  )}
-</td>
+                                <td className="p-4 text-right font-mono font-bold">
+                                  {Number(
+                                    item.package_price || 0,
+                                  ).toLocaleString("en-LK")}
+                                </td>
 
-                    <td className="p-4 text-right font-mono font-bold text-red-600">
-                      {pending.toLocaleString("en-LK")}
-                    </td>
+                                <td className="p-4 text-right font-mono font-bold text-gray-900">
+                                  {Number(
+                                    item.agreed_price || 0,
+                                  ).toLocaleString("en-LK")}
+                                </td>
 
-                    <td className="p-4 text-center">
-                      <span
-                        className={`px-3 py-1 rounded-xl text-xs font-black border ${
-                          paymentStatus === "Fully Paid"
-                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                            : paymentStatus === "Partially Paid"
-                              ? "bg-orange-50 text-orange-700 border-orange-200"
-                              : "bg-red-50 text-red-700 border-red-200"
-                        }`}
-                      >
-                        {paymentStatus}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  </div>
-)}
+                                <td className="p-4 text-right font-mono font-bold text-emerald-700">
+                                  {paid.toLocaleString("en-LK")}
+
+                                  {item.advance_paid_date && (
+                                    <div className="text-[10px] text-gray-400 font-sans">
+                                      Advance: {item.advance_paid_date}
+                                    </div>
+                                  )}
+
+                                  {item.paid_amount > 0 && (
+                                    <div className="text-[10px] text-emerald-600 font-bold mt-1">
+                                      Full Paid:{" "}
+                                      {Number(item.paid_amount).toLocaleString(
+                                        "en-LK",
+                                      )}
+                                    </div>
+                                  )}
+
+                                  {item.paid_date && (
+                                    <div className="text-[10px] text-gray-400 font-sans">
+                                      Paid Date: {item.paid_date}
+                                    </div>
+                                  )}
+                                </td>
+
+                                <td className="p-4 text-right font-mono font-bold text-red-600">
+                                  {pending.toLocaleString("en-LK")}
+                                </td>
+
+                                <td className="p-4 text-center">
+                                  <span
+                                    className={`px-3 py-1 rounded-xl text-xs font-black border ${
+                                      paymentStatus === "Fully Paid"
+                                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                        : paymentStatus === "Partially Paid"
+                                          ? "bg-orange-50 text-orange-700 border-orange-200"
+                                          : "bg-red-50 text-red-700 border-red-200"
+                                    }`}
+                                  >
+                                    {paymentStatus}
+                                  </span>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {activePage === "packages" && (
               <div className="p-6">
@@ -3135,30 +3163,30 @@ const paid =
                   />
                 </div>
                 <div>
-  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-    Paid Amount (LKR)
-  </label>
-  <input
-    type="number"
-    name="paid_amount"
-    value={formData.paid_amount}
-    onChange={handleInputChange}
-    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-  />
-</div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Paid Amount (LKR)
+                  </label>
+                  <input
+                    type="number"
+                    name="paid_amount"
+                    value={formData.paid_amount}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                  />
+                </div>
 
-<div>
-  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-    Paid Date
-  </label>
-  <input
-    type="date"
-    name="paid_date"
-    value={formData.paid_date}
-    onChange={handleInputChange}
-    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-  />
-</div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Paid Date
+                  </label>
+                  <input
+                    type="date"
+                    name="paid_date"
+                    value={formData.paid_date}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                  />
+                </div>
               </div>
 
               <div>
