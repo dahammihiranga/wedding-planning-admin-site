@@ -1573,7 +1573,7 @@ export default function Dashboard() {
                       onClick={clearSearchAndFilters}
                       className="w-[130px] px-4 py-2.5 rounded-xl bg-gray-100 text-gray-700 text-sm font-bold hover:bg-gray-200 transition mt-5"
                     >
-                      Clear
+                      Clearaa
                     </button>
 
                     {/* <div className="ml-auto whitespace-nowrap text-xs font-bold text-gray-400">
