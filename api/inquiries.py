@@ -281,7 +281,7 @@ async def delete_inquiry(id: int):
         return {"success": False, "error": str(e)}
 
 
-@app.get("/api/payments")
+@app.get("/api/inquiries/payments")
 async def get_payments(inquiry_id: int = None):
     client = create_client_sync(url=url, auth_token=auth_token)
 
@@ -305,7 +305,7 @@ async def get_payments(inquiry_id: int = None):
         return {"success": False, "error": str(e)}
 
 
-@app.post("/api/payments")
+@app.post("/api/inquiries/payments")
 async def add_payment(data: dict):
     client = create_client_sync(url=url, auth_token=auth_token)
 
