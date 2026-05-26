@@ -481,7 +481,7 @@ export default function Dashboard() {
 
   const fetchPaymentTransactions = async () => {
     try {
-      const res = await fetch("/api/inquiries/payments");
+      const res = await fetch("/api/payments");
       const json = await res.json();
 
       if (Array.isArray(json)) {
