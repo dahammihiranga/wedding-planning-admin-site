@@ -501,28 +501,31 @@ export default function Dashboard() {
     };
 
     if (
-  name === "package_price" ||
-  name === "discount_rate" ||
-  name === "discount_type"
-) {
-  const packagePrice = parseFloat(updatedForm.package_price) || 0;
-  const discountValue = parseFloat(updatedForm.discount_rate) || 0;
+      name === "package_price" ||
+      name === "discount_rate" ||
+      name === "discount_type"
+    ) {
+      const packagePrice = parseFloat(updatedForm.package_price) || 0;
+      const discountValue = parseFloat(updatedForm.discount_rate) || 0;
 
-  let agreedPrice = packagePrice;
+      let agreedPrice = packagePrice;
 
-  if (updatedForm.discount_type === "percentage") {
-    agreedPrice =
-      packagePrice - (packagePrice * discountValue) / 100;
-  } else {
-    agreedPrice = packagePrice - discountValue;
-  }
+      if (updatedForm.discount_type === "percentage") {
+        agreedPrice = packagePrice - (packagePrice * discountValue) / 100;
+      } else {
+        agreedPrice = packagePrice - discountValue;
+      }
 
-  updatedForm.agreed_price = Math.max(agreedPrice, 0);
-}
+      updatedForm.agreed_price = Math.max(agreedPrice, 0);
+    }
 
-    if (name === "advance_paid" && !updatedForm.id) {
+    if (name === "advance_paid") {
       const advancePaid = parseFloat(updatedForm.advance_paid) || 0;
-      updatedForm.paid_amount = advancePaid;
+      const currentPaid = parseFloat(updatedForm.paid_amount) || 0;
+
+      if (currentPaid === 0 || currentPaid < advancePaid) {
+        updatedForm.paid_amount = advancePaid;
+      }
     }
 
     if (name === "new_payment") {
@@ -1911,8 +1914,8 @@ export default function Dashboard() {
 
                                   <td className="p-3 text-right font-mono font-semibold text-purple-700">
                                     {item.discount_type === "percentage"
-  ? `${item.discount_rate}%`
-  : `LKR ${Number(item.discount_rate).toLocaleString("en-LK")}`}
+                                      ? `${item.discount_rate}%`
+                                      : `LKR ${Number(item.discount_rate).toLocaleString("en-LK")}`}
                                   </td>
 
                                   <td className="p-3 text-right font-mono font-semibold text-gray-900">
@@ -3204,33 +3207,39 @@ export default function Dashboard() {
                 </div>
 
                 <div>
-  <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
-    {formData.discount_type === "fixed"
-      ? "Discount Amount"
-      : "Discount Rate"}
-  </label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
+                    {formData.discount_type === "fixed"
+                      ? "Discount Amount"
+                      : "Discount Rate"}
+                  </label>
 
-  <div className="flex">
-    <input
-      type="number"
-      name="discount_rate"
-      value={formData.discount_rate}
-      onChange={handleInputChange}
-      placeholder={formData.discount_type === "fixed" ? "Enter LKR amount" : "Enter % amount"}
-      className="w-full p-2.5 bg-white border rounded-l-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-    />
+                  <div className="flex">
+                    <input
+                      type="number"
+                      name="discount_rate"
+                      value={formData.discount_rate}
+                      onChange={handleInputChange}
+                      placeholder={
+                        formData.discount_type === "fixed"
+                          ? "Enter LKR amount"
+                          : "Enter % amount"
+                      }
+                      className="w-full p-2.5 bg-white border rounded-l-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                    />
 
-    <select
-      name="discount_type"
-      value={formData.discount_type}
-      onChange={handleInputChange}
-      className="w-[50px] p-2.5 border rounded-r-xl bg-fuchsia-50 text-fuchsia-800 font-black outline-none focus:ring-2 focus:ring-fuchsia-300 text-xs"
-    >
-      <option value="percentage">%</option>
-      <option value="fixed" className="text-[12px]">LKR</option>
-    </select>
-  </div>
-</div>
+                    <select
+                      name="discount_type"
+                      value={formData.discount_type}
+                      onChange={handleInputChange}
+                      className="w-[50px] p-2.5 border rounded-r-xl bg-fuchsia-50 text-fuchsia-800 font-black outline-none focus:ring-2 focus:ring-fuchsia-300 text-xs"
+                    >
+                      <option value="percentage">%</option>
+                      <option value="fixed" className="text-[12px]">
+                        LKR
+                      </option>
+                    </select>
+                  </div>
+                </div>
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
