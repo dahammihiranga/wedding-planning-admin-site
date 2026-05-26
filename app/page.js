@@ -2763,9 +2763,7 @@ export default function Dashboard() {
                           {filteredPayments.map((item, index) => {
                             const pending = Number(item.pending_payment || 0);
 
-                            const paid =
-                              Number(item.advance_paid || 0) +
-                              Number(item.paid_amount || 0);
+                            const paid = Number(item.paid_amount || 0);
 
                             const paymentStatus =
                               pending <= 0
@@ -2808,29 +2806,40 @@ export default function Dashboard() {
                                   ).toLocaleString("en-LK")}
                                 </td>
 
-                                <td className="p-4 text-right font-mono font-bold text-emerald-700">
-                                  {paid.toLocaleString("en-LK")}
+                                <td className="p-4 text-right">
+                                  <div className="font-mono font-black text-emerald-700 text-base">
+                                    Rs. {paid.toLocaleString("en-LK")}
+                                  </div>
 
-                                  {item.advance_paid_date && (
-                                    <div className="text-[10px] text-gray-400 font-sans">
-                                      Advance: {item.advance_paid_date}
+                                  <div className="mt-1 space-y-0.5">
+                                    <div className="text-[10px] text-amber-600 font-bold">
+                                      Booking Advance: Rs.
+                                      {Number(
+                                        item.advance_paid || 0,
+                                      ).toLocaleString("en-LK")}
                                     </div>
-                                  )}
 
-                                  {item.paid_amount > 0 && (
-                                    <div className="text-[10px] text-emerald-600 font-bold mt-1">
-                                      Full Paid:{" "}
-                                      {Number(item.paid_amount).toLocaleString(
-                                        "en-LK",
-                                      )}
-                                    </div>
-                                  )}
+                                    {item.advance_paid_date && (
+                                      <div className="text-[10px] text-gray-400">
+                                        Advance Date: {item.advance_paid_date}
+                                      </div>
+                                    )}
 
-                                  {item.paid_date && (
-                                    <div className="text-[10px] text-gray-400 font-sans">
-                                      Paid Date: {item.paid_date}
-                                    </div>
-                                  )}
+                                    {paid > Number(item.advance_paid || 0) && (
+                                      <div className="text-[10px] text-emerald-600 font-bold">
+                                        Additional Payments: Rs.
+                                        {(
+                                          paid - Number(item.advance_paid || 0)
+                                        ).toLocaleString("en-LK")}
+                                      </div>
+                                    )}
+
+                                    {item.paid_date && (
+                                      <div className="text-[10px] text-gray-400">
+                                        Latest Payment: {item.paid_date}
+                                      </div>
+                                    )}
+                                  </div>
                                 </td>
 
                                 <td className="p-4 text-right font-mono font-bold text-red-600">
