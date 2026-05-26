@@ -963,21 +963,21 @@ export default function Dashboard() {
   };
 
   const filteredCustomers = data.filter((item) =>
-  item.couple_name
-    ?.toLowerCase()
-    .includes(customerSearch.toLowerCase().trim())
-);
-
-const filteredVendors = vendors.filter((vendor) => {
-  const search = vendorSearch.toLowerCase().trim();
-
-  return (
-    !search ||
-    vendor.name?.toLowerCase().includes(search) ||
-    vendor.service?.toLowerCase().includes(search) ||
-    vendor.contact_number?.toLowerCase().includes(search)
+    item.couple_name
+      ?.toLowerCase()
+      .includes(customerSearch.toLowerCase().trim()),
   );
-});
+
+  const filteredVendors = vendors.filter((vendor) => {
+    const search = vendorSearch.toLowerCase().trim();
+
+    return (
+      !search ||
+      vendor.name?.toLowerCase().includes(search) ||
+      vendor.service?.toLowerCase().includes(search) ||
+      vendor.contact_number?.toLowerCase().includes(search)
+    );
+  });
 
   if (!mounted) return <div className="min-h-screen bg-gray-50" />;
 
@@ -1080,733 +1080,846 @@ const filteredVendors = vendors.filter((vendor) => {
       <div className="absolute inset-0 bg-white/75 backdrop-blur-[2px] pointer-events-none"></div>
       <div className="relative z-10 flex flex-col w-full">
         <header
-              className="w-full text-emerald-950 shadow-xl backdrop-blur-xl p-4 sticky top-0 z-[999] flex items-center justify-between border-b border-white/30"
-              style={{
-                backgroundImage: "url('/header-nav-img.jpg')",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-              }}
-            >
-              <div className="flex items-center gap-3">
-                <img
-                  src="/official Logo.png"
-                  alt="Chathu Wedding Planners"
-                  className="w-12 h-12 object-contain rounded-full shadow-sm"
-                />
+          className="w-full text-emerald-950 shadow-xl backdrop-blur-xl p-4 sticky top-0 z-[999] flex items-center justify-between border-b border-white/30"
+          style={{
+            backgroundImage: "url('/header-nav-img.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <img
+              src="/official Logo.png"
+              alt="Chathu Wedding Planners"
+              className="w-12 h-12 object-contain rounded-full shadow-sm"
+            />
 
-                <div>
-                  <h1 className="text-xl font-bold tracking-wide text-fuchsia-950">
-                    Chathu Wedding Planners
-                  </h1>
+            <div>
+              <h1 className="text-xl font-bold tracking-wide text-fuchsia-950">
+                Chathu Wedding Planners
+              </h1>
 
-                  <p className="text-xs text-fuchsia-900 mt-0.5 uppercase tracking-wider">
-                    {activeTab === "allRecords"
-                      ? "ALL WEDDING RECORDS"
-                      : activeTab === "all"
-                        ? "ACTIVE WEDDING INQUIRIES"
-                        : activeTab === "completed"
-                          ? "OUR WEDDING ENQUIRIES"
-                          : "RECYCLE TRACK STORAGE"}
-                  </p>
-                  {upcomingWeddings.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      <div className="inline-flex items-center gap-2 bg-rose-100/90 backdrop-blur-md text-rose-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-rose-200">
-                        🔔 {upcomingWeddings.length} Within 14 Days
-                      </div>
+              <p className="text-xs text-fuchsia-900 mt-0.5 uppercase tracking-wider">
+                {activeTab === "allRecords"
+                  ? "ALL WEDDING RECORDS"
+                  : activeTab === "all"
+                    ? "ACTIVE WEDDING INQUIRIES"
+                    : activeTab === "completed"
+                      ? "OUR WEDDING ENQUIRIES"
+                      : "RECYCLE TRACK STORAGE"}
+              </p>
+              {upcomingWeddings.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <div className="inline-flex items-center gap-2 bg-rose-100/90 backdrop-blur-md text-rose-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-rose-200">
+                    🔔 {upcomingWeddings.length} Within 14 Days
+                  </div>
 
-                      {urgentUpcomingWeddings.length > 0 && (
-                        <div className="inline-flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-red-700">
-                          🚨 {urgentUpcomingWeddings.length} Within 7 Days
-                        </div>
-                      )}
+                  {urgentUpcomingWeddings.length > 0 && (
+                    <div className="inline-flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-red-700">
+                      🚨 {urgentUpcomingWeddings.length} Within 7 Days
                     </div>
                   )}
                 </div>
-              </div>
+              )}
+            </div>
+          </div>
 
-              <div className="flex items-center gap-2 ml-2">
-                <div className="text-right leading-tight max-w-[105px] md:max-w-none">
-                  <p className="text-[8px] md:text-[10px] uppercase tracking-wider font-bold text-fuchsia-900">
-                    Sri Lanka
-                  </p>
+          <div className="flex items-center gap-2 ml-2">
+            <div className="text-right leading-tight max-w-[105px] md:max-w-none">
+              <p className="text-[8px] md:text-[10px] uppercase tracking-wider font-bold text-fuchsia-900">
+                Sri Lanka
+              </p>
 
-                  <p className="text-[9px] md:text-sm font-bold text-fuchsia-950 whitespace-nowrap">
-                    {currentSLTime}
-                  </p>
-                </div>
+              <p className="text-[9px] md:text-sm font-bold text-fuchsia-950 whitespace-nowrap">
+                {currentSLTime}
+              </p>
+            </div>
 
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="px-2 md:px-3 py-2 rounded-xl bg-white/40 hover:bg-white/60 text-fuchsia-900 text-[10px] md:text-xs font-bold border border-white/40"
-                >
-                  Logout
-                </button>
-              </div>
-            </header>
-
-
-      
-      <div className="flex flex-1 min-h-0">
-
-      <div className="hidden md:flex w-72 h-[calc(100vh-88px)] sticky top-[88px] bg-white/70 backdrop-blur-2xl border-r border-white/40 flex-col p-5 shadow-xl overflow-y-auto">
-        <div className="mb-10">
-          
-
-        </div>
-
-        <div className="space-y-2">
-          <button
-            onClick={() => setActivePage("dashboard")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "dashboard" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
-          >
-            🏠 Dashboard
-          </button>
-
-          <button
-            onClick={() => {
-              setActivePage("customers");
-              setActiveTab("allRecords");
-            }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "customers" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
-          >
-            👰 Customers
-          </button>
-
-          <button
-            onClick={() => setActivePage("vendors")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "vendors" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
-          >
-            🤝 Vendors
-          </button>
-
-          <button
-            onClick={() => setActivePage("packages")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "packages" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
-          >
-            📦 Our Packages
-          </button>
-        </div>
-      </div>
-
-      <div className="relative z-10 flex-1 overflow-x-hidden pb-10">
-        {/* HIGH VISIBILITY FLOATING INTERACTIVE TOAST BARS */}
-        {toast.show && (
-          <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[99999] w-full max-w-md px-4 pointer-events-auto">
-            <div
-              className={`border backdrop-blur-xl p-4 rounded-2xl flex items-center gap-4 shadow-[0_20px_50px_rgba(0,0,0,0.15)] transition-all animate-notification ${
-                toast.type === "delete"
-                  ? "bg-rose-950/95 border-rose-500/40 text-rose-50"
-                  : "bg-emerald-950/95 border-emerald-500/40 text-emerald-50"
-              }`}
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="px-2 md:px-3 py-2 rounded-xl bg-white/40 hover:bg-white/60 text-fuchsia-900 text-[10px] md:text-xs font-bold border border-white/40"
             >
-              <div
-                className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold shrink-0 relative overflow-hidden ${
-                  toast.type === "delete"
-                    ? "bg-rose-500/20 text-rose-400"
-                    : "bg-emerald-500/20 text-emerald-400"
-                }`}
-              >
-                <span className="absolute inset-0 opacity-20 blur-sm animate-pulse-glow bg-current" />
-                <span className="relative z-10">
-                  {toast.type === "delete" ? "🗑️" : "✨"}
-                </span>
-              </div>
-              <div className="flex-1">
-                <h4 className="text-xs uppercase tracking-widest font-black opacity-60">
-                  {toast.type === "delete"
-                    ? "System Notice"
-                    : "Success Operation"}
-                </h4>
-                <p className="text-sm font-medium mt-0.5 leading-relaxed tracking-wide">
-                  {toast.message}
-                </p>
-              </div>
+              Logout
+            </button>
+          </div>
+        </header>
+
+        <div className="flex flex-1 min-h-0">
+          <div className="hidden md:flex w-72 h-[calc(100vh-88px)] sticky top-[88px] bg-white/70 backdrop-blur-2xl border-r border-white/40 flex-col p-5 shadow-xl overflow-y-auto">
+            <div className="mb-10"></div>
+
+            <div className="space-y-2">
               <button
-                onClick={() =>
-                  setToast({ show: false, message: "", type: "success" })
-                }
-                className="text-white/40 hover:text-white/90 p-1 text-xs font-bold font-mono"
+                onClick={() => setActivePage("dashboard")}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "dashboard" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
               >
-                ✕
+                🏠 Dashboard
+              </button>
+
+              <button
+                onClick={() => {
+                  setActivePage("customers");
+                  setActiveTab("allRecords");
+                }}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "customers" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
+              >
+                👰 Customers
+              </button>
+
+              <button
+                onClick={() => setActivePage("vendors")}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "vendors" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
+              >
+                🤝 Vendors
+              </button>
+
+              <button
+                onClick={() => setActivePage("packages")}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "packages" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
+              >
+                📦 Our Packages
               </button>
             </div>
           </div>
-        )}
-        {activePage === "dashboard" && (
-          <>
-            
 
-            <div className="hidden md:block max-w-[98%] mx-auto mt-4 bg-white border border-gray-100 rounded-2xl shadow-sm p-4">
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-                <input
-                  type="text"
-                  placeholder="Search by couple name, wedding date or contact no..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="md:col-span-2 w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                />
-
-                <input
-                  type="date"
-                  value={filters.weddingDateFrom}
-                  onChange={(e) =>
-                    setFilters({
-                      ...filters,
-                      weddingDateFrom: e.target.value,
-                    })
-                  }
-                  className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                  title="Wedding date from"
-                />
-
-                <input
-                  type="date"
-                  value={filters.weddingDateTo}
-                  onChange={(e) =>
-                    setFilters({
-                      ...filters,
-                      weddingDateTo: e.target.value,
-                    })
-                  }
-                  className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                  title="Wedding date to"
-                />
-
-                <input
-                  type="month"
-                  value={filters.weddingMonth}
-                  onChange={(e) =>
-                    setFilters({
-                      ...filters,
-                      weddingMonth: e.target.value,
-                    })
-                  }
-                  className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                  title="Filter by month"
-                />
-
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setIsFilterServiceDropdownOpen(
-                        !isFilterServiceDropdownOpen,
-                      )
-                    }
-                    className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none text-left flex items-center justify-between focus:ring-2 focus:ring-fuchsia-300"
+          <div className="relative z-10 flex-1 overflow-x-hidden pb-10">
+            {/* HIGH VISIBILITY FLOATING INTERACTIVE TOAST BARS */}
+            {toast.show && (
+              <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[99999] w-full max-w-md px-4 pointer-events-auto">
+                <div
+                  className={`border backdrop-blur-xl p-4 rounded-2xl flex items-center gap-4 shadow-[0_20px_50px_rgba(0,0,0,0.15)] transition-all animate-notification ${
+                    toast.type === "delete"
+                      ? "bg-rose-950/95 border-rose-500/40 text-rose-50"
+                      : "bg-emerald-950/95 border-emerald-500/40 text-emerald-50"
+                  }`}
+                >
+                  <div
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold shrink-0 relative overflow-hidden ${
+                      toast.type === "delete"
+                        ? "bg-rose-500/20 text-rose-400"
+                        : "bg-emerald-500/20 text-emerald-400"
+                    }`}
                   >
-                    <span className="truncate">
-                      {filters.serviceType?.length > 0
-                        ? `${filters.serviceType.length} service type(s) selected`
-                        : "All Service Types"}
+                    <span className="absolute inset-0 opacity-20 blur-sm animate-pulse-glow bg-current" />
+                    <span className="relative z-10">
+                      {toast.type === "delete" ? "🗑️" : "✨"}
                     </span>
-                    <span className="text-gray-400">▾</span>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-xs uppercase tracking-widest font-black opacity-60">
+                      {toast.type === "delete"
+                        ? "System Notice"
+                        : "Success Operation"}
+                    </h4>
+                    <p className="text-sm font-medium mt-0.5 leading-relaxed tracking-wide">
+                      {toast.message}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() =>
+                      setToast({ show: false, message: "", type: "success" })
+                    }
+                    className="text-white/40 hover:text-white/90 p-1 text-xs font-bold font-mono"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            )}
+            {activePage === "dashboard" && (
+              <>
+                <div className="hidden md:block max-w-[98%] mx-auto mt-4 bg-white border border-gray-100 rounded-2xl shadow-sm p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+                    <input
+                      type="text"
+                      placeholder="Search by couple name, wedding date or contact no..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="md:col-span-2 w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                    />
+
+                    <input
+                      type="date"
+                      value={filters.weddingDateFrom}
+                      onChange={(e) =>
+                        setFilters({
+                          ...filters,
+                          weddingDateFrom: e.target.value,
+                        })
+                      }
+                      className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                      title="Wedding date from"
+                    />
+
+                    <input
+                      type="date"
+                      value={filters.weddingDateTo}
+                      onChange={(e) =>
+                        setFilters({
+                          ...filters,
+                          weddingDateTo: e.target.value,
+                        })
+                      }
+                      className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                      title="Wedding date to"
+                    />
+
+                    <input
+                      type="month"
+                      value={filters.weddingMonth}
+                      onChange={(e) =>
+                        setFilters({
+                          ...filters,
+                          weddingMonth: e.target.value,
+                        })
+                      }
+                      className="w-full p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                      title="Filter by month"
+                    />
+
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setIsFilterServiceDropdownOpen(
+                            !isFilterServiceDropdownOpen,
+                          )
+                        }
+                        className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none text-left flex items-center justify-between focus:ring-2 focus:ring-fuchsia-300"
+                      >
+                        <span className="truncate">
+                          {filters.serviceType?.length > 0
+                            ? `${filters.serviceType.length} service type(s) selected`
+                            : "All Service Types"}
+                        </span>
+                        <span className="text-gray-400">▾</span>
+                      </button>
+
+                      {isFilterServiceDropdownOpen && (
+                        <div className="absolute z-[1000] mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl p-2 space-y-1">
+                          {SERVICE_TYPE_OPTIONS.map((service) => (
+                            <label
+                              key={service}
+                              className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-emerald-50 cursor-pointer text-sm"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={filters.serviceType?.includes(service)}
+                                onChange={(e) => {
+                                  const current = filters.serviceType || [];
+
+                                  if (e.target.checked) {
+                                    const updatedForm = {
+                                      ...formData,
+                                      service_type: [...current, service],
+                                    };
+
+                                    setFormData(updatedForm);
+
+                                    localStorage.setItem(
+                                      DRAFT_KEY,
+                                      JSON.stringify(updatedForm),
+                                    );
+                                  } else {
+                                    const updatedForm = {
+                                      ...formData,
+                                      service_type: current.filter(
+                                        (s) => s !== service,
+                                      ),
+                                    };
+
+                                    setFormData(updatedForm);
+
+                                    localStorage.setItem(
+                                      DRAFT_KEY,
+                                      JSON.stringify(updatedForm),
+                                    );
+                                  }
+                                }}
+                                className="accent-emerald-600"
+                              />
+
+                              <span className="font-medium text-gray-700">
+                                {service}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <select
+                      value={filters.weddingType}
+                      onChange={(e) =>
+                        setFilters({
+                          ...filters,
+                          weddingType: e.target.value,
+                        })
+                      }
+                      className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                    >
+                      <option value="">All Wedding Types</option>
+                      <option value="One day">One day</option>
+                      <option value="Two days">Two days</option>
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mt-3">
+                    <select
+                      value={filters.status}
+                      onChange={(e) =>
+                        setFilters({
+                          ...filters,
+                          status: e.target.value,
+                        })
+                      }
+                      className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                    >
+                      <option value="">All Status</option>
+                      <option value="Inquiry">Inquiry</option>
+                      <option value="Confirmed">Confirmed</option>
+                      <option value="Completed">Completed</option>
+                    </select>
+
+                    <button
+                      type="button"
+                      onClick={clearSearchAndFilters}
+                      className="px-4 py-2.5 rounded-xl bg-gray-100 text-gray-700 text-sm font-bold hover:bg-gray-200 transition"
+                    >
+                      Clear Filters
+                    </button>
+
+                    <div className="md:col-span-3 flex items-center justify-end text-xs font-bold text-gray-400">
+                      Showing {filteredRecordsDisplay.length} of{" "}
+                      {activeRecordsDisplay.length} records
+                    </div>
+                  </div>
+                </div>
+
+                <div className="md:hidden max-w-[94%] mx-auto mt-4">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      placeholder="Search by name, date or contact..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="flex-1 p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setIsMobileFilterOpen(true)}
+                      className="w-12 h-12 rounded-2xl bg-white/85 backdrop-blur-xl border border-white/50 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-200"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="w-5 h-5 text-gray-700"
+                      >
+                        <line x1="4" y1="21" x2="4" y2="14"></line>
+                        <line x1="4" y1="10" x2="4" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12" y2="3"></line>
+                        <line x1="20" y1="21" x2="20" y2="16"></line>
+                        <line x1="20" y1="12" x2="20" y2="3"></line>
+
+                        <line x1="1" y1="14" x2="7" y2="14"></line>
+                        <line x1="9" y1="8" x2="15" y2="8"></line>
+                        <line x1="17" y1="16" x2="23" y2="16"></line>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className="mt-3">
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1 px-1">
+                      Search by wedding date(mm/dd/yyyy)
+                    </label>
+
+                    <input
+                      type="date"
+                      value={filters.weddingDate}
+                      onChange={(e) =>
+                        setFilters({
+                          ...filters,
+                          weddingDate: e.target.value,
+                        })
+                      }
+                      className="w-full p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                    />
+                  </div>
+                </div>
+
+                <div className="max-w-[98%] mx-auto mt-4 flex justify-start gap-2 bg-white/30 backdrop-blur-lg border border-white/30 rounded-2xl p-3 shadow-lg">
+                  <button
+                    onClick={openAddModal}
+                    className="bg-white text-fuchsia-500 border border-fuchsia-200 font-semibold px-4 py-2 rounded-lg shadow hover:bg-fuchsia-50 transition text-sm"
+                  >
+                    + New Inquiry
                   </button>
 
-                  {isFilterServiceDropdownOpen && (
-                    <div className="absolute z-[1000] mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl p-2 space-y-1">
-                      {SERVICE_TYPE_OPTIONS.map((service) => (
-                        <label
-                          key={service}
-                          className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-emerald-50 cursor-pointer text-sm"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={filters.serviceType?.includes(service)}
-                            onChange={(e) => {
-                              const current = filters.serviceType || [];
-
-                              if (e.target.checked) {
-                                const updatedForm = {
-                                  ...formData,
-                                  service_type: [...current, service],
-                                };
-
-                                setFormData(updatedForm);
-
-                                localStorage.setItem(
-                                  DRAFT_KEY,
-                                  JSON.stringify(updatedForm),
-                                );
-                              } else {
-                                const updatedForm = {
-                                  ...formData,
-                                  service_type: current.filter(
-                                    (s) => s !== service,
-                                  ),
-                                };
-
-                                setFormData(updatedForm);
-
-                                localStorage.setItem(
-                                  DRAFT_KEY,
-                                  JSON.stringify(updatedForm),
-                                );
-                              }
-                            }}
-                            className="accent-emerald-600"
-                          />
-
-                          <span className="font-medium text-gray-700">
-                            {service}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <select
-                  value={filters.weddingType}
-                  onChange={(e) =>
-                    setFilters({
-                      ...filters,
-                      weddingType: e.target.value,
-                    })
-                  }
-                  className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                >
-                  <option value="">All Wedding Types</option>
-                  <option value="One day">One day</option>
-                  <option value="Two days">Two days</option>
-                </select>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mt-3">
-                <select
-                  value={filters.status}
-                  onChange={(e) =>
-                    setFilters({
-                      ...filters,
-                      status: e.target.value,
-                    })
-                  }
-                  className="w-full p-2.5 bg-white border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                >
-                  <option value="">All Status</option>
-                  <option value="Inquiry">Inquiry</option>
-                  <option value="Confirmed">Confirmed</option>
-                  <option value="Completed">Completed</option>
-                </select>
-
-                <button
-                  type="button"
-                  onClick={clearSearchAndFilters}
-                  className="px-4 py-2.5 rounded-xl bg-gray-100 text-gray-700 text-sm font-bold hover:bg-gray-200 transition"
-                >
-                  Clear Filters
-                </button>
-
-                <div className="md:col-span-3 flex items-center justify-end text-xs font-bold text-gray-400">
-                  Showing {filteredRecordsDisplay.length} of{" "}
-                  {activeRecordsDisplay.length} records
-                </div>
-              </div>
-            </div>
-
-            <div className="md:hidden max-w-[94%] mx-auto mt-4">
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  placeholder="Search by name, date or contact..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="flex-1 p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                />
-
-                <button
-                  type="button"
-                  onClick={() => setIsMobileFilterOpen(true)}
-                  className="w-12 h-12 rounded-2xl bg-white/85 backdrop-blur-xl border border-white/50 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-200"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="w-5 h-5 text-gray-700"
+                  <button
+                    onClick={() => setIsCalendarOpen(true)}
+                    className="bg-fuchsia-200 text-black font-semibold px-4 py-2 rounded-lg shadow hover:bg-fuchsia-300 transition text-sm"
                   >
-                    <line x1="4" y1="21" x2="4" y2="14"></line>
-                    <line x1="4" y1="10" x2="4" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12" y2="3"></line>
-                    <line x1="20" y1="21" x2="20" y2="16"></line>
-                    <line x1="20" y1="12" x2="20" y2="3"></line>
-
-                    <line x1="1" y1="14" x2="7" y2="14"></line>
-                    <line x1="9" y1="8" x2="15" y2="8"></line>
-                    <line x1="17" y1="16" x2="23" y2="16"></line>
-                  </svg>
-                </button>
-              </div>
-
-              <div className="mt-3">
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1 px-1">
-                  Search by wedding date(mm/dd/yyyy)
-                </label>
-
-                <input
-                  type="date"
-                  value={filters.weddingDate}
-                  onChange={(e) =>
-                    setFilters({
-                      ...filters,
-                      weddingDate: e.target.value,
-                    })
-                  }
-                  className="w-full p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                />
-              </div>
-            </div>
-
-            <div className="max-w-[98%] mx-auto mt-4 flex justify-start gap-2 bg-white/30 backdrop-blur-lg border border-white/30 rounded-2xl p-3 shadow-lg">
-              <button
-                onClick={openAddModal}
-                className="bg-white text-fuchsia-500 border border-fuchsia-200 font-semibold px-4 py-2 rounded-lg shadow hover:bg-fuchsia-50 transition text-sm"
-              >
-                + New Inquiry
-              </button>
-
-              <button
-                onClick={() => setIsCalendarOpen(true)}
-                className="bg-fuchsia-200 text-black font-semibold px-4 py-2 rounded-lg shadow hover:bg-fuchsia-300 transition text-sm"
-              >
-                📅 Calendar
-              </button>
-            </div>
-
-            {tabLoading && (
-              <div className="fixed inset-0 z-[99999] bg-black/20 backdrop-blur-sm flex items-center justify-center">
-                <div className="bg-white/90 backdrop-blur-xl rounded-3xl px-8 py-6 shadow-2xl border border-white/40 flex flex-col items-center gap-4">
-                  <div className="w-14 h-14 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin" />
-
-                  <div className="text-center">
-                    <p className="text-base font-bold text-gray-800">
-                      Loading Wedding Records
-                    </p>
-
-                    <p className="text-xs text-gray-500 mt-1">
-                      Please wait a moment...
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {upcomingWeddings.length > 0 && (
-              <div className="max-w-[98%] mx-auto mt-5 bg-gradient-to-r from-rose-500/10 to-pink-500/10 backdrop-blur-xl border border-rose-200 rounded-3xl shadow-xl overflow-hidden">
-                <div className="px-5 py-4 border-b border-rose-200/50 flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-black text-rose-700 flex items-center gap-2">
-                      🔔 Upcoming Weddings
-                    </h3>
-
-                    <p className="text-xs text-rose-500 mt-1">
-                      Weddings happening within next 14 days
-                    </p>
-                  </div>
-
-                  <div className="bg-rose-600 text-white text-sm font-black px-3 py-1 rounded-full animate-pulse">
-                    {upcomingWeddings.length}
-                  </div>
+                    📅 Calendar
+                  </button>
                 </div>
 
-                <div className="divide-y divide-rose-100">
-                  {upcomingWeddings.map((item) => {
-                    const daysLeft = moment(item.wedding_date).diff(
-                      moment(),
-                      "days",
-                    );
+                {tabLoading && (
+                  <div className="fixed inset-0 z-[99999] bg-black/20 backdrop-blur-sm flex items-center justify-center">
+                    <div className="bg-white/90 backdrop-blur-xl rounded-3xl px-8 py-6 shadow-2xl border border-white/40 flex flex-col items-center gap-4">
+                      <div className="w-14 h-14 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin" />
 
-                    return (
-                      <div
-                        key={item.id}
-                        className="p-4 hover:bg-white/30 transition"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <h4 className="font-black text-gray-900 text-sm md:text-base">
-                              {item.couple_name}
-                            </h4>
+                      <div className="text-center">
+                        <p className="text-base font-bold text-gray-800">
+                          Loading Wedding Records
+                        </p>
 
-                            <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-600">
-                              <span>
-                                📅{" "}
-                                {moment(item.wedding_date).format(
-                                  "MMMM D, YYYY",
-                                )}
-                              </span>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Please wait a moment...
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
-                              <span>•</span>
+                {upcomingWeddings.length > 0 && (
+                  <div className="max-w-[98%] mx-auto mt-5 bg-gradient-to-r from-rose-500/10 to-pink-500/10 backdrop-blur-xl border border-rose-200 rounded-3xl shadow-xl overflow-hidden">
+                    <div className="px-5 py-4 border-b border-rose-200/50 flex items-center justify-between">
+                      <div>
+                        <h3 className="text-lg font-black text-rose-700 flex items-center gap-2">
+                          🔔 Upcoming Weddings
+                        </h3>
 
-                              <span>🏨 {item.hotel || "Venue not added"}</span>
+                        <p className="text-xs text-rose-500 mt-1">
+                          Weddings happening within next 14 days
+                        </p>
+                      </div>
+
+                      <div className="bg-rose-600 text-white text-sm font-black px-3 py-1 rounded-full animate-pulse">
+                        {upcomingWeddings.length}
+                      </div>
+                    </div>
+
+                    <div className="divide-y divide-rose-100">
+                      {upcomingWeddings.map((item) => {
+                        const daysLeft = moment(item.wedding_date).diff(
+                          moment(),
+                          "days",
+                        );
+
+                        return (
+                          <div
+                            key={item.id}
+                            className="p-4 hover:bg-white/30 transition"
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div>
+                                <h4 className="font-black text-gray-900 text-sm md:text-base">
+                                  {item.couple_name}
+                                </h4>
+
+                                <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-600">
+                                  <span>
+                                    📅{" "}
+                                    {moment(item.wedding_date).format(
+                                      "MMMM D, YYYY",
+                                    )}
+                                  </span>
+
+                                  <span>•</span>
+
+                                  <span>
+                                    🏨 {item.hotel || "Venue not added"}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div
+                                className={`px-3 py-1 rounded-full text-xs font-black shrink-0 ${
+                                  daysLeft <= 3
+                                    ? "bg-red-600 text-white animate-pulse"
+                                    : "bg-rose-100 text-rose-700"
+                                }`}
+                              >
+                                {daysLeft === 0
+                                  ? "TODAY"
+                                  : `${daysLeft} DAYS LEFT`}
+                              </div>
                             </div>
                           </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
-                          <div
-                            className={`px-3 py-1 rounded-full text-xs font-black shrink-0 ${
-                              daysLeft <= 3
-                                ? "bg-red-600 text-white animate-pulse"
-                                : "bg-rose-100 text-rose-700"
-                            }`}
-                          >
-                            {daysLeft === 0 ? "TODAY" : `${daysLeft} DAYS LEFT`}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* DASHBOARD TAB SEGMENT CONSOLE NAVIGATION BAR */}
-            <div className="max-w-[98%] mx-auto mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 md:border-b bg-white/50 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none rounded-3xl md:rounded-none p-3 md:p-0 shadow-xl md:shadow-none border border-white/40 md:border-0">
-              <div className="grid grid-cols-1 gap-2 w-full md:flex md:flex-wrap">
-                <button
-                  onClick={() => handleTabChange("all")}
-                  className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
-                    activeTab === "all"
-                      ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
-                      : "bg-white/60 text-gray-500 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-700"
-                  }`}
-                >
-                  ❤️ Active Wedding Inquiries
-                </button>
-
-                <button
-                  onClick={() => handleTabChange("completed")}
-                  className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
-                    activeTab === "completed"
-                      ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
-                      : "bg-white/60 text-gray-500 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-700"
-                  }`}
-                >
-                  ✨ Completed Weddings
-                </button>
-
-                <button
-                  onClick={() => handleTabChange("allRecords")}
-                  className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
-                    activeTab === "allRecords"
-                      ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
-                      : "bg-white/60 text-gray-500 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-700"
-                  }`}
-                >
-                  📁 All Records
-                </button>
-
-                <button
-                  onClick={() => handleTabChange("trash")}
-                  className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
-                    activeTab === "trash"
-                      ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-amber-50/40 md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
-                      : "bg-white/60 text-gray-400 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-600"
-                  }`}
-                >
-                  🗑️ Deleted Records
-                  {deletedRecords.length > 0 && (
-                    <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-black animate-pulse ${
-                        activeTab === "trash"
-                          ? "bg-white text-amber-700 md:bg-amber-600 md:text-white"
-                          : "bg-amber-600 text-white"
+                {/* DASHBOARD TAB SEGMENT CONSOLE NAVIGATION BAR */}
+                <div className="max-w-[98%] mx-auto mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 md:border-b bg-white/50 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none rounded-3xl md:rounded-none p-3 md:p-0 shadow-xl md:shadow-none border border-white/40 md:border-0">
+                  <div className="grid grid-cols-1 gap-2 w-full md:flex md:flex-wrap">
+                    <button
+                      onClick={() => handleTabChange("all")}
+                      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
+                        activeTab === "all"
+                          ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
+                          : "bg-white/60 text-gray-500 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-700"
                       }`}
                     >
-                      {deletedRecords.length}
-                    </span>
-                  )}
-                </button>
-              </div>
+                      ❤️ Active Wedding Inquiries
+                    </button>
 
-              {activeTab === "trash" && deletedRecords.length > 0 && (
-                <button
-                  onClick={() =>
-                    setDeleteModal({
-                      show: true,
-                      id: null,
-                      name: "All Trash Folders",
-                      type: "all",
-                    })
-                  }
-                  className="w-full md:w-auto mb-0 md:mb-0 bg-gradient-to-r from-red-600 to-rose-700 text-white text-xs font-black px-4 py-3 md:py-2 rounded-2xl md:rounded-xl shadow-md shadow-red-100 hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-1.5"
-                >
-                  💥 Clear All Deleted Records
-                </button>
-              )}
-            </div>
+                    <button
+                      onClick={() => handleTabChange("completed")}
+                      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
+                        activeTab === "completed"
+                          ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
+                          : "bg-white/60 text-gray-500 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-700"
+                      }`}
+                    >
+                      ✨ Completed Weddings
+                    </button>
 
-            <main className="max-w-[98%] mx-auto mt-4">
-              {filteredRecordsDisplay.length === 0 ? (
-                <div className="text-center py-12 bg-white rounded-xl shadow border border-gray-100">
-                  <p className="text-gray-400 text-sm font-medium">
-                    {activeTab === "trash"
-                      ? "Your Deleted Records folder is completely empty."
-                      : "No wedding records found in this segment."}
-                  </p>
-                </div>
-              ) : (
-                <>
-                  {/* Desktop Table View Container - Patched Layout constraints */}
-                  <div className="hidden lg:block bg-white shadow-md rounded-xl border border-gray-100 overflow-x-auto w-full clear-both">
-                    <table className="w-full text-left border-collapse min-w-max table-auto bg-white rounded-xl">
-                      <thead>
-                        <tr
-                          className={`${activeTab === "trash" ? "bg-fuchsia-50 text-fuchsia-950" : "bg-fuchsia-50 text-fuchsia-900"} md:text-[15px] uppercase font-bold border-b border-gray-200`}
+                    <button
+                      onClick={() => handleTabChange("allRecords")}
+                      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
+                        activeTab === "allRecords"
+                          ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
+                          : "bg-white/60 text-gray-500 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-700"
+                      }`}
+                    >
+                      📁 All Records
+                    </button>
+
+                    <button
+                      onClick={() => handleTabChange("trash")}
+                      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
+                        activeTab === "trash"
+                          ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-amber-50/40 md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
+                          : "bg-white/60 text-gray-400 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-600"
+                      }`}
+                    >
+                      🗑️ Deleted Records
+                      {deletedRecords.length > 0 && (
+                        <span
+                          className={`text-[10px] px-1.5 py-0.5 rounded-full font-black animate-pulse ${
+                            activeTab === "trash"
+                              ? "bg-white text-amber-700 md:bg-amber-600 md:text-white"
+                              : "bg-amber-600 text-white"
+                          }`}
                         >
-                          <th className="p-3 text-center w-12 bg-inherit">#</th>
-                          <th className="p-3 bg-inherit">Couple Name</th>
-                          <th className="p-3 bg-inherit">Wedding Date</th>
-                          <th className="p-3 bg-inherit">Hotel</th>
-                          <th className="p-3 bg-inherit">Service Type</th>
-                          <th className="p-3 bg-inherit">Wedding Type</th>
-                          {activeTab !== "completed" && (
-                            <>
-                              <th className="p-3 text-center bg-inherit">
-                                Guests
+                          {deletedRecords.length}
+                        </span>
+                      )}
+                    </button>
+                  </div>
+
+                  {activeTab === "trash" && deletedRecords.length > 0 && (
+                    <button
+                      onClick={() =>
+                        setDeleteModal({
+                          show: true,
+                          id: null,
+                          name: "All Trash Folders",
+                          type: "all",
+                        })
+                      }
+                      className="w-full md:w-auto mb-0 md:mb-0 bg-gradient-to-r from-red-600 to-rose-700 text-white text-xs font-black px-4 py-3 md:py-2 rounded-2xl md:rounded-xl shadow-md shadow-red-100 hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-1.5"
+                    >
+                      💥 Clear All Deleted Records
+                    </button>
+                  )}
+                </div>
+
+                <main className="max-w-[98%] mx-auto mt-4">
+                  {filteredRecordsDisplay.length === 0 ? (
+                    <div className="text-center py-12 bg-white rounded-xl shadow border border-gray-100">
+                      <p className="text-gray-400 text-sm font-medium">
+                        {activeTab === "trash"
+                          ? "Your Deleted Records folder is completely empty."
+                          : "No wedding records found in this segment."}
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Desktop Table View Container - Patched Layout constraints */}
+                      <div className="hidden lg:block bg-white shadow-md rounded-xl border border-gray-100 overflow-x-auto w-full clear-both">
+                        <table className="w-full text-left border-collapse min-w-max table-auto bg-white rounded-xl">
+                          <thead>
+                            <tr
+                              className={`${activeTab === "trash" ? "bg-fuchsia-50 text-fuchsia-950" : "bg-fuchsia-50 text-fuchsia-900"} md:text-[15px] uppercase font-bold border-b border-gray-200`}
+                            >
+                              <th className="p-3 text-center w-12 bg-inherit">
+                                #
                               </th>
-                              <th className="p-3 bg-inherit">Bridesmaid</th>
-                            </>
-                          )}
-                          <th className="p-3 bg-inherit">Contact No.</th>
-                          <th className="p-3 text-right bg-inherit">
-                            Package Price
-                          </th>
-                          <th className="p-3 text-right bg-inherit">
-                            Discount
-                          </th>
-                          <th className="p-3 text-right bg-inherit">
-                            Agreed Price
-                          </th>
-                          <th className="p-3 text-right bg-inherit">
-                            Advance Paid
-                          </th>
-                          <th className="p-3 text-right bg-inherit">
-                            Pending Balance
-                          </th>
-                          <th className="p-3 text-center bg-inherit">Status</th>
-                          <th className="p-3 bg-inherit">Remarks</th>
-                          <th className="p-3 text-center w-36 bg-inherit">
-                            {activeTab === "trash"
-                              ? "Restore / Wipe"
-                              : "Actions"}
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100 md:text-sm bg-white">
+                              <th className="p-3 bg-inherit">Couple Name</th>
+                              <th className="p-3 bg-inherit">Wedding Date</th>
+                              <th className="p-3 bg-inherit">Hotel</th>
+                              <th className="p-3 bg-inherit">Service Type</th>
+                              <th className="p-3 bg-inherit">Wedding Type</th>
+                              {activeTab !== "completed" && (
+                                <>
+                                  <th className="p-3 text-center bg-inherit">
+                                    Guests
+                                  </th>
+                                  <th className="p-3 bg-inherit">Bridesmaid</th>
+                                </>
+                              )}
+                              <th className="p-3 bg-inherit">Contact No.</th>
+                              <th className="p-3 text-right bg-inherit">
+                                Package Price
+                              </th>
+                              <th className="p-3 text-right bg-inherit">
+                                Discount
+                              </th>
+                              <th className="p-3 text-right bg-inherit">
+                                Agreed Price
+                              </th>
+                              <th className="p-3 text-right bg-inherit">
+                                Advance Paid
+                              </th>
+                              <th className="p-3 text-right bg-inherit">
+                                Pending Balance
+                              </th>
+                              <th className="p-3 text-center bg-inherit">
+                                Status
+                              </th>
+                              <th className="p-3 bg-inherit">Remarks</th>
+                              <th className="p-3 text-center w-36 bg-inherit">
+                                {activeTab === "trash"
+                                  ? "Restore / Wipe"
+                                  : "Actions"}
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100 md:text-sm bg-white">
+                            {filteredRecordsDisplay.map((item, index) => {
+                              const countryInfo = getCountryDisplay(
+                                item.country,
+                              );
+                              return (
+                                <tr
+                                  key={item.id}
+                                  className="hover:bg-gray-50/80 transition bg-white"
+                                >
+                                  <td className="p-3 text-center font-medium text-gray-400">
+                                    {index + 1}
+                                  </td>
+                                  <td className="p-3 font-bold text-gray-900">
+                                    <div className="flex items-center gap-2">
+                                      <span
+                                        className="emoji-flag text-base select-none"
+                                        title={countryInfo.name}
+                                      >
+                                        {countryInfo.flag}
+                                      </span>
+                                      <span>{item.couple_name}</span>
+                                    </div>
+                                  </td>
+                                  <td className="p-3 text-gray-600 font-medium">
+                                    {item.wedding_date || "—"}
+                                  </td>
+                                  <td className="p-3 text-gray-700 font-medium">
+                                    {item.hotel || "—"}
+                                  </td>
+                                  <td className="p-3">
+                                    <span className="px-2 py-0.5 bg-gray-100 text-gray-800 rounded font-medium">
+                                      {item.service_type}
+                                    </span>
+                                  </td>
+                                  <td className="p-3 text-gray-600">
+                                    {item.wedding_type}
+                                  </td>
+                                  {activeTab !== "completed" && (
+                                    <>
+                                      <td className="p-3 text-center font-semibold">
+                                        {item.guest_count || "—"}
+                                      </td>
+                                      <td className="p-3 text-gray-600">
+                                        {!item.bridesmaid_option ||
+                                        item.bridesmaid_option === "-"
+                                          ? "—"
+                                          : item.bridesmaid_option}
+                                      </td>
+                                    </>
+                                  )}
+                                  <td className="p-3 font-mono text-gray-700">
+                                    {item.contact_no || "—"}
+                                  </td>
+
+                                  <td className="p-3 text-right font-mono font-semibold text-gray-800">
+                                    {item.package_price
+                                      ? Number(
+                                          item.package_price,
+                                        ).toLocaleString("en-LK", {
+                                          minimumFractionDigits: 2,
+                                        })
+                                      : "0.00"}
+                                  </td>
+
+                                  <td className="p-3 text-right font-mono font-semibold text-purple-700">
+                                    {item.discount_rate
+                                      ? `${item.discount_rate}%`
+                                      : "0%"}
+                                  </td>
+
+                                  <td className="p-3 text-right font-mono font-semibold text-gray-900">
+                                    {item.agreed_price
+                                      ? item.agreed_price.toLocaleString(
+                                          "en-LK",
+                                          {
+                                            minimumFractionDigits: 2,
+                                          },
+                                        )
+                                      : "0.00"}
+                                  </td>
+                                  <td className="p-3 text-right font-mono font-semibold text-amber-700">
+                                    <div>
+                                      {item.advance_paid
+                                        ? Number(
+                                            item.advance_paid,
+                                          ).toLocaleString("en-LK", {
+                                            minimumFractionDigits: 2,
+                                          })
+                                        : "0.00"}
+                                    </div>
+
+                                    {item.advance_paid_date && (
+                                      <div className="text-[10px] text-gray-400 font-sans mt-0.5">
+                                        ({item.advance_paid_date})
+                                      </div>
+                                    )}
+                                  </td>
+                                  <td className="p-3 text-right font-mono font-bold text-red-600">
+                                    {item.pending_payment
+                                      ? item.pending_payment.toLocaleString(
+                                          "en-LK",
+                                          {
+                                            minimumFractionDigits: 2,
+                                          },
+                                        )
+                                      : "0.00"}
+                                  </td>
+
+                                  <td className="p-3 text-center">
+                                    {activeTab === "trash" ? (
+                                      <span className="px-2.5 py-1 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">
+                                        {item.status}
+                                      </span>
+                                    ) : (
+                                      <StatusDropdown
+                                        currentStatus={item.status}
+                                        onStatusChange={(newStatus) =>
+                                          handleStatusChange(item, newStatus)
+                                        }
+                                      />
+                                    )}
+                                  </td>
+                                  <td
+                                    className="p-3 text-gray-500 max-w-xs truncate"
+                                    title={item.remarks}
+                                  >
+                                    {item.remarks || "—"}
+                                  </td>
+
+                                  <td className="p-3 text-center">
+                                    {activeTab === "trash" ? (
+                                      <div className="flex items-center justify-center gap-2">
+                                        <button
+                                          onClick={() =>
+                                            handleRecoverRecord(item)
+                                          }
+                                          className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-lg font-bold hover:bg-emerald-100 transition text-[11px]"
+                                        >
+                                          Recovery
+                                        </button>
+                                        <button
+                                          onClick={() =>
+                                            initiateDelete(item, "permanent")
+                                          }
+                                          className="bg-rose-50 text-rose-600 border border-rose-100 p-1 rounded-lg hover:bg-rose-100 transition"
+                                          title="Delete Permanently"
+                                        >
+                                          ✕
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <div className="flex items-center justify-center gap-3">
+                                        <button
+                                          onClick={() => openEditModal(item)}
+                                          className="text-fuchsia-600 font-bold hover:underline"
+                                        >
+                                          Edit
+                                        </button>
+                                        <button
+                                          onClick={() =>
+                                            initiateDelete(item, "soft")
+                                          }
+                                          className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
+                                        >
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            strokeWidth={2}
+                                            stroke="currentColor"
+                                            className="w-4 h-4"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                                            />
+                                          </svg>
+                                        </button>
+                                      </div>
+                                    )}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Mobile Cards View Layout Block */}
+                      <div className="block lg:hidden space-y-4">
                         {filteredRecordsDisplay.map((item, index) => {
                           const countryInfo = getCountryDisplay(item.country);
                           return (
-                            <tr
+                            <div
                               key={item.id}
-                              className="hover:bg-gray-50/80 transition bg-white"
+                              className={`bg-white rounded-xl p-4 shadow border space-y-3 ${activeTab === "trash" ? "border-amber-200" : "border-gray-100"}`}
                             >
-                              <td className="p-3 text-center font-medium text-gray-400">
-                                {index + 1}
-                              </td>
-                              <td className="p-3 font-bold text-gray-900">
-                                <div className="flex items-center gap-2">
-                                  <span
-                                    className="emoji-flag text-base select-none"
-                                    title={countryInfo.name}
-                                  >
-                                    {countryInfo.flag}
-                                  </span>
-                                  <span>{item.couple_name}</span>
-                                </div>
-                              </td>
-                              <td className="p-3 text-gray-600 font-medium">
-                                {item.wedding_date || "—"}
-                              </td>
-                              <td className="p-3 text-gray-700 font-medium">
-                                {item.hotel || "—"}
-                              </td>
-                              <td className="p-3">
-                                <span className="px-2 py-0.5 bg-gray-100 text-gray-800 rounded font-medium">
-                                  {item.service_type}
-                                </span>
-                              </td>
-                              <td className="p-3 text-gray-600">
-                                {item.wedding_type}
-                              </td>
-                              {activeTab !== "completed" && (
-                                <>
-                                  <td className="p-3 text-center font-semibold">
-                                    {item.guest_count || "—"}
-                                  </td>
-                                  <td className="p-3 text-gray-600">
-                                    {!item.bridesmaid_option ||
-                                    item.bridesmaid_option === "-"
-                                      ? "—"
-                                      : item.bridesmaid_option}
-                                  </td>
-                                </>
-                              )}
-                              <td className="p-3 font-mono text-gray-700">
-                                {item.contact_no || "—"}
-                              </td>
-
-                              <td className="p-3 text-right font-mono font-semibold text-gray-800">
-                                {item.package_price
-                                  ? Number(item.package_price).toLocaleString(
-                                      "en-LK",
-                                      {
-                                        minimumFractionDigits: 2,
-                                      },
-                                    )
-                                  : "0.00"}
-                              </td>
-
-                              <td className="p-3 text-right font-mono font-semibold text-purple-700">
-                                {item.discount_rate
-                                  ? `${item.discount_rate}%`
-                                  : "0%"}
-                              </td>
-
-                              <td className="p-3 text-right font-mono font-semibold text-gray-900">
-                                {item.agreed_price
-                                  ? item.agreed_price.toLocaleString("en-LK", {
-                                      minimumFractionDigits: 2,
-                                    })
-                                  : "0.00"}
-                              </td>
-                              <td className="p-3 text-right font-mono font-semibold text-amber-700">
+                              <div className="flex justify-between items-start">
                                 <div>
-                                  {item.advance_paid
-                                    ? Number(item.advance_paid).toLocaleString(
-                                        "en-LK",
-                                        {
-                                          minimumFractionDigits: 2,
-                                        },
-                                      )
-                                    : "0.00"}
+                                  <span className="text-[10px] uppercase font-bold text-gray-400 block">
+                                    Record #{index + 1}
+                                  </span>
+                                  <h3 className="text-base font-bold text-gray-900 flex items-center gap-1.5">
+                                    <span className="emoji-flag text-base select-none">
+                                      {countryInfo.flag}
+                                    </span>
+                                    <span>{item.couple_name}</span>
+                                  </h3>
+
+                                  <p className="text-xs font-semibold text-gray-500 mt-0.5">
+                                    {item.service_type ||
+                                      "Service type pending"}
+                                  </p>
+                                  <p className="text-xs font-semibold text-emerald-700">
+                                    {item.wedding_date || "Date Pending"}
+                                  </p>
                                 </div>
 
-                                {item.advance_paid_date && (
-                                  <div className="text-[10px] text-gray-400 font-sans mt-0.5">
-                                    ({item.advance_paid_date})
-                                  </div>
-                                )}
-                              </td>
-                              <td className="p-3 text-right font-mono font-bold text-red-600">
-                                {item.pending_payment
-                                  ? item.pending_payment.toLocaleString(
-                                      "en-LK",
-                                      {
-                                        minimumFractionDigits: 2,
-                                      },
-                                    )
-                                  : "0.00"}
-                              </td>
-
-                              <td className="p-3 text-center">
                                 {activeTab === "trash" ? (
-                                  <span className="px-2.5 py-1 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">
+                                  <span className="px-2.5 py-0.5 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">
                                     {item.status}
                                   </span>
                                 ) : (
@@ -1817,20 +1930,113 @@ const filteredVendors = vendors.filter((vendor) => {
                                     }
                                   />
                                 )}
-                              </td>
-                              <td
-                                className="p-3 text-gray-500 max-w-xs truncate"
-                                title={item.remarks}
-                              >
-                                {item.remarks || "—"}
-                              </td>
+                              </div>
 
-                              <td className="p-3 text-center">
+                              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs border-t border-b border-gray-50 py-2.5">
+                                <div>
+                                  <span className="text-gray-400 block text-[10px] uppercase font-semibold">
+                                    Origin:
+                                  </span>{" "}
+                                  <span className="font-semibold text-gray-800">
+                                    {countryInfo.name}
+                                  </span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-400 block text-[10px] uppercase font-semibold">
+                                    Venue:
+                                  </span>{" "}
+                                  <span className="font-medium text-gray-800">
+                                    {item.hotel || "—"}
+                                  </span>
+                                </div>
+                                <div className="col-span-2 grid grid-cols-2 gap-1 bg-gray-50 p-2 rounded-lg mt-1 border border-gray-100 font-mono">
+                                  <div>
+                                    <span className="text-[9px] text-gray-400 block uppercase font-bold">
+                                      Package:
+                                    </span>
+                                    <span className="text-xs font-bold text-gray-900">
+                                      {item.package_price
+                                        ? Number(
+                                            item.package_price,
+                                          ).toLocaleString("en-LK")
+                                        : "0"}
+                                    </span>
+                                  </div>
+
+                                  <div>
+                                    <span className="text-[9px] text-gray-400 block uppercase font-bold">
+                                      Discount:
+                                    </span>
+                                    <span className="text-xs font-bold text-purple-700">
+                                      {item.discount_rate
+                                        ? `${item.discount_rate}%`
+                                        : "0%"}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <span className="text-[9px] text-gray-400 block uppercase font-bold">
+                                      Agreed:
+                                    </span>
+                                    <span className="text-xs font-bold text-gray-900">
+                                      {item.agreed_price
+                                        ? item.agreed_price.toLocaleString(
+                                            "en-LK",
+                                          )
+                                        : "0"}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <span className="text-[9px] text-gray-400 block uppercase font-bold">
+                                      Paid:
+                                    </span>
+
+                                    <span className="text-xs font-bold text-amber-800 block">
+                                      {item.advance_paid
+                                        ? item.advance_paid.toLocaleString(
+                                            "en-LK",
+                                          )
+                                        : "0"}
+                                    </span>
+
+                                    {item.advance_paid_date && (
+                                      <span className="block text-[9px] text-gray-400 font-sans mt-0.5">
+                                        ({item.advance_paid_date})
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div>
+                                    <span className="text-[9px] text-gray-400 block uppercase font-bold">
+                                      Pending:
+                                    </span>
+                                    <span className="text-xs font-bold text-red-600">
+                                      {item.pending_payment
+                                        ? item.pending_payment.toLocaleString(
+                                            "en-LK",
+                                          )
+                                        : "0"}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex justify-between items-center pt-0.5">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setSelectedRemark(
+                                      item.remarks || "No remarks",
+                                    )
+                                  }
+                                  className="text-xs text-gray-500 italic truncate max-w-[45%] text-left"
+                                >
+                                  💡 {item.remarks || "No remarks"}
+                                </button>
+
                                 {activeTab === "trash" ? (
-                                  <div className="flex items-center justify-center gap-2">
+                                  <div className="flex items-center gap-1.5">
                                     <button
                                       onClick={() => handleRecoverRecord(item)}
-                                      className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-lg font-bold hover:bg-emerald-100 transition text-[11px]"
+                                      className="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-black shadow transition"
                                     >
                                       Recovery
                                     </button>
@@ -1838,25 +2044,18 @@ const filteredVendors = vendors.filter((vendor) => {
                                       onClick={() =>
                                         initiateDelete(item, "permanent")
                                       }
-                                      className="bg-rose-50 text-rose-600 border border-rose-100 p-1 rounded-lg hover:bg-rose-100 transition"
-                                      title="Delete Permanently"
+                                      className="p-1.5 border border-rose-200 text-rose-600 bg-rose-50 rounded-lg hover:bg-rose-100 transition text-xs font-bold"
                                     >
-                                      ✕
+                                      Wipe
                                     </button>
                                   </div>
                                 ) : (
-                                  <div className="flex items-center justify-center gap-3">
-                                    <button
-                                      onClick={() => openEditModal(item)}
-                                      className="text-fuchsia-600 font-bold hover:underline"
-                                    >
-                                      Edit
-                                    </button>
+                                  <div className="flex items-center gap-2">
                                     <button
                                       onClick={() =>
                                         initiateDelete(item, "soft")
                                       }
-                                      className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
+                                      className="p-2 border border-red-100 text-red-500 bg-red-50/50 rounded-lg hover:bg-red-50 transition"
                                     >
                                       <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -1873,546 +2072,938 @@ const filteredVendors = vendors.filter((vendor) => {
                                         />
                                       </svg>
                                     </button>
+                                    <button
+                                      onClick={() => openEditModal(item)}
+                                      className="bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-100 transition"
+                                    >
+                                      Modify
+                                    </button>
                                   </div>
                                 )}
-                              </td>
-                            </tr>
+                              </div>
+                            </div>
                           );
                         })}
-                      </tbody>
-                    </table>
+                      </div>
+                    </>
+                  )}
+                </main>
+
+                
+                
+
+                
+
+                {isMobileFilterOpen && (
+                  <div className="md:hidden fixed inset-0 z-[9998] bg-black/40 backdrop-blur-sm flex items-end">
+                    <div className="w-full bg-white rounded-t-[2rem] p-5 shadow-2xl max-h-[82vh] overflow-y-auto">
+                      <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-5" />
+
+                      <div className="flex items-center justify-between mb-5">
+                        <h3 className="text-lg font-bold text-gray-900">
+                          Filters
+                        </h3>
+
+                        <button
+                          type="button"
+                          onClick={() => setIsMobileFilterOpen(false)}
+                          className="text-gray-400 font-bold text-xl"
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                            Date From
+                          </label>
+                          <input
+                            type="date"
+                            value={filters.weddingDateFrom}
+                            onChange={(e) =>
+                              setFilters({
+                                ...filters,
+                                weddingDateFrom: e.target.value,
+                              })
+                            }
+                            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                            Date To
+                          </label>
+                          <input
+                            type="date"
+                            value={filters.weddingDateTo}
+                            onChange={(e) =>
+                              setFilters({
+                                ...filters,
+                                weddingDateTo: e.target.value,
+                              })
+                            }
+                            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                            Month
+                          </label>
+                          <input
+                            type="month"
+                            value={filters.weddingMonth}
+                            onChange={(e) =>
+                              setFilters({
+                                ...filters,
+                                weddingMonth: e.target.value,
+                              })
+                            }
+                            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
+                            Service Types
+                          </label>
+
+                          <div className="flex flex-wrap gap-2">
+                            {SERVICE_TYPE_OPTIONS.map((service) => (
+                              <label
+                                key={service}
+                                className={`px-3 py-2 rounded-2xl text-xs font-bold border cursor-pointer ${
+                                  filters.serviceType?.includes(service)
+                                    ? "bg-emerald-600 text-white border-emerald-600"
+                                    : "bg-gray-50 text-gray-600 border-gray-100"
+                                }`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  className="hidden"
+                                  checked={filters.serviceType?.includes(
+                                    service,
+                                  )}
+                                  onChange={(e) => {
+                                    const current = filters.serviceType || [];
+
+                                    setFilters({
+                                      ...filters,
+                                      serviceType: e.target.checked
+                                        ? [...current, service]
+                                        : current.filter((s) => s !== service),
+                                    });
+                                  }}
+                                />
+                                {service}
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                            Wedding Type
+                          </label>
+                          <select
+                            value={filters.weddingType}
+                            onChange={(e) =>
+                              setFilters({
+                                ...filters,
+                                weddingType: e.target.value,
+                              })
+                            }
+                            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                          >
+                            <option value="">All Wedding Types</option>
+                            <option value="One day">One day</option>
+                            <option value="Two days">Two days</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                            Status
+                          </label>
+                          <select
+                            value={filters.status}
+                            onChange={(e) =>
+                              setFilters({
+                                ...filters,
+                                status: e.target.value,
+                              })
+                            }
+                            className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                          >
+                            <option value="">All Status</option>
+                            <option value="Inquiry">Inquiry</option>
+                            <option value="Confirmed">Confirmed</option>
+                            <option value="Completed">Completed</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3 mt-6">
+                        <button
+                          type="button"
+                          onClick={clearSearchAndFilters}
+                          className="p-3 rounded-2xl border border-gray-300 text-gray-700 font-bold"
+                        >
+                          Reset
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setIsMobileFilterOpen(false)}
+                          className="p-3 rounded-2xl bg-fuchsia-200 text-black font-bold"
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            
+
+            {activePage === "customers" && (
+              <div className="p-4 md:p-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                  <div>
+                    <h1 className="text-2xl md:text-3xl font-black text-fuchsia-950">
+                      👰 Customers
+                    </h1>
+                    <p className="text-sm text-fuchsia-900/70 mt-1 font-semibold">
+                      All wedding customers from inquiries, confirmed and
+                      completed records
+                    </p>
                   </div>
 
-                  {/* Mobile Cards View Layout Block */}
-                  <div className="block lg:hidden space-y-4">
-                    {filteredRecordsDisplay.map((item, index) => {
-                      const countryInfo = getCountryDisplay(item.country);
-                      return (
-                        <div
-                          key={item.id}
-                          className={`bg-white rounded-xl p-4 shadow border space-y-3 ${activeTab === "trash" ? "border-amber-200" : "border-gray-100"}`}
-                        >
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <span className="text-[10px] uppercase font-bold text-gray-400 block">
-                                Record #{index + 1}
-                              </span>
-                              <h3 className="text-base font-bold text-gray-900 flex items-center gap-1.5">
-                                <span className="emoji-flag text-base select-none">
-                                  {countryInfo.flag}
-                                </span>
-                                <span>{item.couple_name}</span>
-                              </h3>
+                  <div className="bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl px-4 py-2 shadow text-sm font-black text-fuchsia-700">
+                    Total Customers: {filteredCustomers.length}
+                  </div>
+                </div>
+                <div className="mb-4 bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl p-3 shadow">
+                  <input
+                    type="text"
+                    placeholder="Search by couple name..."
+                    value={customerSearch}
+                    onChange={(e) => setCustomerSearch(e.target.value)}
+                    className="w-full p-3 rounded-xl border border-fuchsia-100 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold"
+                  />
+                </div>
 
-                              <p className="text-xs font-semibold text-gray-500 mt-0.5">
-                                {item.service_type || "Service type pending"}
-                              </p>
-                              <p className="text-xs font-semibold text-emerald-700">
-                                {item.wedding_date || "Date Pending"}
-                              </p>
-                            </div>
+                <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
+                  {filteredCustomers.length === 0 ? (
+                    <div className="p-12 text-center">
+                      <div className="text-4xl mb-3">👰</div>
+                      <p className="text-gray-400 text-sm font-bold">
+                        No customers found yet.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse min-w-max">
+                        <thead>
+                          <tr className="bg-fuchsia-50 text-fuchsia-900 uppercase text-xs md:text-[15px] font-black border-b border-gray-200">
+                            <th className="p-4 text-center w-12">#</th>
+                            <th className="p-4">Couple Name</th>
+                            <th className="p-4">Wedding Date</th>
+                            <th className="p-4">Contact Number</th>
+                            <th className="p-4">Service Type</th>
+                            <th className="p-4 text-center">Status</th>
+                          </tr>
+                        </thead>
 
-                            {activeTab === "trash" ? (
-                              <span className="px-2.5 py-0.5 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">
-                                {item.status}
-                              </span>
-                            ) : (
-                              <StatusDropdown
-                                currentStatus={item.status}
-                                onStatusChange={(newStatus) =>
-                                  handleStatusChange(item, newStatus)
-                                }
-                              />
-                            )}
-                          </div>
+                        <tbody className="divide-y divide-gray-100 bg-white md:text-sm">
+                          {filteredCustomers.map((item, index) => {
+                            const countryInfo = getCountryDisplay(item.country);
 
-                          <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs border-t border-b border-gray-50 py-2.5">
-                            <div>
-                              <span className="text-gray-400 block text-[10px] uppercase font-semibold">
-                                Origin:
-                              </span>{" "}
-                              <span className="font-semibold text-gray-800">
-                                {countryInfo.name}
-                              </span>
-                            </div>
-                            <div>
-                              <span className="text-gray-400 block text-[10px] uppercase font-semibold">
-                                Venue:
-                              </span>{" "}
-                              <span className="font-medium text-gray-800">
-                                {item.hotel || "—"}
-                              </span>
-                            </div>
-                            <div className="col-span-2 grid grid-cols-2 gap-1 bg-gray-50 p-2 rounded-lg mt-1 border border-gray-100 font-mono">
-                              <div>
-                                <span className="text-[9px] text-gray-400 block uppercase font-bold">
-                                  Package:
-                                </span>
-                                <span className="text-xs font-bold text-gray-900">
-                                  {item.package_price
-                                    ? Number(item.package_price).toLocaleString(
-                                        "en-LK",
-                                      )
-                                    : "0"}
-                                </span>
-                              </div>
+                            return (
+                              <tr
+                                key={item.id}
+                                className="hover:bg-fuchsia-50/40 transition"
+                              >
+                                <td className="p-4 text-center font-medium text-gray-400">
+                                  {index + 1}
+                                </td>
 
-                              <div>
-                                <span className="text-[9px] text-gray-400 block uppercase font-bold">
-                                  Discount:
-                                </span>
-                                <span className="text-xs font-bold text-purple-700">
-                                  {item.discount_rate
-                                    ? `${item.discount_rate}%`
-                                    : "0%"}
-                                </span>
-                              </div>
-                              <div>
-                                <span className="text-[9px] text-gray-400 block uppercase font-bold">
-                                  Agreed:
-                                </span>
-                                <span className="text-xs font-bold text-gray-900">
-                                  {item.agreed_price
-                                    ? item.agreed_price.toLocaleString("en-LK")
-                                    : "0"}
-                                </span>
-                              </div>
-                              <div>
-                                <span className="text-[9px] text-gray-400 block uppercase font-bold">
-                                  Paid:
-                                </span>
+                                <td className="p-4 font-bold text-gray-900">
+                                  <div className="flex items-center gap-2">
+                                    <span
+                                      className="emoji-flag text-base select-none"
+                                      title={countryInfo.name}
+                                    >
+                                      {countryInfo.flag}
+                                    </span>
+                                    <span>{item.couple_name}</span>
+                                  </div>
+                                </td>
 
-                                <span className="text-xs font-bold text-amber-800 block">
-                                  {item.advance_paid
-                                    ? item.advance_paid.toLocaleString("en-LK")
-                                    : "0"}
-                                </span>
+                                <td className="p-4 text-gray-700 font-medium">
+                                  {item.wedding_date || "—"}
+                                </td>
 
-                                {item.advance_paid_date && (
-                                  <span className="block text-[9px] text-gray-400 font-sans mt-0.5">
-                                    ({item.advance_paid_date})
+                                <td className="p-4 font-mono text-gray-700">
+                                  {item.contact_no || "—"}
+                                </td>
+
+                                <td className="p-4">
+                                  <span className="px-2 py-0.5 bg-gray-100 text-gray-800 rounded font-medium">
+                                    {item.service_type || "—"}
                                   </span>
-                                )}
-                              </div>
-                              <div>
-                                <span className="text-[9px] text-gray-400 block uppercase font-bold">
-                                  Pending:
-                                </span>
-                                <span className="text-xs font-bold text-red-600">
-                                  {item.pending_payment
-                                    ? item.pending_payment.toLocaleString(
-                                        "en-LK",
-                                      )
-                                    : "0"}
-                                </span>
-                              </div>
+                                </td>
+
+                                <td className="p-4 text-center">
+                                  <span
+                                    className={`px-3 py-1 rounded-xl text-xs font-black border ${
+                                      item.status === "Confirmed"
+                                        ? "bg-amber-50 text-amber-800 border-amber-200"
+                                        : item.status === "Completed"
+                                          ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                                          : "bg-blue-50 text-blue-800 border-blue-200"
+                                    }`}
+                                  >
+                                    {item.status || "Inquiry"}
+                                  </span>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {activePage === "vendors" && (
+              <div className="p-4 md:p-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                  <div>
+                    <h1 className="text-2xl md:text-3xl font-black text-fuchsia-950">
+                      🤝 Vendors
+                    </h1>
+                    <p className="text-sm text-fuchsia-900/70 mt-1 font-semibold">
+                      Manage wedding vendors and service providers
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => openVendorModal()}
+                    className="bg-white text-fuchsia-500 border border-fuchsia-200 font-semibold px-4 py-2 rounded-xl shadow hover:bg-fuchsia-50 transition text-sm"
+                  >
+                    + Add Vendor
+                  </button>
+                </div>
+
+                <div className="mb-4 bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl p-3 shadow">
+                  <input
+                    type="text"
+                    placeholder="Search by name, service or contact number..."
+                    value={vendorSearch}
+                    onChange={(e) => setVendorSearch(e.target.value)}
+                    className="w-full p-3 rounded-xl border border-fuchsia-100 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold"
+                  />
+                </div>
+
+                <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
+                  {vendorLoading ? (
+                    <div className="p-12 flex flex-col items-center justify-center gap-4">
+                      <div className="w-14 h-14 border-4 border-fuchsia-100 border-t-fuchsia-400 rounded-full animate-spin" />
+                      <p className="text-sm font-bold text-gray-500">
+                        Loading Vendors...
+                      </p>
+                    </div>
+                  ) : filteredVendors.length === 0 ? (
+                    <div className="p-12 text-center">
+                      <div className="text-4xl mb-3">🤝</div>
+                      <p className="text-gray-400 text-sm font-bold">
+                        No vendors added yet.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse min-w-max">
+                        <thead>
+                          <tr className="bg-fuchsia-50 text-fuchsia-900 uppercase text-xs md:text-[15px] font-black border-b border-gray-200">
+                            <th className="p-4">Name</th>
+                            <th className="p-4">Service</th>
+                            <th className="p-4">Contact Number</th>
+                            <th className="p-4">Location</th>
+                            <th className="p-4">Remarks</th>
+                            <th className="p-4 text-center">Actions</th>
+                          </tr>
+                        </thead>
+
+                        <tbody className="divide-y divide-gray-100 bg-white md:text-sm">
+                          {filteredVendors.map((vendor) => (
+                            <tr
+                              key={vendor.id}
+                              className="hover:bg-fuchsia-50/40 transition"
+                            >
+                              <td className="p-4 font-bold text-gray-900">
+                                🧾 {vendor.name}
+                              </td>
+                              <td className="p-4 text-gray-700 font-medium">
+                                {vendor.service || "—"}
+                              </td>
+                              <td className="p-4 font-mono text-gray-700">
+                                {vendor.contact_number || "—"}
+                              </td>
+                              <td className="p-4 text-gray-700">
+                                {vendor.location || "—"}
+                              </td>
+                              <td
+                                className="p-4 text-gray-500 max-w-xs truncate"
+                                title={vendor.remarks}
+                              >
+                                {vendor.remarks || "—"}
+                              </td>
+                              <td className="p-4 text-center">
+                                <div className="flex items-center justify-center gap-3">
+                                  <button
+                                    onClick={() => openVendorModal(vendor)}
+                                    className="text-fuchsia-600 font-bold hover:underline"
+                                  >
+                                    Edit
+                                  </button>
+
+                                  <button
+                                    onClick={() => deleteVendor(vendor)}
+                                    className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
+                                    title="Delete Vendor"
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      strokeWidth={2}
+                                      stroke="currentColor"
+                                      className="w-4 h-4"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                                      />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {activePage === "packages" && (
+              <div className="p-6">
+                <h1 className="text-3xl font-black text-fuchsia-950 mb-6">
+                  Our Packages
+                </h1>
+
+                <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/40">
+                  <p className="text-gray-500">
+                    Package PDF storage section will be added here.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            
+
+            
+
+            <WindowsFlagFix />
+          </div>
+        </div>
+      </div>
+            {/* INPUT / EDIT DIALOG FORM MODAL */}
+            {isModalOpen && (
+                  <div className="fixed inset-0 bg-black/55 backdrop-blur-md flex items-start md:items-center justify-center p-3 md:p-4 z-[999999] overflow-y-auto pb-[env(safe-area-inset-bottom)]">
+                    <div className="relative z-[1000000] bg-white rounded-2xl w-full max-w-lg p-4 md:p-6 shadow-2xl space-y-4 my-4 md:my-8 border border-gray-100 max-h-[92vh] overflow-y-auto pb-28 md:pb-6">
+                      <div className="flex items-center justify-between border-b pb-3">
+                        <h2 className="text-lg font-bold text-gray-900">
+                          {formData.id
+                            ? "Modify Wedding File"
+                            : "Add New Wedding Record"}
+                        </h2>
+
+                        <button
+                          type="button"
+                          onClick={() => setIsModalOpen(false)}
+                          className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition flex items-center justify-center text-lg font-bold active:scale-95"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                      <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+                          <div className="col-span-2">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                              Couple Name *
+                            </label>
+                            <input
+                              type="text"
+                              name="couple_name"
+                              required
+                              value={formData.couple_name}
+                              onChange={handleInputChange}
+                              className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                              Country
+                            </label>
+                            <select
+                              name="country"
+                              value={formData.country}
+                              onChange={handleInputChange}
+                              className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none font-medium text-gray-700"
+                            >
+                              {COUNTRIES.map((c) => (
+                                <option key={c.code} value={c.code}>
+                                  {c.flag} {c.code}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                              Wedding Date
+                            </label>
+                            <input
+                              type="date"
+                              name="wedding_date"
+                              value={formData.wedding_date}
+                              onChange={handleInputChange}
+                              className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm bg-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                              Guest Count
+                            </label>
+                            <div className="flex gap-1">
+                              <select
+                                name="guest_count"
+                                value={
+                                  [100, 150, 200, 250, 300, 350, 400].includes(
+                                    Number(formData.guest_count),
+                                  )
+                                    ? formData.guest_count
+                                    : ""
+                                }
+                                onChange={handleInputChange}
+                                className="w-1/2 p-2.5 bg-white border rounded-lg text-sm outline-none"
+                              >
+                                <option value="">Select count</option>
+                                <option value="100">100</option>
+                                <option value="150">150</option>
+                                <option value="200">200</option>
+                                <option value="250">250</option>
+                                <option value="300">300</option>
+                                <option value="350">350</option>
+                                <option value="400">400</option>
+                              </select>
+                              <input
+                                type="number"
+                                name="guest_count"
+                                placeholder="Or type..."
+                                value={formData.guest_count}
+                                onChange={handleInputChange}
+                                className="w-1/2 p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                              />
                             </div>
                           </div>
+                        </div>
 
-                          <div className="flex justify-between items-center pt-0.5">
+                        <div>
+                          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                            Hotel / Venue
+                          </label>
+                          <input
+                            type="text"
+                            name="hotel"
+                            value={formData.hotel}
+                            onChange={handleInputChange}
+                            className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="relative">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                              Service Type
+                            </label>
+
                             <button
                               type="button"
                               onClick={() =>
-                                setSelectedRemark(item.remarks || "No remarks")
+                                setIsServiceDropdownOpen(!isServiceDropdownOpen)
                               }
-                              className="text-xs text-gray-500 italic truncate max-w-[45%] text-left"
+                              className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none text-left flex items-center justify-between"
                             >
-                              💡 {item.remarks || "No remarks"}
+                              <span className="truncate">
+                                {Array.isArray(formData.service_type) &&
+                                formData.service_type.length > 0
+                                  ? formData.service_type.join(", ")
+                                  : "Please select service type"}
+                              </span>
+
+                              <span className="text-gray-400">▾</span>
                             </button>
 
-                            {activeTab === "trash" ? (
-                              <div className="flex items-center gap-1.5">
-                                <button
-                                  onClick={() => handleRecoverRecord(item)}
-                                  className="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-black shadow transition"
-                                >
-                                  Recovery
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    initiateDelete(item, "permanent")
-                                  }
-                                  className="p-1.5 border border-rose-200 text-rose-600 bg-rose-50 rounded-lg hover:bg-rose-100 transition text-xs font-bold"
-                                >
-                                  Wipe
-                                </button>
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-2">
-                                <button
-                                  onClick={() => initiateDelete(item, "soft")}
-                                  className="p-2 border border-red-100 text-red-500 bg-red-50/50 rounded-lg hover:bg-red-50 transition"
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth={2}
-                                    stroke="currentColor"
-                                    className="w-4 h-4"
+                            {isServiceDropdownOpen && (
+                              <div className="absolute z-[10000] mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl p-2 space-y-1">
+                                {SERVICE_TYPE_OPTIONS.map((service) => (
+                                  <label
+                                    key={service}
+                                    className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-emerald-50 cursor-pointer text-sm"
                                   >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                                    <input
+                                      type="checkbox"
+                                      checked={
+                                        Array.isArray(formData.service_type) &&
+                                        formData.service_type.includes(service)
+                                      }
+                                      onChange={(e) => {
+                                        const current = Array.isArray(
+                                          formData.service_type,
+                                        )
+                                          ? formData.service_type
+                                          : [];
+
+                                        if (e.target.checked) {
+                                          const updatedForm = {
+                                            ...formData,
+                                            service_type: [...current, service],
+                                          };
+
+                                          setFormData(updatedForm);
+
+                                          if (!updatedForm.id) {
+                                            localStorage.setItem(
+                                              DRAFT_KEY,
+                                              JSON.stringify(updatedForm),
+                                            );
+                                          }
+                                        } else {
+                                          const updatedForm = {
+                                            ...formData,
+                                            service_type: current.filter(
+                                              (s) => s !== service,
+                                            ),
+                                          };
+
+                                          setFormData(updatedForm);
+
+                                          if (!updatedForm.id) {
+                                            localStorage.setItem(
+                                              DRAFT_KEY,
+                                              JSON.stringify(updatedForm),
+                                            );
+                                          }
+                                        }
+                                      }}
+                                      className="accent-emerald-600"
                                     />
-                                  </svg>
-                                </button>
-                                <button
-                                  onClick={() => openEditModal(item)}
-                                  className="bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-100 transition"
-                                >
-                                  Modify
-                                </button>
+
+                                    <span className="font-medium text-gray-700">
+                                      {service}
+                                    </span>
+                                  </label>
+                                ))}
                               </div>
                             )}
                           </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                              Wedding Type
+                            </label>
+                            <select
+                              name="wedding_type"
+                              value={formData.wedding_type}
+                              onChange={handleInputChange}
+                              className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
+                            >
+                              <option value="One day">One day</option>
+                              <option value="Two days">Two days</option>
+                            </select>
+                          </div>
                         </div>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-            </main>
 
-            {/* INPUT / EDIT DIALOG FORM MODAL */}
-            {isModalOpen && (
-              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start md:items-center justify-center p-3 md:p-4 z-[9999] overflow-y-auto pb-[env(safe-area-inset-bottom)]">
-                <div className="bg-white rounded-2xl w-full max-w-lg p-4 md:p-6 shadow-2xl space-y-4 my-4 md:my-8 border border-gray-100 max-h-[92vh] overflow-y-auto pb-28 md:pb-6">
-                  <div className="flex items-center justify-between border-b pb-3">
-                    <h2 className="text-lg font-bold text-gray-900">
-                      {formData.id
-                        ? "Modify Wedding File"
-                        : "Add New Wedding Record"}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                              Bridesmaid
+                            </label>
+                            <select
+                              name="bridesmaid_option"
+                              value={formData.bridesmaid_option}
+                              onChange={handleInputChange}
+                              className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
+                            >
+                              <option value="">Please select</option>
+                              <option value="Without bridesmaid">
+                                Without bridesmaid
+                              </option>
+                              <option value="With bridesmaid">
+                                With bridesmaid
+                              </option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                              Status
+                            </label>
+                            <select
+                              name="status"
+                              value={formData.status}
+                              onChange={handleInputChange}
+                              className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
+                            >
+                              <option value="Inquiry">Inquiry</option>
+                              <option value="Confirmed">Confirmed</option>
+                              <option value="Completed">Completed</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-fuchsia-50/50 p-3 rounded-xl border border-fuchsia-100">
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
+                              Package Price (LKR)
+                            </label>
+                            <input
+                              type="number"
+                              name="package_price"
+                              value={formData.package_price}
+                              onChange={handleInputChange}
+                              className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
+                              Discount Rate (%)
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="number"
+                                name="discount_rate"
+                                value={formData.discount_rate}
+                                onChange={handleInputChange}
+                                className="w-full p-2.5 pr-8 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                              />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">
+                                %
+                              </span>
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
+                              Agreed Price (LKR)
+                            </label>
+                            <input
+                              type="number"
+                              name="agreed_price"
+                              value={formData.agreed_price}
+                              readOnly
+                              className="w-full p-2.5 bg-gray-100 border rounded-lg outline-none text-sm font-bold text-fuchsia-800"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
+                              Advance Paid (LKR)
+                            </label>
+                            <input
+                              type="number"
+                              name="advance_paid"
+                              value={formData.advance_paid}
+                              onChange={handleInputChange}
+                              className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
+                              Advance Paid Date
+                            </label>
+                            <input
+                              type="date"
+                              name="advance_paid_date"
+                              value={formData.advance_paid_date || ""}
+                              onChange={handleInputChange}
+                              className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                            Contact No.
+                          </label>
+                          <input
+                            type="text"
+                            name="contact_no"
+                            value={formData.contact_no}
+                            onChange={handleInputChange}
+                            className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                            Remarks
+                          </label>
+                          <textarea
+                            name="remarks"
+                            rows="2"
+                            value={formData.remarks}
+                            onChange={handleInputChange}
+                            className="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-fuchsia-300 outline-none"
+                          ></textarea>
+                        </div>
+
+                        <div className="flex justify-end gap-3 pt-4 pb-6 md:pb-0 border-t">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              localStorage.removeItem(DRAFT_KEY);
+
+                              setFormData({
+                                id: null,
+                                couple_name: "",
+                                wedding_date: "",
+                                hotel: "",
+                                service_type: [],
+                                wedding_type: "One day",
+                                guest_count: "",
+                                contact_no: "",
+                                bridesmaid_option: "",
+                                package_price: 0,
+                                discount_rate: 0,
+                                agreed_price: 0,
+                                advance_paid: 0,
+                                status: "Inquiry",
+                                remarks: "",
+                                country: "Local",
+                                advance_paid_date: "",
+                              });
+
+                              triggerNotification(
+                                "All inquiry fields cleared successfully.",
+                                "delete",
+                              );
+                            }}
+                            className="px-4 py-2 border border-rose-200 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 text-sm font-semibold transition"
+                          >
+                            Clear All
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setIsModalOpen(false)}
+                            className="px-4 py-2 border rounded-lg text-gray-600 hover:bg-gray-50 text-sm font-semibold"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="px-5 py-2 bg-fuchsia-200 text-black rounded-lg font-bold hover:bg-fuchsia-300 text-sm"
+                          >
+                            Save Record
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
+
+                {isVendorModalOpen && (
+              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start md:items-center justify-center p-4 z-[9999] overflow-y-auto">
+                <div className="bg-white rounded-3xl w-full max-w-lg p-5 shadow-2xl border border-gray-100 my-6">
+                  <div className="flex items-center justify-between border-b pb-3 mb-4">
+                    <h2 className="text-xl font-black text-gray-900">
+                      {vendorForm.id ? "Edit Vendor" : "Add Vendor"}
                     </h2>
 
                     <button
                       type="button"
-                      onClick={() => setIsModalOpen(false)}
-                      className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition flex items-center justify-center text-lg font-bold active:scale-95"
+                      onClick={() => setIsVendorModalOpen(false)}
+                      className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold"
                     >
                       ✕
                     </button>
                   </div>
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
-                      <div className="col-span-2">
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                          Couple Name *
-                        </label>
-                        <input
-                          type="text"
-                          name="couple_name"
-                          required
-                          value={formData.couple_name}
-                          onChange={handleInputChange}
-                          className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                          Country
-                        </label>
-                        <select
-                          name="country"
-                          value={formData.country}
-                          onChange={handleInputChange}
-                          className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none font-medium text-gray-700"
-                        >
-                          {COUNTRIES.map((c) => (
-                            <option key={c.code} value={c.code}>
-                              {c.flag} {c.code}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                          Wedding Date
-                        </label>
-                        <input
-                          type="date"
-                          name="wedding_date"
-                          value={formData.wedding_date}
-                          onChange={handleInputChange}
-                          className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm bg-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                          Guest Count
-                        </label>
-                        <div className="flex gap-1">
-                          <select
-                            name="guest_count"
-                            value={
-                              [100, 150, 200, 250, 300, 350, 400].includes(
-                                Number(formData.guest_count),
-                              )
-                                ? formData.guest_count
-                                : ""
-                            }
-                            onChange={handleInputChange}
-                            className="w-1/2 p-2.5 bg-white border rounded-lg text-sm outline-none"
-                          >
-                            <option value="">Select count</option>
-                            <option value="100">100</option>
-                            <option value="150">150</option>
-                            <option value="200">200</option>
-                            <option value="250">250</option>
-                            <option value="300">300</option>
-                            <option value="350">350</option>
-                            <option value="400">400</option>
-                          </select>
-                          <input
-                            type="number"
-                            name="guest_count"
-                            placeholder="Or type..."
-                            value={formData.guest_count}
-                            onChange={handleInputChange}
-                            className="w-1/2 p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
+                  <form onSubmit={handleVendorSubmit} className="space-y-4">
                     <div>
                       <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                        Hotel / Venue
+                        Name *
                       </label>
                       <input
                         type="text"
-                        name="hotel"
-                        value={formData.hotel}
-                        onChange={handleInputChange}
-                        className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                        name="name"
+                        required
+                        value={vendorForm.name}
+                        onChange={handleVendorChange}
+                        className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="relative">
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                          Service Type
-                        </label>
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setIsServiceDropdownOpen(!isServiceDropdownOpen)
-                          }
-                          className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none text-left flex items-center justify-between"
-                        >
-                          <span className="truncate">
-                            {Array.isArray(formData.service_type) &&
-                            formData.service_type.length > 0
-                              ? formData.service_type.join(", ")
-                              : "Please select service type"}
-                          </span>
-
-                          <span className="text-gray-400">▾</span>
-                        </button>
-
-                        {isServiceDropdownOpen && (
-                          <div className="absolute z-[10000] mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl p-2 space-y-1">
-                            {SERVICE_TYPE_OPTIONS.map((service) => (
-                              <label
-                                key={service}
-                                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-emerald-50 cursor-pointer text-sm"
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={
-                                    Array.isArray(formData.service_type) &&
-                                    formData.service_type.includes(service)
-                                  }
-                                  onChange={(e) => {
-                                    const current = Array.isArray(
-                                      formData.service_type,
-                                    )
-                                      ? formData.service_type
-                                      : [];
-
-                                    if (e.target.checked) {
-                                      const updatedForm = {
-                                        ...formData,
-                                        service_type: [...current, service],
-                                      };
-
-                                      setFormData(updatedForm);
-
-                                      if (!updatedForm.id) {
-                                        localStorage.setItem(
-                                          DRAFT_KEY,
-                                          JSON.stringify(updatedForm),
-                                        );
-                                      }
-                                    } else {
-                                      const updatedForm = {
-                                        ...formData,
-                                        service_type: current.filter(
-                                          (s) => s !== service,
-                                        ),
-                                      };
-
-                                      setFormData(updatedForm);
-
-                                      if (!updatedForm.id) {
-                                        localStorage.setItem(
-                                          DRAFT_KEY,
-                                          JSON.stringify(updatedForm),
-                                        );
-                                      }
-                                    }
-                                  }}
-                                  className="accent-emerald-600"
-                                />
-
-                                <span className="font-medium text-gray-700">
-                                  {service}
-                                </span>
-                              </label>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                          Wedding Type
-                        </label>
-                        <select
-                          name="wedding_type"
-                          value={formData.wedding_type}
-                          onChange={handleInputChange}
-                          className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
-                        >
-                          <option value="One day">One day</option>
-                          <option value="Two days">Two days</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                          Bridesmaid
-                        </label>
-                        <select
-                          name="bridesmaid_option"
-                          value={formData.bridesmaid_option}
-                          onChange={handleInputChange}
-                          className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
-                        >
-                          <option value="">Please select</option>
-                          <option value="Without bridesmaid">
-                            Without bridesmaid
-                          </option>
-                          <option value="With bridesmaid">
-                            With bridesmaid
-                          </option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                          Status
-                        </label>
-                        <select
-                          name="status"
-                          value={formData.status}
-                          onChange={handleInputChange}
-                          className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
-                        >
-                          <option value="Inquiry">Inquiry</option>
-                          <option value="Confirmed">Confirmed</option>
-                          <option value="Completed">Completed</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-fuchsia-50/50 p-3 rounded-xl border border-fuchsia-100">
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
-                          Package Price (LKR)
-                        </label>
-                        <input
-                          type="number"
-                          name="package_price"
-                          value={formData.package_price}
-                          onChange={handleInputChange}
-                          className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
-                          Discount Rate (%)
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="number"
-                            name="discount_rate"
-                            value={formData.discount_rate}
-                            onChange={handleInputChange}
-                            className="w-full p-2.5 pr-8 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                          />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">
-                            %
-                          </span>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
-                          Agreed Price (LKR)
-                        </label>
-                        <input
-                          type="number"
-                          name="agreed_price"
-                          value={formData.agreed_price}
-                          readOnly
-                          className="w-full p-2.5 bg-gray-100 border rounded-lg outline-none text-sm font-bold text-fuchsia-800"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
-                          Advance Paid (LKR)
-                        </label>
-                        <input
-                          type="number"
-                          name="advance_paid"
-                          value={formData.advance_paid}
-                          onChange={handleInputChange}
-                          className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
-                          Advance Paid Date
-                        </label>
-                        <input
-                          type="date"
-                          name="advance_paid_date"
-                          value={formData.advance_paid_date || ""}
-                          onChange={handleInputChange}
-                          className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                        />
-                      </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                        Service
+                      </label>
+                      <input
+                        type="text"
+                        name="service"
+                        value={vendorForm.service}
+                        onChange={handleVendorChange}
+                        className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                      />
                     </div>
 
                     <div>
                       <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                        Contact No.
+                        Contact Number
                       </label>
                       <input
                         type="text"
-                        name="contact_no"
-                        value={formData.contact_no}
-                        onChange={handleInputChange}
-                        className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                        name="contact_number"
+                        value={vendorForm.contact_number}
+                        onChange={handleVendorChange}
+                        className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                        Location
+                      </label>
+                      <input
+                        type="text"
+                        name="location"
+                        value={vendorForm.location}
+                        onChange={handleVendorChange}
+                        className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
                       />
                     </div>
 
@@ -2422,60 +3013,27 @@ const filteredVendors = vendors.filter((vendor) => {
                       </label>
                       <textarea
                         name="remarks"
-                        rows="2"
-                        value={formData.remarks}
-                        onChange={handleInputChange}
-                        className="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-fuchsia-300 outline-none"
-                      ></textarea>
+                        rows="3"
+                        value={vendorForm.remarks}
+                        onChange={handleVendorChange}
+                        className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                      />
                     </div>
 
-                    <div className="flex justify-end gap-3 pt-4 pb-6 md:pb-0 border-t">
+                    <div className="flex justify-end gap-3 pt-4 border-t">
                       <button
                         type="button"
-                        onClick={() => {
-                          localStorage.removeItem(DRAFT_KEY);
-
-                          setFormData({
-                            id: null,
-                            couple_name: "",
-                            wedding_date: "",
-                            hotel: "",
-                            service_type: [],
-                            wedding_type: "One day",
-                            guest_count: "",
-                            contact_no: "",
-                            bridesmaid_option: "",
-                            package_price: 0,
-                            discount_rate: 0,
-                            agreed_price: 0,
-                            advance_paid: 0,
-                            status: "Inquiry",
-                            remarks: "",
-                            country: "Local",
-                            advance_paid_date: "",
-                          });
-
-                          triggerNotification(
-                            "All inquiry fields cleared successfully.",
-                            "delete",
-                          );
-                        }}
-                        className="px-4 py-2 border border-rose-200 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 text-sm font-semibold transition"
-                      >
-                        Clear All
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setIsModalOpen(false)}
-                        className="px-4 py-2 border rounded-lg text-gray-600 hover:bg-gray-50 text-sm font-semibold"
+                        onClick={() => setIsVendorModalOpen(false)}
+                        className="px-4 py-2 rounded-xl border text-gray-600 font-bold"
                       >
                         Cancel
                       </button>
+
                       <button
                         type="submit"
-                        className="px-5 py-2 bg-fuchsia-200 text-black rounded-lg font-bold hover:bg-fuchsia-300 text-sm"
+                        className="px-5 py-2 rounded-xl bg-fuchsia-300 hover:bg-fuchsia-400 text-black font-black"
                       >
-                        Save Record
+                        {vendorForm.id ? "Update Vendor" : "Save Vendor"}
                       </button>
                     </div>
                   </form>
@@ -2483,933 +3041,401 @@ const filteredVendors = vendors.filter((vendor) => {
               </div>
             )}
 
-            {/* DYNAMIC CONFIRMATION DIALOG MODAL */}
-
-            {isCalendarOpen && (
-              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-                <div className="bg-white rounded-2xl w-full max-w-6xl h-[92vh] p-3 md:p-5 shadow-2xl border border-gray-100 flex flex-col overflow-hidden">
-                  <div className="flex items-center justify-between border-b pb-3 mb-4">
-                    <div>
-                      <h2 className="text-lg font-bold text-gray-900">
-                        Wedding Inquiry Calendar
-                      </h2>
-                      <p className="text-xs text-gray-500">
-                        Showing inquiries with wedding dates only
-                      </p>
-                    </div>
-
+            {deleteModal.show && (
+              <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-md flex items-center justify-center p-4 z-50">
+                <div className="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl text-center space-y-4 border border-rose-100">
+                  <div
+                    className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto text-3xl font-bold relative ${
+                      deleteModal.type === "soft"
+                        ? "bg-amber-50 text-amber-600"
+                        : "bg-rose-50 text-rose-600"
+                    }`}
+                  >
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-2xl bg-current opacity-10" />
+                    {deleteModal.type === "soft" ? "📁" : "⚠️"}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-extrabold text-gray-900 tracking-wide">
+                      {deleteModal.type === "soft"
+                        ? "Move to Deleted Records?"
+                        : deleteModal.type === "all"
+                          ? "Empty Entire Trash Bin?"
+                          : deleteModal.type === "vendor"
+                            ? "Delete Vendor?"
+                            : "Confirm Permanent Deletion"}
+                    </h3>
+                    <p className="text-sm text-gray-500 mt-2 px-2 leading-relaxed">
+                      {deleteModal.type === "soft" && (
+                        <>
+                          Are you sure you want to remove{" "}
+                          <strong>"{deleteModal.name}"</strong> from your
+                          tracking screens? You can restore them anytime from
+                          the Deleted Records tab.
+                        </>
+                      )}
+                      {deleteModal.type === "permanent" && (
+                        <>
+                          This will permanently scrub the database files for{" "}
+                          <strong>"{deleteModal.name}"</strong>. This action is
+                          irreversible.
+                        </>
+                      )}
+                      {deleteModal.type === "all" && (
+                        <>
+                          This will instantly wipe and erase{" "}
+                          <strong>all {deletedRecords.length} files</strong>{" "}
+                          inside your trash database list completely. This
+                          cannot be undone.
+                        </>
+                      )}
+                    </p>
+                  </div>
+                  <div className="flex gap-3 justify-center pt-2">
                     <button
-                      onClick={() => setIsCalendarOpen(false)}
-                      className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm font-bold text-gray-700"
+                      onClick={() =>
+                        setDeleteModal({
+                          show: false,
+                          id: null,
+                          name: "",
+                          type: "soft",
+                        })
+                      }
+                      className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs tracking-wider uppercase transition"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={confirmDeleteAction}
+                      className={`px-6 py-2.5 text-white font-black rounded-xl text-xs tracking-wider uppercase shadow-lg transition ${
+                        deleteModal.type === "soft"
+                          ? "bg-amber-600 shadow-amber-100 hover:bg-amber-700"
+                          : "bg-rose-600 shadow-rose-100 hover:bg-rose-700"
+                      }`}
+                    >
+                      {deleteModal.type === "soft"
+                        ? "Yes, Move to Trash"
+                        : deleteModal.type === "all"
+                          ? "Yes, Purge Everything"
+                          : deleteModal.type === "vendor"
+                            ? "Yes, Delete Vendor"
+                            : "Yes, Delete Permanently"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            {selectedRemark && (
+              <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+                <div className="relative z-[1000000] bg-white rounded-2xl w-full max-w-sm p-5 shadow-2xl border border-gray-100">
+                  <h3 className="text-base font-bold text-gray-900 mb-3">
+                    Remarks
+                  </h3>
+
+                  <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {selectedRemark}
+                  </p>
+
+                  <div className="flex justify-end mt-5">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRemark(null)}
+                      className="px-4 py-2 rounded-xl bg-fuchsia-200 text-white text-sm font-bold"
                     >
                       Close
                     </button>
                   </div>
+                </div>
+              </div>
+            )}
+            {/* DYNAMIC CONFIRMATION DIALOG MODAL */}
 
-                  <div className="flex-1 min-h-[520px] md:min-h-0 rounded-2xl overflow-auto border border-gray-100 shadow-inner bg-white p-2 md:p-3 calendar-premium">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
-                      <div className="bg-gradient-to-r from-emerald-50 to-white border border-emerald-100 rounded-2xl p-4 mb-4 shadow-sm">
-                        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-                          <div>
-                            <h3 className="text-sm font-black text-emerald-800 uppercase tracking-wider">
-                              Calendar Navigator
-                            </h3>
-                            <p className="text-xs text-gray-500 mt-1">
-                              Jump quickly to future wedding enquiry dates.
-                            </p>
-                          </div>
-
-                          <div className="flex flex-col md:flex-row gap-3">
-                            <div>
-                              <label className="block text-xs font-bold text-gray-500 mb-1">
-                                Date Picker
-                              </label>
-                              <input
-                                type="date"
-                                value={moment(calendarDate).format(
-                                  "YYYY-MM-DD",
-                                )}
-                                onChange={(e) => {
-                                  const value = e.target.value;
-                                  if (!value) return;
-
-                                  const selectedDate = moment(
-                                    value,
-                                    "YYYY-MM-DD",
-                                    true,
-                                  );
-
-                                  if (selectedDate.isValid()) {
-                                    setCalendarDate(selectedDate.toDate());
-                                    setManualCalendarDate(
-                                      selectedDate.format("YYYY-MM-DD"),
-                                    );
-                                  }
-                                }}
-                                className="w-full md:w-44 p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300 bg-white"
-                              />
-                            </div>
-
-                            <div>
-                              <label className="block text-xs font-bold text-gray-500 mb-1">
-                                Type Date Manually
-                              </label>
-                              <input
-                                type="text"
-                                placeholder="YYYY-MM-DD"
-                                value={manualCalendarDate}
-                                onChange={(e) =>
-                                  setManualCalendarDate(e.target.value)
-                                }
-                                className="w-full md:w-44 p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300 bg-white"
-                              />
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const selectedDate = moment(
-                                  manualCalendarDate,
-                                  "YYYY-MM-DD",
-                                  true,
-                                );
-
-                                if (selectedDate.isValid()) {
-                                  setCalendarDate(selectedDate.toDate());
-                                } else {
-                                  triggerNotification(
-                                    "Please enter date as YYYY-MM-DD",
-                                    "delete",
-                                  );
-                                }
-                              }}
-                              className="px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-black hover:bg-emerald-700 transition"
-                            >
-                              Go
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const today = new Date();
-                                setCalendarDate(today);
-                                setManualCalendarDate(
-                                  moment(today).format("YYYY-MM-DD"),
-                                );
-                              }}
-                              className="px-4 py-2.5 rounded-xl bg-gray-100 text-gray-700 text-sm font-black hover:bg-gray-200 transition"
-                            >
-                              Today
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => setCalendarDate(new Date())}
-                        className="px-4 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 text-sm font-bold hover:bg-emerald-100 transition"
-                      >
-                        Today
-                      </button>
-                    </div>
-                    <Calendar
-                      localizer={localizer}
-                      events={calendarEvents}
-                      startAccessor="start"
-                      endAccessor="end"
-                      titleAccessor="title"
-                      views={["month", "week", "day", "agenda"]}
-                      defaultView="month"
-                      date={
-                        calendarDate instanceof Date && !isNaN(calendarDate)
-                          ? calendarDate
-                          : new Date()
-                      }
-                      onNavigate={(date) => {
-                        if (date instanceof Date && !isNaN(date)) {
-                          setCalendarDate(date);
-                        }
-                      }}
-                      selectable
-                      onSelectSlot={(slotInfo) => {
-                        const selectedDate = moment(slotInfo.start).format(
-                          "YYYY-MM-DD",
-                        );
-
-                        setFormData({
-                          id: null,
-                          couple_name: "",
-                          wedding_date: selectedDate,
-                          hotel: "",
-                          service_type: [],
-                          wedding_type: "One day",
-                          guest_count: "",
-                          contact_no: "",
-                          bridesmaid_option: "",
-                          package_price: 0,
-                          discount_rate: 0,
-                          agreed_price: 0,
-                          advance_paid: 0,
-                          status: "Inquiry",
-                          remarks: "",
-                          country: "Local",
-                        });
-                        localStorage.setItem(
-                          DRAFT_KEY,
-                          JSON.stringify(updatedForm),
-                        );
-
-                        setIsModalOpen(true);
-                      }}
-                      popup
-                      style={{ height: "520px", minWidth: "720px" }}
-                      onSelectEvent={(event) => {
-                        setSelectedCalendarEvent(event.resource);
-                      }}
-                    />
-                  </div>
-                  {selectedCalendarEvent && (
-                    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
-                      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-gray-100 overflow-hidden">
-                        <div className="bg-emerald-700 px-5 py-4 text-white">
-                          <h2 className="text-xl font-bold">
-                            {selectedCalendarEvent.couple_name}
+                {isCalendarOpen && (
+                  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="relative z-[1000000] bg-white rounded-2xl w-full max-w-6xl h-[92vh] p-3 md:p-5 shadow-2xl border border-gray-100 flex flex-col overflow-hidden">
+                      <div className="flex items-center justify-between border-b pb-3 mb-4">
+                        <div>
+                          <h2 className="text-lg font-bold text-gray-900">
+                            Wedding Inquiry Calendar
                           </h2>
-
-                          <p className="text-emerald-100 text-sm mt-1">
-                            Wedding Details
+                          <p className="text-xs text-gray-500">
+                            Showing inquiries with wedding dates only
                           </p>
                         </div>
 
-                        <div className="p-5 space-y-4">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <p className="text-xs text-gray-400 font-semibold">
-                                Wedding Date
-                              </p>
+                        <button
+                          onClick={() => setIsCalendarOpen(false)}
+                          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm font-bold text-gray-700"
+                        >
+                          Close
+                        </button>
+                      </div>
 
-                              <p className="font-semibold text-gray-800">
-                                {selectedCalendarEvent.wedding_date || "-"}
-                              </p>
+                      <div className="flex-1 min-h-[520px] md:min-h-0 rounded-2xl overflow-auto border border-gray-100 shadow-inner bg-white p-2 md:p-3 calendar-premium">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+                          <div className="bg-gradient-to-r from-emerald-50 to-white border border-emerald-100 rounded-2xl p-4 mb-4 shadow-sm">
+                            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+                              <div>
+                                <h3 className="text-sm font-black text-emerald-800 uppercase tracking-wider">
+                                  Calendar Navigator
+                                </h3>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Jump quickly to future wedding enquiry dates.
+                                </p>
+                              </div>
+
+                              <div className="flex flex-col md:flex-row gap-3">
+                                <div>
+                                  <label className="block text-xs font-bold text-gray-500 mb-1">
+                                    Date Picker
+                                  </label>
+                                  <input
+                                    type="date"
+                                    value={moment(calendarDate).format(
+                                      "YYYY-MM-DD",
+                                    )}
+                                    onChange={(e) => {
+                                      const value = e.target.value;
+                                      if (!value) return;
+
+                                      const selectedDate = moment(
+                                        value,
+                                        "YYYY-MM-DD",
+                                        true,
+                                      );
+
+                                      if (selectedDate.isValid()) {
+                                        setCalendarDate(selectedDate.toDate());
+                                        setManualCalendarDate(
+                                          selectedDate.format("YYYY-MM-DD"),
+                                        );
+                                      }
+                                    }}
+                                    className="w-full md:w-44 p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300 bg-white"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-xs font-bold text-gray-500 mb-1">
+                                    Type Date Manually
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="YYYY-MM-DD"
+                                    value={manualCalendarDate}
+                                    onChange={(e) =>
+                                      setManualCalendarDate(e.target.value)
+                                    }
+                                    className="w-full md:w-44 p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300 bg-white"
+                                  />
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const selectedDate = moment(
+                                      manualCalendarDate,
+                                      "YYYY-MM-DD",
+                                      true,
+                                    );
+
+                                    if (selectedDate.isValid()) {
+                                      setCalendarDate(selectedDate.toDate());
+                                    } else {
+                                      triggerNotification(
+                                        "Please enter date as YYYY-MM-DD",
+                                        "delete",
+                                      );
+                                    }
+                                  }}
+                                  className="px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-black hover:bg-emerald-700 transition"
+                                >
+                                  Go
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const today = new Date();
+                                    setCalendarDate(today);
+                                    setManualCalendarDate(
+                                      moment(today).format("YYYY-MM-DD"),
+                                    );
+                                  }}
+                                  className="px-4 py-2.5 rounded-xl bg-gray-100 text-gray-700 text-sm font-black hover:bg-gray-200 transition"
+                                >
+                                  Today
+                                </button>
+                              </div>
                             </div>
-
-                            <div>
-                              <p className="text-xs text-gray-400 font-semibold">
-                                Guest Count
-                              </p>
-
-                              <p className="font-semibold text-gray-800">
-                                {selectedCalendarEvent.guest_count || "-"}
-                              </p>
-                            </div>
                           </div>
 
-                          <div>
-                            <p className="text-xs text-gray-400 font-semibold">
-                              Hotel
-                            </p>
-
-                            <p className="font-semibold text-gray-800">
-                              {selectedCalendarEvent.hotel || "-"}
-                            </p>
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <p className="text-xs text-gray-400 font-semibold">
-                                Service Type
-                              </p>
-
-                              <p className="font-semibold text-gray-800">
-                                {selectedCalendarEvent.service_type || "-"}
-                              </p>
-                            </div>
-
-                            <div>
-                              <p className="text-xs text-gray-400 font-semibold">
-                                Wedding Type
-                              </p>
-
-                              <p className="font-semibold text-gray-800">
-                                {selectedCalendarEvent.wedding_type || "-"}
-                              </p>
-                            </div>
-                          </div>
-
-                          <div>
-                            <p className="text-xs text-gray-400 font-semibold">
-                              Contact Number
-                            </p>
-
-                            <p className="font-semibold text-gray-800">
-                              {selectedCalendarEvent.contact_no || "-"}
-                            </p>
-                          </div>
-
-                          <div>
-                            <p className="text-xs text-gray-400 font-semibold">
-                              Status
-                            </p>
-
-                            <span className="inline-flex px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 mt-1">
-                              {selectedCalendarEvent.status || "-"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="border-t p-4 flex justify-end">
                           <button
-                            onClick={() => setSelectedCalendarEvent(null)}
-                            className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm"
+                            type="button"
+                            onClick={() => setCalendarDate(new Date())}
+                            className="px-4 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 text-sm font-bold hover:bg-emerald-100 transition"
                           >
-                            Close
+                            Today
                           </button>
                         </div>
+                        <Calendar
+                          localizer={localizer}
+                          events={calendarEvents}
+                          startAccessor="start"
+                          endAccessor="end"
+                          titleAccessor="title"
+                          views={["month", "week", "day", "agenda"]}
+                          defaultView="month"
+                          date={
+                            calendarDate instanceof Date && !isNaN(calendarDate)
+                              ? calendarDate
+                              : new Date()
+                          }
+                          onNavigate={(date) => {
+                            if (date instanceof Date && !isNaN(date)) {
+                              setCalendarDate(date);
+                            }
+                          }}
+                          selectable
+                          onSelectSlot={(slotInfo) => {
+                            const selectedDate = moment(slotInfo.start).format(
+                              "YYYY-MM-DD",
+                            );
+
+                            setFormData({
+                              id: null,
+                              couple_name: "",
+                              wedding_date: selectedDate,
+                              hotel: "",
+                              service_type: [],
+                              wedding_type: "One day",
+                              guest_count: "",
+                              contact_no: "",
+                              bridesmaid_option: "",
+                              package_price: 0,
+                              discount_rate: 0,
+                              agreed_price: 0,
+                              advance_paid: 0,
+                              status: "Inquiry",
+                              remarks: "",
+                              country: "Local",
+                            });
+                            localStorage.setItem(
+                              DRAFT_KEY,
+                              JSON.stringify(updatedForm),
+                            );
+
+                            setIsModalOpen(true);
+                          }}
+                          popup
+                          style={{ height: "520px", minWidth: "720px" }}
+                          onSelectEvent={(event) => {
+                            setSelectedCalendarEvent(event.resource);
+                          }}
+                        />
                       </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+                      {selectedCalendarEvent && (
+                        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+                          <div className="relative z-[1000000] bg-white rounded-2xl w-full max-w-md shadow-2xl border border-gray-100 overflow-hidden">
+                            <div className="bg-emerald-700 px-5 py-4 text-white">
+                              <h2 className="text-xl font-bold">
+                                {selectedCalendarEvent.couple_name}
+                              </h2>
 
-            {isMobileFilterOpen && (
-              <div className="md:hidden fixed inset-0 z-[9998] bg-black/40 backdrop-blur-sm flex items-end">
-                <div className="w-full bg-white rounded-t-[2rem] p-5 shadow-2xl max-h-[82vh] overflow-y-auto">
-                  <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-5" />
+                              <p className="text-emerald-100 text-sm mt-1">
+                                Wedding Details
+                              </p>
+                            </div>
 
-                  <div className="flex items-center justify-between mb-5">
-                    <h3 className="text-lg font-bold text-gray-900">Filters</h3>
+                            <div className="p-5 space-y-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <p className="text-xs text-gray-400 font-semibold">
+                                    Wedding Date
+                                  </p>
 
-                    <button
-                      type="button"
-                      onClick={() => setIsMobileFilterOpen(false)}
-                      className="text-gray-400 font-bold text-xl"
-                    >
-                      ✕
-                    </button>
-                  </div>
+                                  <p className="font-semibold text-gray-800">
+                                    {selectedCalendarEvent.wedding_date || "-"}
+                                  </p>
+                                </div>
 
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                        Date From
-                      </label>
-                      <input
-                        type="date"
-                        value={filters.weddingDateFrom}
-                        onChange={(e) =>
-                          setFilters({
-                            ...filters,
-                            weddingDateFrom: e.target.value,
-                          })
-                        }
-                        className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                      />
-                    </div>
+                                <div>
+                                  <p className="text-xs text-gray-400 font-semibold">
+                                    Guest Count
+                                  </p>
 
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                        Date To
-                      </label>
-                      <input
-                        type="date"
-                        value={filters.weddingDateTo}
-                        onChange={(e) =>
-                          setFilters({
-                            ...filters,
-                            weddingDateTo: e.target.value,
-                          })
-                        }
-                        className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                        Month
-                      </label>
-                      <input
-                        type="month"
-                        value={filters.weddingMonth}
-                        onChange={(e) =>
-                          setFilters({
-                            ...filters,
-                            weddingMonth: e.target.value,
-                          })
-                        }
-                        className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
-                        Service Types
-                      </label>
-
-                      <div className="flex flex-wrap gap-2">
-                        {SERVICE_TYPE_OPTIONS.map((service) => (
-                          <label
-                            key={service}
-                            className={`px-3 py-2 rounded-2xl text-xs font-bold border cursor-pointer ${
-                              filters.serviceType?.includes(service)
-                                ? "bg-emerald-600 text-white border-emerald-600"
-                                : "bg-gray-50 text-gray-600 border-gray-100"
-                            }`}
-                          >
-                            <input
-                              type="checkbox"
-                              className="hidden"
-                              checked={filters.serviceType?.includes(service)}
-                              onChange={(e) => {
-                                const current = filters.serviceType || [];
-
-                                setFilters({
-                                  ...filters,
-                                  serviceType: e.target.checked
-                                    ? [...current, service]
-                                    : current.filter((s) => s !== service),
-                                });
-                              }}
-                            />
-                            {service}
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                        Wedding Type
-                      </label>
-                      <select
-                        value={filters.weddingType}
-                        onChange={(e) =>
-                          setFilters({
-                            ...filters,
-                            weddingType: e.target.value,
-                          })
-                        }
-                        className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                      >
-                        <option value="">All Wedding Types</option>
-                        <option value="One day">One day</option>
-                        <option value="Two days">Two days</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                        Status
-                      </label>
-                      <select
-                        value={filters.status}
-                        onChange={(e) =>
-                          setFilters({
-                            ...filters,
-                            status: e.target.value,
-                          })
-                        }
-                        className="w-full p-3 rounded-2xl bg-gray-50 border border-gray-100 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
-                      >
-                        <option value="">All Status</option>
-                        <option value="Inquiry">Inquiry</option>
-                        <option value="Confirmed">Confirmed</option>
-                        <option value="Completed">Completed</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3 mt-6">
-                    <button
-                      type="button"
-                      onClick={clearSearchAndFilters}
-                      className="p-3 rounded-2xl border border-gray-300 text-gray-700 font-bold"
-                    >
-                      Reset
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setIsMobileFilterOpen(false)}
-                      className="p-3 rounded-2xl bg-fuchsia-200 text-black font-bold"
-                    >
-                      Apply
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
-        {deleteModal.show && (
-          <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-md flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl text-center space-y-4 border border-rose-100">
-              <div
-                className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto text-3xl font-bold relative ${
-                  deleteModal.type === "soft"
-                    ? "bg-amber-50 text-amber-600"
-                    : "bg-rose-50 text-rose-600"
-                }`}
-              >
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-2xl bg-current opacity-10" />
-                {deleteModal.type === "soft" ? "📁" : "⚠️"}
-              </div>
-              <div>
-                <h3 className="text-xl font-extrabold text-gray-900 tracking-wide">
-                  {deleteModal.type === "soft"
-                    ? "Move to Deleted Records?"
-                    : deleteModal.type === "all"
-                      ? "Empty Entire Trash Bin?"
-                      : deleteModal.type === "vendor"
-                        ? "Delete Vendor?"
-                        : "Confirm Permanent Deletion"}
-                </h3>
-                <p className="text-sm text-gray-500 mt-2 px-2 leading-relaxed">
-                  {deleteModal.type === "soft" && (
-                    <>
-                      Are you sure you want to remove{" "}
-                      <strong>"{deleteModal.name}"</strong> from your tracking
-                      screens? You can restore them anytime from the Deleted
-                      Records tab.
-                    </>
-                  )}
-                  {deleteModal.type === "permanent" && (
-                    <>
-                      This will permanently scrub the database files for{" "}
-                      <strong>"{deleteModal.name}"</strong>. This action is
-                      irreversible.
-                    </>
-                  )}
-                  {deleteModal.type === "all" && (
-                    <>
-                      This will instantly wipe and erase{" "}
-                      <strong>all {deletedRecords.length} files</strong> inside
-                      your trash database list completely. This cannot be
-                      undone.
-                    </>
-                  )}
-                </p>
-              </div>
-              <div className="flex gap-3 justify-center pt-2">
-                <button
-                  onClick={() =>
-                    setDeleteModal({
-                      show: false,
-                      id: null,
-                      name: "",
-                      type: "soft",
-                    })
-                  }
-                  className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs tracking-wider uppercase transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={confirmDeleteAction}
-                  className={`px-6 py-2.5 text-white font-black rounded-xl text-xs tracking-wider uppercase shadow-lg transition ${
-                    deleteModal.type === "soft"
-                      ? "bg-amber-600 shadow-amber-100 hover:bg-amber-700"
-                      : "bg-rose-600 shadow-rose-100 hover:bg-rose-700"
-                  }`}
-                >
-                  {deleteModal.type === "soft"
-                    ? "Yes, Move to Trash"
-                    : deleteModal.type === "all"
-                      ? "Yes, Purge Everything"
-                      : deleteModal.type === "vendor"
-                        ? "Yes, Delete Vendor"
-                        : "Yes, Delete Permanently"}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activePage === "customers" && (
-          <div className="p-4 md:p-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-              <div>
-                <h1 className="text-2xl md:text-3xl font-black text-fuchsia-950">
-                  👰 Customers
-                </h1>
-                <p className="text-sm text-fuchsia-900/70 mt-1 font-semibold">
-                  All wedding customers from inquiries, confirmed and completed
-                  records
-                </p>
-              </div>
-
-              <div className="bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl px-4 py-2 shadow text-sm font-black text-fuchsia-700">
-                Total Customers: {filteredCustomers.length}
-              </div>
-            </div>
-            <div className="mb-4 bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl p-3 shadow">
-  <input
-    type="text"
-    placeholder="Search by couple name..."
-    value={customerSearch}
-    onChange={(e) => setCustomerSearch(e.target.value)}
-    className="w-full p-3 rounded-xl border border-fuchsia-100 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold"
-  />
-</div>
-
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
-              {filteredCustomers.length === 0 ? (
-                <div className="p-12 text-center">
-                  <div className="text-4xl mb-3">👰</div>
-                  <p className="text-gray-400 text-sm font-bold">
-                    No customers found yet.
-                  </p>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse min-w-max">
-                    <thead>
-                      <tr className="bg-fuchsia-50 text-fuchsia-900 uppercase text-xs md:text-[15px] font-black border-b border-gray-200">
-                        <th className="p-4 text-center w-12">#</th>
-                        <th className="p-4">Couple Name</th>
-                        <th className="p-4">Wedding Date</th>
-                        <th className="p-4">Contact Number</th>
-                        <th className="p-4">Service Type</th>
-                        <th className="p-4 text-center">Status</th>
-                      </tr>
-                    </thead>
-
-                    <tbody className="divide-y divide-gray-100 bg-white md:text-sm">
-                      {filteredCustomers.map((item, index) => {
-                        const countryInfo = getCountryDisplay(item.country);
-
-                        return (
-                          <tr
-                            key={item.id}
-                            className="hover:bg-fuchsia-50/40 transition"
-                          >
-                            <td className="p-4 text-center font-medium text-gray-400">
-                              {index + 1}
-                            </td>
-
-                            <td className="p-4 font-bold text-gray-900">
-                              <div className="flex items-center gap-2">
-                                <span
-                                  className="emoji-flag text-base select-none"
-                                  title={countryInfo.name}
-                                >
-                                  {countryInfo.flag}
-                                </span>
-                                <span>{item.couple_name}</span>
+                                  <p className="font-semibold text-gray-800">
+                                    {selectedCalendarEvent.guest_count || "-"}
+                                  </p>
+                                </div>
                               </div>
-                            </td>
 
-                            <td className="p-4 text-gray-700 font-medium">
-                              {item.wedding_date || "—"}
-                            </td>
+                              <div>
+                                <p className="text-xs text-gray-400 font-semibold">
+                                  Hotel
+                                </p>
 
-                            <td className="p-4 font-mono text-gray-700">
-                              {item.contact_no || "—"}
-                            </td>
+                                <p className="font-semibold text-gray-800">
+                                  {selectedCalendarEvent.hotel || "-"}
+                                </p>
+                              </div>
 
-                            <td className="p-4">
-                              <span className="px-2 py-0.5 bg-gray-100 text-gray-800 rounded font-medium">
-                                {item.service_type || "—"}
-                              </span>
-                            </td>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <p className="text-xs text-gray-400 font-semibold">
+                                    Service Type
+                                  </p>
 
-                            <td className="p-4 text-center">
-                              <span
-                                className={`px-3 py-1 rounded-xl text-xs font-black border ${
-                                  item.status === "Confirmed"
-                                    ? "bg-amber-50 text-amber-800 border-amber-200"
-                                    : item.status === "Completed"
-                                      ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-                                      : "bg-blue-50 text-blue-800 border-blue-200"
-                                }`}
-                              >
-                                {item.status || "Inquiry"}
-                              </span>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+                                  <p className="font-semibold text-gray-800">
+                                    {selectedCalendarEvent.service_type || "-"}
+                                  </p>
+                                </div>
 
-        {activePage === "vendors" && (
-          <div className="p-4 md:p-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-              <div>
-                <h1 className="text-2xl md:text-3xl font-black text-fuchsia-950">
-                  🤝 Vendors
-                </h1>
-                <p className="text-sm text-fuchsia-900/70 mt-1 font-semibold">
-                  Manage wedding vendors and service providers
-                </p>
-              </div>
+                                <div>
+                                  <p className="text-xs text-gray-400 font-semibold">
+                                    Wedding Type
+                                  </p>
 
-              <button
-                onClick={() => openVendorModal()}
-                className="bg-white text-fuchsia-500 border border-fuchsia-200 font-semibold px-4 py-2 rounded-xl shadow hover:bg-fuchsia-50 transition text-sm"
-              >
-                + Add Vendor
-              </button>
-            </div>
+                                  <p className="font-semibold text-gray-800">
+                                    {selectedCalendarEvent.wedding_type || "-"}
+                                  </p>
+                                </div>
+                              </div>
 
-            <div className="mb-4 bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl p-3 shadow">
-  <input
-    type="text"
-    placeholder="Search by name, service or contact number..."
-    value={vendorSearch}
-    onChange={(e) => setVendorSearch(e.target.value)}
-    className="w-full p-3 rounded-xl border border-fuchsia-100 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold"
-  />
-</div>
+                              <div>
+                                <p className="text-xs text-gray-400 font-semibold">
+                                  Contact Number
+                                </p>
 
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
-              {vendorLoading ? (
-                <div className="p-12 flex flex-col items-center justify-center gap-4">
-                  <div className="w-14 h-14 border-4 border-fuchsia-100 border-t-fuchsia-400 rounded-full animate-spin" />
-                  <p className="text-sm font-bold text-gray-500">
-                    Loading Vendors...
-                  </p>
-                </div>
-              ) : filteredVendors.length === 0 ? (
-                <div className="p-12 text-center">
-                  <div className="text-4xl mb-3">🤝</div>
-                  <p className="text-gray-400 text-sm font-bold">
-                    No vendors added yet.
-                  </p>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse min-w-max">
-                    <thead>
-                      <tr className="bg-fuchsia-50 text-fuchsia-900 uppercase text-xs md:text-[15px] font-black border-b border-gray-200">
-                        <th className="p-4">Name</th>
-                        <th className="p-4">Service</th>
-                        <th className="p-4">Contact Number</th>
-                        <th className="p-4">Location</th>
-                        <th className="p-4">Remarks</th>
-                        <th className="p-4 text-center">Actions</th>
-                      </tr>
-                    </thead>
+                                <p className="font-semibold text-gray-800">
+                                  {selectedCalendarEvent.contact_no || "-"}
+                                </p>
+                              </div>
 
-                    <tbody className="divide-y divide-gray-100 bg-white md:text-sm">
-                      {filteredVendors.map((vendor) => (
-                        <tr
-                          key={vendor.id}
-                          className="hover:bg-fuchsia-50/40 transition"
-                        >
-                          <td className="p-4 font-bold text-gray-900">
-                            🧾 {vendor.name}
-                          </td>
-                          <td className="p-4 text-gray-700 font-medium">
-                            {vendor.service || "—"}
-                          </td>
-                          <td className="p-4 font-mono text-gray-700">
-                            {vendor.contact_number || "—"}
-                          </td>
-                          <td className="p-4 text-gray-700">
-                            {vendor.location || "—"}
-                          </td>
-                          <td
-                            className="p-4 text-gray-500 max-w-xs truncate"
-                            title={vendor.remarks}
-                          >
-                            {vendor.remarks || "—"}
-                          </td>
-                          <td className="p-4 text-center">
-                            <div className="flex items-center justify-center gap-3">
+                              <div>
+                                <p className="text-xs text-gray-400 font-semibold">
+                                  Status
+                                </p>
+
+                                <span className="inline-flex px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 mt-1">
+                                  {selectedCalendarEvent.status || "-"}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="border-t p-4 flex justify-end">
                               <button
-                                onClick={() => openVendorModal(vendor)}
-                                className="text-fuchsia-600 font-bold hover:underline"
+                                onClick={() => setSelectedCalendarEvent(null)}
+                                className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm"
                               >
-                                Edit
-                              </button>
-
-                              <button
-                                onClick={() => deleteVendor(vendor)}
-                                className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
-                                title="Delete Vendor"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  strokeWidth={2}
-                                  stroke="currentColor"
-                                  className="w-4 h-4"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                                  />
-                                </svg>
+                                Close
                               </button>
                             </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {activePage === "packages" && (
-          <div className="p-6">
-            <h1 className="text-3xl font-black text-fuchsia-950 mb-6">
-              Our Packages
-            </h1>
-
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/40">
-              <p className="text-gray-500">
-                Package PDF storage section will be added here.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {selectedRemark && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
-            <div className="bg-white rounded-2xl w-full max-w-sm p-5 shadow-2xl border border-gray-100">
-              <h3 className="text-base font-bold text-gray-900 mb-3">
-                Remarks
-              </h3>
-
-              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                {selectedRemark}
-              </p>
-
-              <div className="flex justify-end mt-5">
-                <button
-                  type="button"
-                  onClick={() => setSelectedRemark(null)}
-                  className="px-4 py-2 rounded-xl bg-fuchsia-200 text-white text-sm font-bold"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {isVendorModalOpen && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start md:items-center justify-center p-4 z-[9999] overflow-y-auto">
-            <div className="bg-white rounded-3xl w-full max-w-lg p-5 shadow-2xl border border-gray-100 my-6">
-              <div className="flex items-center justify-between border-b pb-3 mb-4">
-                <h2 className="text-xl font-black text-gray-900">
-                  {vendorForm.id ? "Edit Vendor" : "Add Vendor"}
-                </h2>
-
-                <button
-                  type="button"
-                  onClick={() => setIsVendorModalOpen(false)}
-                  className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <form onSubmit={handleVendorSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Name *
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    required
-                    value={vendorForm.name}
-                    onChange={handleVendorChange}
-                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Service
-                  </label>
-                  <input
-                    type="text"
-                    name="service"
-                    value={vendorForm.service}
-                    onChange={handleVendorChange}
-                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Contact Number
-                  </label>
-                  <input
-                    type="text"
-                    name="contact_number"
-                    value={vendorForm.contact_number}
-                    onChange={handleVendorChange}
-                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Location
-                  </label>
-                  <input
-                    type="text"
-                    name="location"
-                    value={vendorForm.location}
-                    onChange={handleVendorChange}
-                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Remarks
-                  </label>
-                  <textarea
-                    name="remarks"
-                    rows="3"
-                    value={vendorForm.remarks}
-                    onChange={handleVendorChange}
-                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-                  />
-                </div>
-
-                <div className="flex justify-end gap-3 pt-4 border-t">
-                  <button
-                    type="button"
-                    onClick={() => setIsVendorModalOpen(false)}
-                    className="px-4 py-2 rounded-xl border text-gray-600 font-bold"
-                  >
-                    Cancel
-                  </button>
-
-                  <button
-                    type="submit"
-                    className="px-5 py-2 rounded-xl bg-fuchsia-300 hover:bg-fuchsia-400 text-black font-black"
-                  >
-                    {vendorForm.id ? "Update Vendor" : "Save Vendor"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        <WindowsFlagFix />
-      </div>
-      </div>
-      </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
     </div>
   );
 }
