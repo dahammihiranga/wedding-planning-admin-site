@@ -1817,8 +1817,10 @@ export default function Dashboard() {
                                   <td className="p-3 text-gray-600 font-medium">
                                     {item.wedding_date || "—"}
                                   </td>
-                                  <td className="p-3 text-gray-700 font-medium">
-                                    {item.hotel || "—"}
+                                  <td className="p-3 max-w-[220px]">
+                                    <div className="whitespace-normal break-words leading-snug">
+                                      {item.hotel || "-"}
+                                    </div>
                                   </td>
                                   <td className="p-3">
                                     <span className="px-2 py-0.5 bg-gray-100 text-gray-800 rounded font-medium">
@@ -1931,11 +1933,21 @@ export default function Dashboard() {
                                       />
                                     )}
                                   </td>
-                                  <td
-                                    className="p-3 text-gray-500 max-w-xs truncate"
-                                    title={item.remarks}
-                                  >
-                                    {item.remarks || "—"}
+                                  <td className="p-3 text-gray-500 max-w-xs">
+                                    {item.remarks ? (
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          setSelectedRemark(item.remarks)
+                                        }
+                                        className="max-w-xs truncate text-left text-gray-500 hover:text-fuchsia-600 hover:underline transition"
+                                        title="Click to view full remarks"
+                                      >
+                                        {item.remarks}
+                                      </button>
+                                    ) : (
+                                      "—"
+                                    )}
                                   </td>
 
                                   <td className="p-3 text-center">
@@ -2562,11 +2574,21 @@ export default function Dashboard() {
                               <td className="p-4 text-gray-700">
                                 {vendor.location || "—"}
                               </td>
-                              <td
-                                className="p-4 text-gray-500 max-w-xs truncate"
-                                title={vendor.remarks}
-                              >
-                                {vendor.remarks || "—"}
+                              <td className="p-4 text-gray-500 max-w-xs truncate">
+                                {vendor.remarks ? (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setSelectedRemark(vendor.remarks)
+                                    }
+                                    className="max-w-[220px] truncate text-left hover:text-fuchsia-600 hover:underline transition"
+                                    title="Click to view full remarks"
+                                  >
+                                    {vendor.remarks}
+                                  </button>
+                                ) : (
+                                  "—"
+                                )}
                               </td>
                               <td className="p-4 text-center">
                                 <div className="flex items-center justify-center gap-3">
