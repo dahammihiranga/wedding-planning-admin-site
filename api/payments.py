@@ -17,7 +17,7 @@ url = os.environ.get("TURSO_DATABASE_URL")
 auth_token = os.environ.get("TURSO_AUTH_TOKEN")
 
 
-@app.get("/api/payments")
+@app.get("/")
 async def get_payments(inquiry_id: int = None):
     client = create_client_sync(url=url, auth_token=auth_token)
 
@@ -48,7 +48,7 @@ async def get_payments(inquiry_id: int = None):
         return {"success": False, "error": str(e)}
 
 
-@app.post("/api/payments")
+@app.post("/")
 async def add_payment(data: dict):
     client = create_client_sync(url=url, auth_token=auth_token)
 

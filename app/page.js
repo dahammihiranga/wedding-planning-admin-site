@@ -768,7 +768,7 @@ export default function Dashboard() {
         const json = await res.json();
 
         if (formData.id && Number(formData.new_payment || 0) > 0) {
-          const paymentRes = await fetch("/api/inquiries/payments", {
+          const paymentRes = await fetch("/api/payments", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
