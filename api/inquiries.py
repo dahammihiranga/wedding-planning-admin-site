@@ -86,7 +86,14 @@ async def create_inquiry(data: dict):
 
         package_price = float(data.get("package_price") or 0)
         discount_rate = float(data.get("discount_rate") or 0)
-        agreed_price = package_price - ((package_price * discount_rate) / 100)
+        discount_type = data.get("discount_type") or "percentage"
+
+        if discount_type == "fixed":
+            agreed_price = package_price - discount_rate
+        else:
+            agreed_price = package_price - ((package_price * discount_rate) / 100)
+
+        agreed_price = max(agreed_price, 0)
         advance_paid = float(data.get("advance_paid") or 0)
         paid_amount = float(data.get("paid_amount") or 0)
 
@@ -149,7 +156,7 @@ async def create_inquiry(data: dict):
                 data.get("advance_paid_date") or None,
                 paid_amount,
                 data.get("paid_date") or None,
-                data.get("discount_type") or "percentage"
+                data.get("discount_type") or "percentage",
             ],
         )
 
@@ -175,11 +182,20 @@ async def update_inquiry(id: int, data: dict):
 
         package_price = float(data.get("package_price") or 0)
         discount_rate = float(data.get("discount_rate") or 0)
-        agreed_price = package_price - ((package_price * discount_rate) / 100)
+        discount_type = data.get("discount_type") or "percentage"
+
+        if discount_type == "fixed":
+            agreed_price = package_price - discount_rate
+        else:
+            agreed_price = package_price - ((package_price * discount_rate) / 100)
+
+        agreed_price = max(agreed_price, 0)
         advance_paid = float(data.get("advance_paid") or 0)
         paid_amount = float(data.get("paid_amount") or 0)
-        total_paid = advance_paid + paid_amount
-        pending_payment = agreed_price - total_paid
+        if paid_amount < advance_paid:
+            paid_amount = advance_paid
+
+        pending_payment = agreed_price - paid_amount
 
         guest_count_raw = data.get("guest_count")
         guest_count = (
@@ -262,6 +278,93 @@ async def delete_inquiry(id: int):
 
         client.close()
 
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/api/payments")
+async def get_payments(inquiry_id: int = None):
+    client = create_client_sync(url=url, auth_token=auth_token)
+
+    try:
+        if inquiry_id:
+            result = client.execute(
+                "SELECT * FROM payment_transactions WHERE inquiry_id = ? ORDER BY payment_date ASC, id ASC",
+                [inquiry_id],
+            )
+        else:
+            result = client.execute(
+                "SELECT * FROM payment_transactions ORDER BY payment_date ASC, id ASC"
+            )
+
+        rows = [dict(zip(result.columns, row)) for row in result.rows]
+        client.close()
+        return rows
+
+    except Exception as e:
+        client.close()
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/api/payments")
+async def add_payment(data: dict):
+    client = create_client_sync(url=url, auth_token=auth_token)
+
+    try:
+        inquiry_id = int(data.get("inquiry_id"))
+        amount = float(data.get("amount") or 0)
+        payment_date = data.get("payment_date") or None
+        payment_type = data.get("payment_type") or "Partial"
+
+        if amount <= 0:
+            return {"success": False, "error": "Payment amount must be greater than 0"}
+
+        client.execute(
+            """
+            INSERT INTO payment_transactions (
+                inquiry_id,
+                amount,
+                payment_date,
+                payment_type
+            )
+            VALUES (?, ?, ?, ?)
+            """,
+            [inquiry_id, amount, payment_date, payment_type],
+        )
+
+        total_result = client.execute(
+            "SELECT COALESCE(SUM(amount), 0) FROM payment_transactions WHERE inquiry_id = ?",
+            [inquiry_id],
+        )
+
+        total_paid = float(total_result.rows[0][0] or 0)
+
+        inquiry_result = client.execute(
+            "SELECT agreed_price FROM inquiries WHERE id = ?",
+            [inquiry_id],
+        )
+
+        agreed_price = float(inquiry_result.rows[0][0] or 0)
+        pending_payment = max(agreed_price - total_paid, 0)
+
+        client.execute(
+            """
+            UPDATE inquiries
+            SET paid_amount = ?, pending_payment = ?, paid_date = ?
+            WHERE id = ?
+            """,
+            [total_paid, pending_payment, payment_date, inquiry_id],
+        )
+
+        client.close()
+
+        return {
+            "success": True,
+            "paid_amount": total_paid,
+            "pending_payment": pending_payment,
+        }
+
+    except Exception as e:
+        client.close()
         return {"success": False, "error": str(e)}
 
 

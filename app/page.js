@@ -315,6 +315,7 @@ export default function Dashboard() {
   const [vendorSearch, setVendorSearch] = useState("");
   const [paymentSearch, setPaymentSearch] = useState("");
   const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
+  const [paymentTransactions, setPaymentTransactions] = useState([]);
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -478,9 +479,23 @@ export default function Dashboard() {
     }
   };
 
+  const fetchPaymentTransactions = async () => {
+    try {
+      const res = await fetch("/api/payments");
+      const json = await res.json();
+
+      if (Array.isArray(json)) {
+        setPaymentTransactions(json);
+      }
+    } catch (err) {
+      console.error("Error fetching payment transactions", err);
+    }
+  };
+
   useEffect(() => {
     if (mounted) {
       fetchData();
+      fetchPaymentTransactions();
     }
   }, [activeTab, mounted, deletedRecords.length]);
 
@@ -750,11 +765,29 @@ export default function Dashboard() {
         body: JSON.stringify(adjustedData),
       });
       if (res.ok) {
+        const json = await res.json();
+
+        if (formData.id && Number(formData.new_payment || 0) > 0) {
+          await fetch("/api/payments", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              inquiry_id: formData.id,
+              amount: Number(formData.new_payment || 0),
+              payment_date:
+                formData.paid_date || new Date().toISOString().slice(0, 10),
+              payment_type: "Partial",
+            }),
+          });
+        }
+
         if (!formData.id) {
           localStorage.removeItem(DRAFT_KEY);
         }
+
         setIsModalOpen(false);
         fetchData();
+        fetchPaymentTransactions();
         triggerNotification(
           formData.id
             ? `Changes applied to ${formData.couple_name}'s booking file.`
@@ -2809,6 +2842,9 @@ export default function Dashboard() {
                                 : paid > 0
                                   ? "Partially Paid"
                                   : "Pending";
+                            const transactions = paymentTransactions.filter(
+                              (p) => Number(p.inquiry_id) === Number(item.id),
+                            );
 
                             return (
                               <tr
@@ -2846,36 +2882,49 @@ export default function Dashboard() {
 
                                 <td className="p-4 text-right">
                                   <div className="font-mono font-black text-emerald-700 text-base">
-                                    Rs. {paid.toLocaleString("en-LK")}
+                                    Rs.{" "}
+                                    {Number(
+                                      item.paid_amount || 0,
+                                    ).toLocaleString("en-LK")}
                                   </div>
 
-                                  <div className="mt-1 space-y-0.5">
-                                    <div className="text-[10px] text-amber-600 font-bold">
-                                      Booking Advance: Rs.
-                                      {Number(
-                                        item.advance_paid || 0,
-                                      ).toLocaleString("en-LK")}
-                                    </div>
+                                  <div className="mt-2 space-y-1 text-[10px]">
+                                    {transactions.length > 0 ? (
+                                      transactions.map((payment) => (
+                                        <div
+                                          key={payment.id}
+                                          className="rounded-lg bg-emerald-50 border border-emerald-100 px-2 py-1 text-left"
+                                        >
+                                          <div className="font-black text-emerald-700">
+                                            {payment.payment_type}: Rs.{" "}
+                                            {Number(
+                                              payment.amount || 0,
+                                            ).toLocaleString("en-LK")}
+                                          </div>
 
-                                    {item.advance_paid_date && (
-                                      <div className="text-[10px] text-gray-400">
-                                        Advance Date: {item.advance_paid_date}
-                                      </div>
-                                    )}
+                                          <div className="text-gray-400 font-semibold">
+                                            {payment.payment_date || "No date"}
+                                          </div>
+                                        </div>
+                                      ))
+                                    ) : (
+                                      <>
+                                        {Number(item.advance_paid || 0) > 0 && (
+                                          <div className="text-amber-600 font-bold">
+                                            Booking Advance: Rs.{" "}
+                                            {Number(
+                                              item.advance_paid || 0,
+                                            ).toLocaleString("en-LK")}
+                                          </div>
+                                        )}
 
-                                    {paid > Number(item.advance_paid || 0) && (
-                                      <div className="text-[10px] text-emerald-600 font-bold">
-                                        Additional Payments: Rs.
-                                        {(
-                                          paid - Number(item.advance_paid || 0)
-                                        ).toLocaleString("en-LK")}
-                                      </div>
-                                    )}
-
-                                    {item.paid_date && (
-                                      <div className="text-[10px] text-gray-400">
-                                        Latest Payment: {item.paid_date}
-                                      </div>
+                                        {item.advance_paid_date && (
+                                          <div className="text-gray-400">
+                                            Advance Date:{" "}
+                                            {item.advance_paid_date}
+                                          </div>
+                                        )}
+                                      </>
                                     )}
                                   </div>
                                 </td>
