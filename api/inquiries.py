@@ -76,19 +76,13 @@ async def get_inquiries(tab: str = "all"):
 @app.post("/api/inquiries")
 async def create_inquiry(data: dict):
 
-    client = create_client_sync(
-        url=url,
-        auth_token=auth_token
-    )
+    client = create_client_sync(url=url, auth_token=auth_token)
 
     try:
         couple_name = (data.get("couple_name") or "").strip()
 
         if not couple_name:
-            return {
-                "success": False,
-                "error": "Couple name is required"
-            }
+            return {"success": False, "error": "Couple name is required"}
 
         package_price = float(data.get("package_price") or 0)
         discount_rate = float(data.get("discount_rate") or 0)
@@ -103,7 +97,9 @@ async def create_inquiry(data: dict):
         pending_payment = agreed_price - paid_amount
 
         guest_count_raw = data.get("guest_count")
-        guest_count = int(guest_count_raw) if guest_count_raw not in [None, ""] else None
+        guest_count = (
+            int(guest_count_raw) if guest_count_raw not in [None, ""] else None
+        )
 
         query = """
         INSERT INTO inquiries (
@@ -151,8 +147,8 @@ async def create_inquiry(data: dict):
                 data.get("country") or "Local",
                 data.get("advance_paid_date") or None,
                 paid_amount,
-                data.get("paid_date") or None
-            ]
+                data.get("paid_date") or None,
+            ],
         )
 
         client.close()
@@ -161,27 +157,19 @@ async def create_inquiry(data: dict):
 
     except Exception as e:
         client.close()
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        return {"success": False, "error": str(e)}
+
 
 @app.put("/api/inquiries")
 async def update_inquiry(id: int, data: dict):
 
-    client = create_client_sync(
-        url=url,
-        auth_token=auth_token
-    )
+    client = create_client_sync(url=url, auth_token=auth_token)
 
     try:
         couple_name = (data.get("couple_name") or "").strip()
 
         if not couple_name:
-            return {
-                "success": False,
-                "error": "Couple name is required"
-            }
+            return {"success": False, "error": "Couple name is required"}
 
         package_price = float(data.get("package_price") or 0)
         discount_rate = float(data.get("discount_rate") or 0)
@@ -192,9 +180,12 @@ async def update_inquiry(id: int, data: dict):
         pending_payment = agreed_price - total_paid
 
         guest_count_raw = data.get("guest_count")
-        guest_count = int(guest_count_raw) if guest_count_raw not in [None, ""] else None
+        guest_count = (
+            int(guest_count_raw) if guest_count_raw not in [None, ""] else None
+        )
 
-        client.execute("""
+        client.execute(
+            """
     UPDATE inquiries SET 
         couple_name=?,
         wedding_date=?,
@@ -216,75 +207,58 @@ async def update_inquiry(id: int, data: dict):
         remarks=?,
         country=?
     WHERE id=?
-""", [
-    couple_name,
-    data.get("wedding_date") or None,
-    data.get("hotel") or None,
-    data.get("service_type") or None,
-    data.get("wedding_type") or None,
-    guest_count,
-    data.get("contact_no") or None,
-    data.get("bridesmaid_option") or "-",
-    package_price,
-    discount_rate,
-    agreed_price,
-    advance_paid,
-    data.get("advance_paid_date") or None,
-    paid_amount,
-    data.get("paid_date") or None,
-    pending_payment,
-    data.get("status") or "Inquiry",
-    data.get("remarks") or None,
-    data.get("country") or "Local",
-    id
-])
+""",
+            [
+                couple_name,
+                data.get("wedding_date") or None,
+                data.get("hotel") or None,
+                data.get("service_type") or None,
+                data.get("wedding_type") or None,
+                guest_count,
+                data.get("contact_no") or None,
+                data.get("bridesmaid_option") or "-",
+                package_price,
+                discount_rate,
+                agreed_price,
+                advance_paid,
+                data.get("advance_paid_date") or None,
+                paid_amount,
+                data.get("paid_date") or None,
+                pending_payment,
+                data.get("status") or "Inquiry",
+                data.get("remarks") or None,
+                data.get("country") or "Local",
+                id,
+            ],
+        )
 
         client.close()
 
-        return {
-            "success": True,
-            "id": id,
-            "pending_payment": pending_payment
-        }
+        return {"success": True, "id": id, "pending_payment": pending_payment}
 
     except Exception as e:
         client.close()
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        return {"success": False, "error": str(e)}
 
 
 @app.delete("/api/inquiries")
 async def delete_inquiry(id: int):
 
-    client = create_client_sync(
-        url=url,
-        auth_token=auth_token
-    )
+    client = create_client_sync(url=url, auth_token=auth_token)
 
     try:
 
-        client.execute(
-            "DELETE FROM inquiries WHERE id = ?",
-            [id]
-        )
+        client.execute("DELETE FROM inquiries WHERE id = ?", [id])
 
         client.close()
 
-        return {
-            "success": True,
-            "id": id
-        }
+        return {"success": True, "id": id}
 
     except Exception as e:
 
         client.close()
 
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        return {"success": False, "error": str(e)}
 
 
 handler = app

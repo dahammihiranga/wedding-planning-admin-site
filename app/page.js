@@ -369,6 +369,7 @@ export default function Dashboard() {
     advance_paid_date: "",
     paid_amount: 0,
     paid_date: "",
+    new_payment: "",
   });
 
   const API_URL = "/api/inquiries";
@@ -506,25 +507,23 @@ export default function Dashboard() {
         packagePrice - (packagePrice * discountRate) / 100;
     }
 
-    if (name === "advance_paid") {
-  const advancePaid = parseFloat(updatedForm.advance_paid) || 0;
-  const paidAmount = parseFloat(updatedForm.paid_amount) || 0;
+    if (name === "advance_paid" && !updatedForm.id) {
+      const advancePaid = parseFloat(updatedForm.advance_paid) || 0;
+      updatedForm.paid_amount = advancePaid;
+    }
 
-  if (paidAmount < advancePaid) {
-    updatedForm.paid_amount = advancePaid;
-  }
-}
+    if (name === "new_payment") {
+      const previousNewPayment = parseFloat(formData.new_payment) || 0;
+      const currentPaid = parseFloat(formData.paid_amount) || 0;
+      const newPayment = parseFloat(value) || 0;
 
-if (
-  name === "agreed_price" ||
-  name === "advance_paid" ||
-  name === "paid_amount"
-) {
-  const agreedPrice = parseFloat(updatedForm.agreed_price) || 0;
-  const paidAmount = parseFloat(updatedForm.paid_amount) || 0;
+      updatedForm.paid_amount = currentPaid - previousNewPayment + newPayment;
+    }
 
-  updatedForm.pending_payment = agreedPrice - paidAmount;
-}
+    const agreedPrice = parseFloat(updatedForm.agreed_price) || 0;
+    const paidAmount = parseFloat(updatedForm.paid_amount) || 0;
+
+    updatedForm.pending_payment = Math.max(agreedPrice - paidAmount, 0);
 
     setFormData(updatedForm);
 
@@ -673,6 +672,7 @@ if (
           ? item.bridesmaid_option
           : "",
       country: item.country || "Local",
+      new_payment: "",
     });
 
     setIsModalOpen(true);
@@ -704,6 +704,7 @@ if (
         advance_paid_date: "",
         paid_amount: 0,
         paid_date: "",
+        new_payment: "",
       });
     }
 
@@ -1010,9 +1011,9 @@ if (
   );
 
   const totalReceived = paymentRecords.reduce(
-  (sum, item) => sum + Number(item.paid_amount || 0),
-  0,
-);
+    (sum, item) => sum + Number(item.paid_amount || 0),
+    0,
+  );
 
   const totalPending = paymentRecords.reduce(
     (sum, item) => sum + Number(item.pending_payment || 0),
@@ -1024,15 +1025,13 @@ if (
   );
 
   const partiallyPaidRecords = paymentRecords.filter((item) => {
-    const totalPaid =
-      Number(item.paid_amount || 0)
+    const totalPaid = Number(item.paid_amount || 0);
 
     return totalPaid > 0 && Number(item.pending_payment || 0) > 0;
   });
 
   const pendingPaymentRecords = paymentRecords.filter((item) => {
-    const totalPaid =
-      Number(item.paid_amount || 0)
+    const totalPaid = Number(item.paid_amount || 0);
 
     return totalPaid === 0;
   });
@@ -1040,8 +1039,7 @@ if (
   const filteredPayments = paymentRecords.filter((item) => {
     const search = paymentSearch.toLowerCase().trim();
 
-    const totalPaid =
-      Number(item.paid_amount || 0)
+    const totalPaid = Number(item.paid_amount || 0);
 
     const paymentStatus =
       Number(item.pending_payment || 0) <= 0
@@ -3211,8 +3209,8 @@ if (
                     type="number"
                     name="paid_amount"
                     value={formData.paid_amount}
-                    onChange={handleInputChange}
-                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                    readOnly
+                    className="w-full p-3 border rounded-xl bg-gray-50 text-gray-500 outline-none"
                   />
                 </div>
 
@@ -3227,6 +3225,23 @@ if (
                     onChange={handleInputChange}
                     className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
                   />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    New Payment Amount
+                  </label>
+                  <input
+                    type="number"
+                    name="new_payment"
+                    value={formData.new_payment}
+                    onChange={handleInputChange}
+                    placeholder="Enter latest payment only"
+                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                  />
+                  <p className="text-[10px] text-gray-400 mt-1">
+                    Enter only the amount customer paid now. System will add it
+                    to total paid.
+                  </p>
                 </div>
               </div>
 
@@ -3282,6 +3297,7 @@ if (
                       advance_paid_date: "",
                       paid_amount: 0,
                       paid_date: "",
+                      new_payment: "",
                     });
 
                     triggerNotification(
