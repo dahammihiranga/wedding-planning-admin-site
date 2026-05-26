@@ -768,7 +768,7 @@ export default function Dashboard() {
         const json = await res.json();
 
         if (formData.id && Number(formData.new_payment || 0) > 0) {
-          await fetch("/api/payments", {
+          const paymentRes = await fetch("/api/payments", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -779,6 +779,14 @@ export default function Dashboard() {
               payment_type: "Partial",
             }),
           });
+
+          const paymentJson = await paymentRes.json();
+
+          if (!paymentRes.ok || paymentJson.success === false) {
+            console.error("Payment save failed:", paymentJson);
+            triggerNotification("Payment history save failed.", "delete");
+            return;
+          }
         }
 
         if (!formData.id) {

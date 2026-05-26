@@ -331,19 +331,15 @@ async def add_payment(data: dict):
             [inquiry_id, amount, payment_date, payment_type],
         )
 
-        total_result = client.execute(
-            "SELECT COALESCE(SUM(amount), 0) FROM payment_transactions WHERE inquiry_id = ?",
-            [inquiry_id],
-        )
-
-        total_paid = float(total_result.rows[0][0] or 0)
-
         inquiry_result = client.execute(
-            "SELECT agreed_price FROM inquiries WHERE id = ?",
-            [inquiry_id],
-        )
+    "SELECT agreed_price, paid_amount FROM inquiries WHERE id = ?",
+    [inquiry_id],
+)
 
         agreed_price = float(inquiry_result.rows[0][0] or 0)
+        current_paid = float(inquiry_result.rows[0][1] or 0)
+
+        total_paid = current_paid + amount
         pending_payment = max(agreed_price - total_paid, 0)
 
         client.execute(
