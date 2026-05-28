@@ -312,6 +312,7 @@ export default function Dashboard() {
   });
   const [vendorLoading, setVendorLoading] = useState(false);
   const [customerSearch, setCustomerSearch] = useState("");
+  const [selectedCustomerRecord, setSelectedCustomerRecord] = useState(null);
   const [vendorSearch, setVendorSearch] = useState("");
   const [paymentSearch, setPaymentSearch] = useState("");
   const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
@@ -571,6 +572,18 @@ export default function Dashboard() {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(updatedForm));
     }
   };
+
+  const openCustomerInDashboard = (item) => {
+  setSelectedCustomerRecord(item);
+  setActivePage("dashboard");
+  setActiveTab("allRecords");
+  setSearchTerm("");
+  clearSearchAndFilters();
+
+  setTimeout(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, 100);
+};
 
   const handleStatusChange = async (item, newStatus) => {
     const updatedRecord = { ...item, status: newStatus };
@@ -869,7 +882,13 @@ export default function Dashboard() {
 
   const activeRecordsDisplay = activeTab === "trash" ? deletedRecords : data;
 
-  const filteredRecordsDisplay = activeRecordsDisplay.filter((item) => {
+  const dashboardRecordsDisplay = selectedCustomerRecord
+  ? activeRecordsDisplay.filter(
+      (item) => Number(item.id) === Number(selectedCustomerRecord.id),
+    )
+  : activeRecordsDisplay;
+
+  const filteredRecordsDisplay = dashboardRecordsDisplay.filter((item) => {
     const search = searchTerm.toLowerCase().trim();
 
     const matchesSearch =
@@ -1606,7 +1625,7 @@ export default function Dashboard() {
                       onClick={clearSearchAndFilters}
                       className="w-[130px] px-4 py-2.5 rounded-xl bg-gray-100 text-gray-700 text-sm font-bold hover:bg-gray-200 transition mt-5"
                     >
-                      Clearaa
+                      Clear
                     </button>
 
                     {/* <div className="ml-auto whitespace-nowrap text-xs font-bold text-gray-400">
@@ -1854,6 +1873,27 @@ export default function Dashboard() {
                     </button>
                   )}
                 </div>
+
+                {selectedCustomerRecord && (
+  <div className="max-w-[98%] mx-auto mt-4 bg-emerald-50 border border-emerald-100 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+    <div>
+      <p className="text-xs font-black uppercase text-emerald-700">
+        Showing selected customer
+      </p>
+      <p className="text-sm font-bold text-gray-800">
+        {selectedCustomerRecord.couple_name}
+      </p>
+    </div>
+
+    <button
+      type="button"
+      onClick={() => setSelectedCustomerRecord(null)}
+      className="px-4 py-2 rounded-xl bg-white text-emerald-700 border border-emerald-200 text-xs font-black hover:bg-emerald-100 transition"
+    >
+      Show All Records
+    </button>
+  </div>
+)}
 
                 <main className="max-w-[98%] mx-auto mt-4">
                   {filteredRecordsDisplay.length === 0 ? (
@@ -2603,7 +2643,13 @@ export default function Dashboard() {
                                     >
                                       {countryInfo.flag}
                                     </span>
-                                    <span>{item.couple_name}</span>
+                                    <button
+  type="button"
+  onClick={() => openCustomerInDashboard(item)}
+  className="font-black text-fuchsia-700 hover:text-fuchsia-900 hover:underline transition"
+>
+  {item.couple_name}
+</button>
                                   </div>
                                 </td>
 
