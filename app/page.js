@@ -709,7 +709,7 @@ export default function Dashboard() {
     } else if (item.status === "Confirmed") {
       message = `Congratulations ${item.couple_name} !!\n Your Booking is Confirmed for ${
         item.wedding_date || "the selected wedding date"
-      }`;
+      }\nService type : ${item.service_type}`;
     } else {
       message = "This booking is still pending.";
     }
@@ -3608,7 +3608,7 @@ export default function Dashboard() {
                 {statusPopup.status}
               </h3>
 
-              <p className="text-sm font-semibold text-gray-600 mt-3 leading-relaxed">
+              <p className="text-sm font-semibold text-gray-600 mt-3 leading-relaxed whitespace-pre-line">
                 {statusPopup.message}
               </p>
 
