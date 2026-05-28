@@ -318,10 +318,10 @@ export default function Dashboard() {
   const [paymentTransactions, setPaymentTransactions] = useState([]);
 
   const [statusPopup, setStatusPopup] = useState({
-  show: false,
-  status: "",
-  message: "",
-});
+    show: false,
+    status: "",
+    message: "",
+  });
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -702,24 +702,24 @@ export default function Dashboard() {
   };
 
   const openCustomerStatusPopup = (item) => {
-  let message = "";
+    let message = "";
 
-  if (item.status === "Completed") {
-    message = "Wedding is completed !!";
-  } else if (item.status === "Confirmed") {
-    message = `Congratulations !! Your Booking is Confirmed for ${
-      item.wedding_date || "the selected wedding date"
-    }`;
-  } else {
-    message = "This booking is still pending.";
-  }
+    if (item.status === "Completed") {
+      message = "This Wedding is completed !!";
+    } else if (item.status === "Confirmed") {
+      message = `Congratulations ${item.couple_name} !!\n Your Booking is Confirmed for ${
+        item.wedding_date || "the selected wedding date"
+      }`;
+    } else {
+      message = "This booking is still pending.";
+    }
 
-  setStatusPopup({
-    show: true,
-    status: item.status,
-    message,
-  });
-};
+    setStatusPopup({
+      show: true,
+      status: item.status,
+      message,
+    });
+  };
 
   const openEditModal = (item) => {
     setFormData({
@@ -2623,18 +2623,20 @@ export default function Dashboard() {
 
                                 <td className="p-4 text-center">
                                   <button
-  type="button"
-  onClick={() => openCustomerStatusPopup(item)}
-  className={`px-3 py-1.5 rounded-xl text-xs font-black border shadow-sm hover:scale-105 active:scale-95 transition ${
-    item.status === "Completed"
-      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-      : item.status === "Confirmed"
-        ? "bg-amber-50 text-amber-700 border-amber-200"
-        : "bg-blue-50 text-blue-700 border-blue-200"
-  }`}
->
-  {item.status}
-</button>
+                                    type="button"
+                                    onClick={() =>
+                                      openCustomerStatusPopup(item)
+                                    }
+                                    className={`px-3 py-1.5 rounded-xl text-xs font-black border shadow-sm hover:scale-105 active:scale-95 transition ${
+                                      item.status === "Completed"
+                                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                        : item.status === "Confirmed"
+                                          ? "bg-amber-50 text-amber-700 border-amber-200"
+                                          : "bg-blue-50 text-blue-700 border-blue-200"
+                                    }`}
+                                  >
+                                    {item.status}
+                                  </button>
                                 </td>
                               </tr>
                             );
@@ -3588,45 +3590,45 @@ export default function Dashboard() {
       )}
 
       {statusPopup.show && (
-  <div className="fixed inset-0 z-[999999] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-    <div className="relative w-full max-w-md bg-white/90 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/50 p-6 text-center animate-scale-in overflow-hidden">
-      <div className="absolute -top-16 -right-16 w-36 h-36 bg-fuchsia-200/60 rounded-full blur-3xl" />
-      <div className="absolute -bottom-16 -left-16 w-36 h-36 bg-emerald-200/60 rounded-full blur-3xl" />
+        <div className="fixed inset-0 z-[999999] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="relative w-full max-w-md bg-white/90 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/50 p-6 text-center animate-scale-in overflow-hidden">
+            <div className="absolute -top-16 -right-16 w-36 h-36 bg-fuchsia-200/60 rounded-full blur-3xl" />
+            <div className="absolute -bottom-16 -left-16 w-36 h-36 bg-emerald-200/60 rounded-full blur-3xl" />
 
-      <div className="relative z-10">
-        <div className="w-16 h-16 mx-auto rounded-2xl bg-white shadow-xl flex items-center justify-center text-3xl mb-4">
-          {statusPopup.status === "Completed"
-            ? "✨"
-            : statusPopup.status === "Confirmed"
-              ? "💍"
-              : "📋"}
+            <div className="relative z-10">
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-white shadow-xl flex items-center justify-center text-3xl mb-4">
+                {statusPopup.status === "Completed"
+                  ? "✨"
+                  : statusPopup.status === "Confirmed"
+                    ? "💍"
+                    : "📋"}
+              </div>
+
+              <h3 className="text-xl font-black text-gray-900">
+                {statusPopup.status}
+              </h3>
+
+              <p className="text-sm font-semibold text-gray-600 mt-3 leading-relaxed">
+                {statusPopup.message}
+              </p>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setStatusPopup({
+                    show: false,
+                    status: "",
+                    message: "",
+                  })
+                }
+                className="mt-6 px-6 py-3 rounded-2xl bg-fuchsia-300 hover:bg-fuchsia-400 text-black font-black shadow-lg hover:scale-105 active:scale-95 transition"
+              >
+                Got it
+              </button>
+            </div>
+          </div>
         </div>
-
-        <h3 className="text-xl font-black text-gray-900">
-          {statusPopup.status}
-        </h3>
-
-        <p className="text-sm font-semibold text-gray-600 mt-3 leading-relaxed">
-          {statusPopup.message}
-        </p>
-
-        <button
-          type="button"
-          onClick={() =>
-            setStatusPopup({
-              show: false,
-              status: "",
-              message: "",
-            })
-          }
-          className="mt-6 px-6 py-3 rounded-2xl bg-fuchsia-300 hover:bg-fuchsia-400 text-black font-black shadow-lg hover:scale-105 active:scale-95 transition"
-        >
-          Got it
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+      )}
 
       {isVendorModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start md:items-center justify-center p-4 z-[9999] overflow-y-auto">
