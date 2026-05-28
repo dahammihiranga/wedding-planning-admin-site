@@ -1871,6 +1871,9 @@ export default function Dashboard() {
                                 Discount
                               </th>
                               <th className="p-3 text-right bg-inherit">
+                                Transport Cost
+                              </th>
+                              <th className="p-3 text-right bg-inherit">
                                 Agreed Price
                               </th>
                               <th className="p-3 text-right bg-inherit">
@@ -1964,6 +1967,22 @@ export default function Dashboard() {
                                     {item.discount_type === "percentage"
                                       ? `${item.discount_rate}%`
                                       : `LKR ${Number(item.discount_rate).toLocaleString("en-LK")}`}
+                                  </td>
+
+                                  <td className="p-3 text-right font-mono font-semibold">
+                                    <span
+                                      className={
+                                        Number(item.transport_cost || 0) > 0
+                                          ? "text-cyan-700"
+                                          : "text-gray-300"
+                                      }
+                                    >
+                                      {Number(
+                                        item.transport_cost || 0,
+                                      ).toLocaleString("en-LK", {
+                                        minimumFractionDigits: 2,
+                                      })}
+                                    </span>
                                   </td>
 
                                   <td className="p-3 text-right font-mono font-semibold text-gray-900">
@@ -2851,6 +2870,7 @@ export default function Dashboard() {
                             <th className="p-4">Couple</th>
                             <th className="p-4">Wedding Date</th>
                             <th className="p-4 text-right">Package</th>
+                            <th className="p-4 text-right">Transport</th>
                             <th className="p-4 text-right">Agreed</th>
                             <th className="p-4 text-right">Paid</th>
                             <th className="p-4 text-right">Pending</th>
@@ -2902,10 +2922,52 @@ export default function Dashboard() {
                                   ).toLocaleString("en-LK")}
                                 </td>
 
-                                <td className="p-4 text-right font-mono font-bold text-gray-900">
-                                  {Number(
-                                    item.agreed_price || 0,
-                                  ).toLocaleString("en-LK")}
+                                <td className="p-4 text-right font-mono font-black">
+                                  <span
+                                    className={
+                                      Number(item.transport_cost || 0) > 0
+                                        ? "text-cyan-700"
+                                        : "text-gray-300"
+                                    }
+                                  >
+                                    Rs.{" "}
+                                    {Number(
+                                      item.transport_cost || 0,
+                                    ).toLocaleString("en-LK")}
+                                  </span>
+                                </td>
+
+                                <td className="p-4 text-right">
+                                  <div className="font-mono font-black text-gray-900">
+                                    Rs.{" "}
+                                    {Number(
+                                      item.agreed_price || 0,
+                                    ).toLocaleString("en-LK")}
+                                  </div>
+
+                                  <div className="mt-2 space-y-1 text-[10px]">
+                                    {Number(item.discount_rate || 0) > 0 ? (
+                                      <div className="rounded-lg bg-purple-50 border border-purple-100 px-2 py-1 text-left">
+                                        <div className="font-black text-purple-700">
+                                          Discount:{" "}
+                                          {item.discount_type === "percentage"
+                                            ? `${item.discount_rate}%`
+                                            : `Rs. ${Number(item.discount_rate || 0).toLocaleString("en-LK")}`}
+                                        </div>
+
+                                        <div className="text-gray-400 font-semibold">
+                                          Package: Rs.{" "}
+                                          {Number(
+                                            item.package_price || 0,
+                                          ).toLocaleString("en-LK")}
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <div className="text-[10px] text-gray-300 font-semibold">
+                                        No discount
+                                      </div>
+                                    )}
+                                  </div>
                                 </td>
 
                                 <td className="p-4 text-right">
