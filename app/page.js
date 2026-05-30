@@ -1928,17 +1928,19 @@ export default function Dashboard() {
                   ) : (
                     <>
                       {/* Desktop Table View Container - Patched Layout constraints */}
-                      <div className="hidden lg:block bg-white shadow-md rounded-xl border border-gray-100 w-full clear-both">
-                        <div className="overflow-x-auto overflow-y-hidden pb-3">
-                          <table className="w-full text-left border-collapse min-w-max table-auto bg-white rounded-xl">
-                            <thead>
+                      <div className="hidden lg:block bg-white shadow-md rounded-xl border border-gray-100 w-full clear-both overflow-hidden">
+  <div className="max-h-[68vh] overflow-auto">
+    <table className="w-full text-left border-collapse min-w-max table-auto bg-white rounded-xl">
+                            <thead className="sticky top-0 z-30">
                               <tr
                                 className={`${activeTab === "trash" ? "bg-fuchsia-50 text-fuchsia-950" : "bg-fuchsia-50 text-fuchsia-900"} md:text-[15px] uppercase font-bold border-b border-gray-200`}
                               >
                                 <th className="p-3 text-center w-12 bg-inherit">
                                   #
                                 </th>
-                                <th className="p-3 bg-inherit">Couple Name</th>
+                                <th className="sticky left-0 z-40 p-3 bg-fuchsia-50 shadow-sm">
+  Couple Name
+</th>
                                 <th className="p-3 bg-inherit">Wedding Date</th>
                                 <th className="p-3 bg-inherit">Hotel</th>
                                 <th className="p-3 bg-inherit">Service Type</th>
@@ -1979,7 +1981,7 @@ export default function Dashboard() {
                                   Status
                                 </th>
                                 <th className="p-3 bg-inherit">Remarks</th>
-                                <th className="p-3 text-center w-36 bg-inherit">
+                                <th className="sticky right-0 z-40 p-3 text-center w-36 bg-fuchsia-50 shadow-sm">
                                   {activeTab === "trash"
                                     ? "Restore / Wipe"
                                     : "Actions"}
@@ -2009,7 +2011,7 @@ export default function Dashboard() {
                                         index +
                                         1}
                                     </td>
-                                    <td className="p-3 font-bold text-gray-900">
+                                    <td className="sticky left-0 z-20 p-3 font-bold text-gray-900 bg-white shadow-sm">
                                       <div className="flex items-center gap-2">
                                         <span
                                           className="emoji-flag text-base select-none"
@@ -2172,7 +2174,7 @@ export default function Dashboard() {
                                       )}
                                     </td>
 
-                                    <td className="p-3 text-center">
+                                    <td className="sticky right-0 z-20 p-3 text-center bg-white shadow-sm">
                                       {activeTab === "trash" ? (
                                         <div className="flex items-center justify-center gap-2">
                                           <button
