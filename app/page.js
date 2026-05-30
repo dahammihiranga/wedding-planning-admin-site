@@ -325,6 +325,9 @@ export default function Dashboard() {
     message: "",
   });
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 10;
+
   const [searchTerm, setSearchTerm] = useState("");
 
   const [filters, setFilters] = useState({
@@ -939,6 +942,17 @@ export default function Dashboard() {
       matchesStatus
     );
   });
+
+  const totalPages = Math.ceil(filteredRecordsDisplay.length / recordsPerPage);
+
+  const paginatedRecordsDisplay = filteredRecordsDisplay.slice(
+    (currentPage - 1) * recordsPerPage,
+    currentPage * recordsPerPage,
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filters, activeTab, activePage, selectedCustomerRecord]);
 
   const upcomingWeddings = data.filter((item) => {
     if (item.status !== "Confirmed" || !item.wedding_date) {
@@ -1914,302 +1928,345 @@ export default function Dashboard() {
                   ) : (
                     <>
                       {/* Desktop Table View Container - Patched Layout constraints */}
-                      <div className="hidden lg:block bg-white shadow-md rounded-xl border border-gray-100 overflow-x-auto w-full clear-both">
-                        <table className="w-full text-left border-collapse min-w-max table-auto bg-white rounded-xl">
-                          <thead>
-                            <tr
-                              className={`${activeTab === "trash" ? "bg-fuchsia-50 text-fuchsia-950" : "bg-fuchsia-50 text-fuchsia-900"} md:text-[15px] uppercase font-bold border-b border-gray-200`}
-                            >
-                              <th className="p-3 text-center w-12 bg-inherit">
-                                #
-                              </th>
-                              <th className="p-3 bg-inherit">Couple Name</th>
-                              <th className="p-3 bg-inherit">Wedding Date</th>
-                              <th className="p-3 bg-inherit">Hotel</th>
-                              <th className="p-3 bg-inherit">Service Type</th>
-                              <th className="p-3 bg-inherit">Wedding Type</th>
-                              {activeTab !== "completed" && (
-                                <>
-                                  <th className="p-3 text-center bg-inherit">
-                                    Guests
-                                  </th>
-                                  <th className="p-3 bg-inherit">Bridesmaid</th>
-                                </>
-                              )}
-                              <th className="p-3 bg-inherit">Contact No.</th>
-                              <th className="p-3 text-right bg-inherit">
-                                Package Price
-                              </th>
-                              <th className="p-3 text-right bg-inherit">
-                                Discount
-                              </th>
-                              <th className="p-3 text-right bg-inherit">
-                                Transport Cost
-                              </th>
-                              <th className="p-3 text-right bg-inherit">
-                                Agreed Price
-                              </th>
-                              <th className="p-3 text-right bg-inherit">
-                                Advance Paid
-                              </th>
-                              <th className="p-3 text-right bg-inherit">
-                                Pending Balance
-                              </th>
-                              <th className="p-3 text-right bg-inherit">
-                                Paid Amount
-                              </th>
-                              <th className="p-3 text-center bg-inherit">
-                                Status
-                              </th>
-                              <th className="p-3 bg-inherit">Remarks</th>
-                              <th className="p-3 text-center w-36 bg-inherit">
-                                {activeTab === "trash"
-                                  ? "Restore / Wipe"
-                                  : "Actions"}
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-gray-100 md:text-sm bg-white">
-                            {filteredRecordsDisplay.map((item, index) => {
-                              const countryInfo = getCountryDisplay(
-                                item.country,
-                              );
-                              return (
-                                <tr
-                                  key={item.id}
-                                  onClick={() => toggleRecordHighlight(item.id)}
-                                  className={`cursor-pointer transition ${
-                                    Number(highlightedRecordId) ===
-                                    Number(item.id)
-                                      ? "bg-amber-100 ring-2 ring-amber-300 shadow-inner"
-                                      : "bg-white hover:bg-gray-50/80"
-                                  }`}
-                                >
-                                  <td className="p-3 text-center font-medium text-gray-400">
-                                    {index + 1}
-                                  </td>
-                                  <td className="p-3 font-bold text-gray-900">
-                                    <div className="flex items-center gap-2">
-                                      <span
-                                        className="emoji-flag text-base select-none"
-                                        title={countryInfo.name}
-                                      >
-                                        {countryInfo.flag}
+                      <div className="hidden lg:block bg-white shadow-md rounded-xl border border-gray-100 w-full clear-both">
+                        <div className="overflow-x-auto overflow-y-hidden pb-3">
+                          <table className="w-full text-left border-collapse min-w-max table-auto bg-white rounded-xl">
+                            <thead>
+                              <tr
+                                className={`${activeTab === "trash" ? "bg-fuchsia-50 text-fuchsia-950" : "bg-fuchsia-50 text-fuchsia-900"} md:text-[15px] uppercase font-bold border-b border-gray-200`}
+                              >
+                                <th className="p-3 text-center w-12 bg-inherit">
+                                  #
+                                </th>
+                                <th className="p-3 bg-inherit">Couple Name</th>
+                                <th className="p-3 bg-inherit">Wedding Date</th>
+                                <th className="p-3 bg-inherit">Hotel</th>
+                                <th className="p-3 bg-inherit">Service Type</th>
+                                <th className="p-3 bg-inherit">Wedding Type</th>
+                                {activeTab !== "completed" && (
+                                  <>
+                                    <th className="p-3 text-center bg-inherit">
+                                      Guests
+                                    </th>
+                                    <th className="p-3 bg-inherit">
+                                      Bridesmaid
+                                    </th>
+                                  </>
+                                )}
+                                <th className="p-3 bg-inherit">Contact No.</th>
+                                <th className="p-3 text-right bg-inherit">
+                                  Package Price
+                                </th>
+                                <th className="p-3 text-right bg-inherit">
+                                  Discount
+                                </th>
+                                <th className="p-3 text-right bg-inherit">
+                                  Transport Cost
+                                </th>
+                                <th className="p-3 text-right bg-inherit">
+                                  Agreed Price
+                                </th>
+                                <th className="p-3 text-right bg-inherit">
+                                  Advance Paid
+                                </th>
+                                <th className="p-3 text-right bg-inherit">
+                                  Pending Balance
+                                </th>
+                                <th className="p-3 text-right bg-inherit">
+                                  Paid Amount
+                                </th>
+                                <th className="p-3 text-center bg-inherit">
+                                  Status
+                                </th>
+                                <th className="p-3 bg-inherit">Remarks</th>
+                                <th className="p-3 text-center w-36 bg-inherit">
+                                  {activeTab === "trash"
+                                    ? "Restore / Wipe"
+                                    : "Actions"}
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100 md:text-sm bg-white">
+                              {paginatedRecordsDisplay.map((item, index) => {
+                                const countryInfo = getCountryDisplay(
+                                  item.country,
+                                );
+                                return (
+                                  <tr
+                                    key={item.id}
+                                    onClick={() =>
+                                      toggleRecordHighlight(item.id)
+                                    }
+                                    className={`cursor-pointer transition ${
+                                      Number(highlightedRecordId) ===
+                                      Number(item.id)
+                                        ? "bg-amber-100 ring-2 ring-amber-300 shadow-inner"
+                                        : "bg-white hover:bg-gray-50/80"
+                                    }`}
+                                  >
+                                    <td className="p-3 text-center font-medium text-gray-400">
+                                      {(currentPage - 1) * recordsPerPage +
+                                        index +
+                                        1}
+                                    </td>
+                                    <td className="p-3 font-bold text-gray-900">
+                                      <div className="flex items-center gap-2">
+                                        <span
+                                          className="emoji-flag text-base select-none"
+                                          title={countryInfo.name}
+                                        >
+                                          {countryInfo.flag}
+                                        </span>
+                                        <span>{item.couple_name}</span>
+                                      </div>
+                                    </td>
+                                    <td className="p-3 text-gray-600 font-medium">
+                                      {item.wedding_date || "—"}
+                                    </td>
+                                    <td className="p-3 max-w-[220px]">
+                                      <div className="whitespace-normal break-words leading-snug">
+                                        {item.hotel || "-"}
+                                      </div>
+                                    </td>
+                                    <td className="p-3">
+                                      <span className="px-2 py-0.5 bg-gray-100 text-gray-800 rounded font-medium">
+                                        {item.service_type}
                                       </span>
-                                      <span>{item.couple_name}</span>
-                                    </div>
-                                  </td>
-                                  <td className="p-3 text-gray-600 font-medium">
-                                    {item.wedding_date || "—"}
-                                  </td>
-                                  <td className="p-3 max-w-[220px]">
-                                    <div className="whitespace-normal break-words leading-snug">
-                                      {item.hotel || "-"}
-                                    </div>
-                                  </td>
-                                  <td className="p-3">
-                                    <span className="px-2 py-0.5 bg-gray-100 text-gray-800 rounded font-medium">
-                                      {item.service_type}
-                                    </span>
-                                  </td>
-                                  <td className="p-3 text-gray-600">
-                                    {item.wedding_type}
-                                  </td>
-                                  {activeTab !== "completed" && (
-                                    <>
-                                      <td className="p-3 text-center font-semibold">
-                                        {item.guest_count || "—"}
-                                      </td>
-                                      <td className="p-3 text-gray-600">
-                                        {!item.bridesmaid_option ||
-                                        item.bridesmaid_option === "-"
-                                          ? "—"
-                                          : item.bridesmaid_option}
-                                      </td>
-                                    </>
-                                  )}
-                                  <td className="p-3 font-mono text-gray-700">
-                                    {item.contact_no || "—"}
-                                  </td>
+                                    </td>
+                                    <td className="p-3 text-gray-600">
+                                      {item.wedding_type}
+                                    </td>
+                                    {activeTab !== "completed" && (
+                                      <>
+                                        <td className="p-3 text-center font-semibold">
+                                          {item.guest_count || "—"}
+                                        </td>
+                                        <td className="p-3 text-gray-600">
+                                          {!item.bridesmaid_option ||
+                                          item.bridesmaid_option === "-"
+                                            ? "—"
+                                            : item.bridesmaid_option}
+                                        </td>
+                                      </>
+                                    )}
+                                    <td className="p-3 font-mono text-gray-700">
+                                      {item.contact_no || "—"}
+                                    </td>
 
-                                  <td className="p-3 text-right font-mono font-semibold text-gray-800">
-                                    {item.package_price
-                                      ? Number(
-                                          item.package_price,
+                                    <td className="p-3 text-right font-mono font-semibold text-gray-800">
+                                      {item.package_price
+                                        ? Number(
+                                            item.package_price,
+                                          ).toLocaleString("en-LK", {
+                                            minimumFractionDigits: 2,
+                                          })
+                                        : "0.00"}
+                                    </td>
+
+                                    <td className="p-3 text-right font-mono font-semibold text-purple-700">
+                                      {item.discount_type === "percentage"
+                                        ? `${item.discount_rate}%`
+                                        : `LKR ${Number(item.discount_rate).toLocaleString("en-LK")}`}
+                                    </td>
+
+                                    <td className="p-3 text-right font-mono font-semibold">
+                                      <span
+                                        className={
+                                          Number(item.transport_cost || 0) > 0
+                                            ? "text-cyan-700"
+                                            : "text-gray-300"
+                                        }
+                                      >
+                                        {Number(
+                                          item.transport_cost || 0,
                                         ).toLocaleString("en-LK", {
                                           minimumFractionDigits: 2,
-                                        })
-                                      : "0.00"}
-                                  </td>
-
-                                  <td className="p-3 text-right font-mono font-semibold text-purple-700">
-                                    {item.discount_type === "percentage"
-                                      ? `${item.discount_rate}%`
-                                      : `LKR ${Number(item.discount_rate).toLocaleString("en-LK")}`}
-                                  </td>
-
-                                  <td className="p-3 text-right font-mono font-semibold">
-                                    <span
-                                      className={
-                                        Number(item.transport_cost || 0) > 0
-                                          ? "text-cyan-700"
-                                          : "text-gray-300"
-                                      }
-                                    >
-                                      {Number(
-                                        item.transport_cost || 0,
-                                      ).toLocaleString("en-LK", {
-                                        minimumFractionDigits: 2,
-                                      })}
-                                    </span>
-                                  </td>
-
-                                  <td className="p-3 text-right font-mono font-semibold text-gray-900">
-                                    {item.agreed_price
-                                      ? item.agreed_price.toLocaleString(
-                                          "en-LK",
-                                          {
-                                            minimumFractionDigits: 2,
-                                          },
-                                        )
-                                      : "0.00"}
-                                  </td>
-                                  <td className="p-3 text-right font-mono font-semibold text-amber-700">
-                                    <div>
-                                      {item.advance_paid
-                                        ? Number(
-                                            item.advance_paid,
-                                          ).toLocaleString("en-LK", {
-                                            minimumFractionDigits: 2,
-                                          })
-                                        : "0.00"}
-                                    </div>
-
-                                    {item.advance_paid_date && (
-                                      <div className="text-[10px] text-gray-400 font-sans mt-0.5">
-                                        ({item.advance_paid_date})
-                                      </div>
-                                    )}
-                                  </td>
-                                  <td className="p-3 text-right font-mono font-bold text-red-600">
-                                    {item.pending_payment
-                                      ? item.pending_payment.toLocaleString(
-                                          "en-LK",
-                                          {
-                                            minimumFractionDigits: 2,
-                                          },
-                                        )
-                                      : "0.00"}
-                                  </td>
-
-                                  <td className="p-3 text-right font-mono font-bold text-emerald-700">
-                                    <div>
-                                      {item.paid_amount
-                                        ? Number(
-                                            item.paid_amount,
-                                          ).toLocaleString("en-LK", {
-                                            minimumFractionDigits: 2,
-                                          })
-                                        : "0.00"}
-                                    </div>
-
-                                    {item.paid_date && (
-                                      <div className="text-[10px] text-gray-400 font-sans mt-0.5">
-                                        ({item.paid_date})
-                                      </div>
-                                    )}
-                                  </td>
-
-                                  <td className="p-3 text-center">
-                                    {activeTab === "trash" ? (
-                                      <span className="px-2.5 py-1 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">
-                                        {item.status}
+                                        })}
                                       </span>
-                                    ) : (
-                                      <StatusDropdown
-                                        currentStatus={item.status}
-                                        onStatusChange={(newStatus) =>
-                                          handleStatusChange(item, newStatus)
-                                        }
-                                      />
-                                    )}
-                                  </td>
-                                  <td className="p-3 text-gray-500 max-w-xs">
-                                    {item.remarks ? (
-                                      <button
-                                        type="button"
-                                        onClick={() =>
-                                          setSelectedRemark(item.remarks)
-                                        }
-                                        className="max-w-xs truncate text-left text-gray-500 hover:text-fuchsia-600 hover:underline transition"
-                                        title="Click to view full remarks"
-                                      >
-                                        {item.remarks}
-                                      </button>
-                                    ) : (
-                                      "—"
-                                    )}
-                                  </td>
+                                    </td>
 
-                                  <td className="p-3 text-center">
-                                    {activeTab === "trash" ? (
-                                      <div className="flex items-center justify-center gap-2">
-                                        <button
-                                          onClick={() =>
-                                            handleRecoverRecord(item)
-                                          }
-                                          className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-lg font-bold hover:bg-emerald-100 transition text-[11px]"
-                                        >
-                                          Recovery
-                                        </button>
-                                        <button
-                                          onClick={() =>
-                                            initiateDelete(item, "permanent")
-                                          }
-                                          className="bg-rose-50 text-rose-600 border border-rose-100 p-1 rounded-lg hover:bg-rose-100 transition"
-                                          title="Delete Permanently"
-                                        >
-                                          ✕
-                                        </button>
+                                    <td className="p-3 text-right font-mono font-semibold text-gray-900">
+                                      {item.agreed_price
+                                        ? item.agreed_price.toLocaleString(
+                                            "en-LK",
+                                            {
+                                              minimumFractionDigits: 2,
+                                            },
+                                          )
+                                        : "0.00"}
+                                    </td>
+                                    <td className="p-3 text-right font-mono font-semibold text-amber-700">
+                                      <div>
+                                        {item.advance_paid
+                                          ? Number(
+                                              item.advance_paid,
+                                            ).toLocaleString("en-LK", {
+                                              minimumFractionDigits: 2,
+                                            })
+                                          : "0.00"}
                                       </div>
-                                    ) : (
-                                      <div className="flex items-center justify-center gap-3">
-                                        <button
-                                          onClick={() => openEditModal(item)}
-                                          className="text-fuchsia-600 font-bold hover:underline"
-                                        >
-                                          Edit
-                                        </button>
-                                        <button
-                                          onClick={() =>
-                                            initiateDelete(item, "soft")
+
+                                      {item.advance_paid_date && (
+                                        <div className="text-[10px] text-gray-400 font-sans mt-0.5">
+                                          ({item.advance_paid_date})
+                                        </div>
+                                      )}
+                                    </td>
+                                    <td className="p-3 text-right font-mono font-bold text-red-600">
+                                      {item.pending_payment
+                                        ? item.pending_payment.toLocaleString(
+                                            "en-LK",
+                                            {
+                                              minimumFractionDigits: 2,
+                                            },
+                                          )
+                                        : "0.00"}
+                                    </td>
+
+                                    <td className="p-3 text-right font-mono font-bold text-emerald-700">
+                                      <div>
+                                        {item.paid_amount
+                                          ? Number(
+                                              item.paid_amount,
+                                            ).toLocaleString("en-LK", {
+                                              minimumFractionDigits: 2,
+                                            })
+                                          : "0.00"}
+                                      </div>
+
+                                      {item.paid_date && (
+                                        <div className="text-[10px] text-gray-400 font-sans mt-0.5">
+                                          ({item.paid_date})
+                                        </div>
+                                      )}
+                                    </td>
+
+                                    <td className="p-3 text-center">
+                                      {activeTab === "trash" ? (
+                                        <span className="px-2.5 py-1 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">
+                                          {item.status}
+                                        </span>
+                                      ) : (
+                                        <StatusDropdown
+                                          currentStatus={item.status}
+                                          onStatusChange={(newStatus) =>
+                                            handleStatusChange(item, newStatus)
                                           }
-                                          className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
+                                        />
+                                      )}
+                                    </td>
+                                    <td className="p-3 text-gray-500 max-w-xs">
+                                      {item.remarks ? (
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            setSelectedRemark(item.remarks)
+                                          }
+                                          className="max-w-xs truncate text-left text-gray-500 hover:text-fuchsia-600 hover:underline transition"
+                                          title="Click to view full remarks"
                                         >
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth={2}
-                                            stroke="currentColor"
-                                            className="w-4 h-4"
+                                          {item.remarks}
+                                        </button>
+                                      ) : (
+                                        "—"
+                                      )}
+                                    </td>
+
+                                    <td className="p-3 text-center">
+                                      {activeTab === "trash" ? (
+                                        <div className="flex items-center justify-center gap-2">
+                                          <button
+                                            onClick={() =>
+                                              handleRecoverRecord(item)
+                                            }
+                                            className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-lg font-bold hover:bg-emerald-100 transition text-[11px]"
                                           >
-                                            <path
-                                              strokeLinecap="round"
-                                              strokeLinejoin="round"
-                                              d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                                            />
-                                          </svg>
-                                        </button>
-                                      </div>
-                                    )}
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
+                                            Recovery
+                                          </button>
+                                          <button
+                                            onClick={() =>
+                                              initiateDelete(item, "permanent")
+                                            }
+                                            className="bg-rose-50 text-rose-600 border border-rose-100 p-1 rounded-lg hover:bg-rose-100 transition"
+                                            title="Delete Permanently"
+                                          >
+                                            ✕
+                                          </button>
+                                        </div>
+                                      ) : (
+                                        <div className="flex items-center justify-center gap-3">
+                                          <button
+                                            onClick={() => openEditModal(item)}
+                                            className="text-fuchsia-600 font-bold hover:underline"
+                                          >
+                                            Edit
+                                          </button>
+                                          <button
+                                            onClick={() =>
+                                              initiateDelete(item, "soft")
+                                            }
+                                            className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
+                                          >
+                                            <svg
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              fill="none"
+                                              viewBox="0 0 24 24"
+                                              strokeWidth={2}
+                                              stroke="currentColor"
+                                              className="w-4 h-4"
+                                            >
+                                              <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                                              />
+                                            </svg>
+                                          </button>
+                                        </div>
+                                      )}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
+
+                      {/* Pagination buttons */}
+                      {totalPages > 1 && (
+                        <div className="flex items-center justify-between gap-3 mt-4 bg-white/80 backdrop-blur-xl border border-gray-100 rounded-2xl p-3 shadow-sm">
+                          <p className="text-xs font-bold text-gray-500">
+                            Page {currentPage} of {totalPages}
+                          </p>
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              disabled={currentPage === 1}
+                              onClick={() =>
+                                setCurrentPage((p) => Math.max(p - 1, 1))
+                              }
+                              className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 text-xs font-black disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-200 transition"
+                            >
+                              ← Previous
+                            </button>
+
+                            <button
+                              type="button"
+                              disabled={currentPage === totalPages}
+                              onClick={() =>
+                                setCurrentPage((p) =>
+                                  Math.min(p + 1, totalPages),
+                                )
+                              }
+                              className="px-4 py-2 rounded-xl bg-fuchsia-200 text-fuchsia-900 text-xs font-black disabled:opacity-40 disabled:cursor-not-allowed hover:bg-fuchsia-300 transition"
+                            >
+                              Next →
+                            </button>
+                          </div>
+                        </div>
+                      )}
 
                       {/* Mobile Cards View Layout Block */}
                       <div className="block lg:hidden space-y-4">
