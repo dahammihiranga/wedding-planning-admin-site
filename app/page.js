@@ -2760,7 +2760,7 @@ export default function Dashboard() {
                   />
                 </div>
 
-                <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
+                <div className="hidden md:block bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
                   {filteredCustomers.length === 0 ? (
                     <div className="p-12 text-center">
                       <div className="text-4xl mb-3">👰</div>
@@ -2852,6 +2852,88 @@ export default function Dashboard() {
                         </tbody>
                       </table>
                     </div>
+                  )}
+                </div>
+                <div className="md:hidden space-y-4">
+                  {filteredCustomers.length === 0 ? (
+                    <div className="bg-white/85 rounded-3xl p-6 text-center border border-white/50 shadow">
+                      <p className="text-sm font-bold text-gray-500">
+                        No customers found yet.
+                      </p>
+                    </div>
+                  ) : (
+                    filteredCustomers.map((item) => {
+                      const countryInfo = getCountryDisplay(item.country);
+
+                      return (
+                        <div
+                          key={item.id}
+                          className="bg-white/90 backdrop-blur-xl rounded-3xl border border-white/50 shadow-lg p-4 space-y-4"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <button
+                                type="button"
+                                onClick={() => openCustomerInDashboard(item)}
+                                className="text-left text-base font-black text-fuchsia-800 hover:underline"
+                              >
+                                {countryInfo.flag} {item.couple_name}
+                              </button>
+
+                              <p className="text-xs font-semibold text-gray-500 mt-1">
+                                📅{" "}
+                                {item.wedding_date || "Wedding date not added"}
+                              </p>
+
+                              <p className="text-xs font-semibold text-gray-500">
+                                📞 {item.contact_no || "Contact not added"}
+                              </p>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => openCustomerStatusPopup(item)}
+                              className={`px-3 py-1 rounded-full text-[10px] font-black border shadow-sm active:scale-95 transition ${
+                                item.status === "Completed"
+                                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                  : item.status === "Confirmed"
+                                    ? "bg-amber-50 text-amber-700 border-amber-200"
+                                    : "bg-blue-50 text-blue-700 border-blue-200"
+                              }`}
+                            >
+                              {item.status}
+                            </button>
+                          </div>
+
+                          <div className="rounded-2xl bg-gray-50 p-3">
+                            <p className="text-[10px] uppercase font-black text-gray-400">
+                              Service Type
+                            </p>
+                            <p className="text-sm font-bold text-gray-800">
+                              {item.service_type || "—"}
+                            </p>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <button
+                              type="button"
+                              onClick={() => openCustomerInDashboard(item)}
+                              className="rounded-2xl bg-fuchsia-50 text-fuchsia-700 p-3 text-xs font-black border border-fuchsia-100 active:scale-95 transition"
+                            >
+                              View Record
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => openCustomerStatusPopup(item)}
+                              className="rounded-2xl bg-emerald-50 text-emerald-700 p-3 text-xs font-black border border-emerald-100 active:scale-95 transition"
+                            >
+                              View Status
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })
                   )}
                 </div>
               </div>
