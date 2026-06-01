@@ -1326,12 +1326,12 @@ export default function Dashboard() {
         >
           <div className="flex items-center gap-3">
             <button
-  type="button"
-  onClick={() => setIsMobileSidebarOpen(true)}
-  className="md:hidden w-10 h-10 rounded-2xl bg-white/50 border border-white/40 shadow-sm flex items-center justify-center text-fuchsia-950 font-black active:scale-95 transition"
->
-  ☰
-</button>
+              type="button"
+              onClick={() => setIsMobileSidebarOpen(true)}
+              className="md:hidden w-10 h-10 rounded-2xl bg-white/50 border border-white/40 shadow-sm flex items-center justify-center text-fuchsia-950 font-black active:scale-95 transition"
+            >
+              ☰
+            </button>
             <img
               src="/official Logo.png"
               alt="Chathu Wedding Planners"
@@ -1355,21 +1355,21 @@ export default function Dashboard() {
               {upcomingWeddings.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-2">
                   <button
-  type="button"
-  onClick={() => setIsWeddingAlertModalOpen(true)}
-  className="inline-flex items-center gap-2 bg-rose-100/90 backdrop-blur-md text-rose-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-rose-200 hover:bg-rose-200 hover:scale-105 active:scale-95 transition"
->
-  🔔 {upcomingWeddings.length} Within 14 Days
-</button>
+                    type="button"
+                    onClick={() => setIsWeddingAlertModalOpen(true)}
+                    className="inline-flex items-center gap-2 bg-rose-100/90 backdrop-blur-md text-rose-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-rose-200 hover:bg-rose-200 hover:scale-105 active:scale-95 transition"
+                  >
+                    🔔 {upcomingWeddings.length} Within 14 Days
+                  </button>
 
                   {urgentUpcomingWeddings.length > 0 && (
                     <button
-  type="button"
-  onClick={() => setIsWeddingAlertModalOpen(true)}
-  className="inline-flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-red-700 hover:bg-red-700 hover:scale-105 active:scale-95 transition"
->
-  🚨 {urgentUpcomingWeddings.length} Within 7 Days
-</button>
+                      type="button"
+                      onClick={() => setIsWeddingAlertModalOpen(true)}
+                      className="inline-flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-red-700 hover:bg-red-700 hover:scale-105 active:scale-95 transition"
+                    >
+                      🚨 {urgentUpcomingWeddings.length} Within 7 Days
+                    </button>
                   )}
                 </div>
               )}
@@ -1398,77 +1398,74 @@ export default function Dashboard() {
         </header>
 
         {isMobileSidebarOpen && (
-  <div className="fixed inset-0 z-[999999] md:hidden">
-    <div
-      className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-fade-in"
-      onClick={() => setIsMobileSidebarOpen(false)}
-    />
+          <div className="fixed inset-0 z-[999999] md:hidden">
+            <div
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-fade-in"
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
 
-    <div className="absolute left-0 top-0 h-full w-[82%] max-w-sm bg-white/90 backdrop-blur-2xl shadow-2xl border-r border-white/50 p-5 animate-scale-in">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <img
-            src="/official Logo.png"
-            alt="Chathu Wedding Planners"
-            className="w-12 h-12 object-contain rounded-full shadow-sm"
-          />
+            <div className="absolute left-0 top-0 h-full w-[82%] max-w-sm bg-white/90 backdrop-blur-2xl shadow-2xl border-r border-white/50 p-5 animate-scale-in">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <img
+                    src="/official Logo.png"
+                    alt="Chathu Wedding Planners"
+                    className="w-12 h-12 object-contain rounded-full shadow-sm"
+                  />
 
-          <div>
-            <h2 className="text-sm font-black text-fuchsia-950">
-              Chathu Wedding
-            </h2>
-            <p className="text-[10px] font-bold text-gray-500 uppercase">
-              Admin Menu
-            </p>
+                  <div>
+                    <h2 className="text-sm font-black text-fuchsia-950">
+                      Chathu Wedding
+                    </h2>
+                    <p className="text-[10px] font-bold text-gray-500 uppercase">
+                      Admin Menu
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsMobileSidebarOpen(false)}
+                  className="w-9 h-9 rounded-full bg-rose-50 text-rose-600 font-black"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                {[
+                  { key: "dashboard", label: "Dashboard", icon: "🏠" },
+                  { key: "customers", label: "Customers", icon: "👰" },
+                  { key: "vendors", label: "Vendors", icon: "🤝" },
+                  { key: "payments", label: "Payments", icon: "💳" },
+                  { key: "packages", label: "Our Packages", icon: "📦" },
+                ].map((nav) => (
+                  <button
+                    key={nav.key}
+                    type="button"
+                    onClick={() => {
+                      setActivePage(nav.key);
+
+                      if (nav.key === "customers" || nav.key === "payments") {
+                        setActiveTab("allRecords");
+                      }
+
+                      setIsMobileSidebarOpen(false);
+                    }}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-black transition ${
+                      activePage === nav.key
+                        ? "bg-emerald-100 text-emerald-800 shadow-sm"
+                        : "bg-white/60 text-gray-700 hover:bg-white"
+                    }`}
+                  >
+                    <span className="text-lg">{nav.icon}</span>
+                    <span>{nav.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setIsMobileSidebarOpen(false)}
-          className="w-9 h-9 rounded-full bg-rose-50 text-rose-600 font-black"
-        >
-          ✕
-        </button>
-      </div>
-
-      <div className="space-y-2">
-        {[
-          { key: "dashboard", label: "Dashboard", icon: "🏠" },
-          { key: "customers", label: "Customers", icon: "👰" },
-          { key: "vendors", label: "Vendors", icon: "🤝" },
-          { key: "payments", label: "Payments", icon: "💳" },
-          { key: "packages", label: "Our Packages", icon: "📦" },
-        ].map((nav) => (
-          <button
-            key={nav.key}
-            type="button"
-            onClick={() => {
-              setActivePage(nav.key);
-
-              if (
-                nav.key === "customers" ||
-                nav.key === "payments"
-              ) {
-                setActiveTab("allRecords");
-              }
-
-              setIsMobileSidebarOpen(false);
-            }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-black transition ${
-              activePage === nav.key
-                ? "bg-emerald-100 text-emerald-800 shadow-sm"
-                : "bg-white/60 text-gray-700 hover:bg-white"
-            }`}
-          >
-            <span className="text-lg">{nav.icon}</span>
-            <span>{nav.label}</span>
-          </button>
-        ))}
-      </div>
-    </div>
-  </div>
-)}
+        )}
 
         <div className="flex flex-1 min-h-0">
           <div className="hidden md:flex w-72 h-[calc(100vh-88px)] sticky top-[88px] bg-white/70 backdrop-blur-2xl border-r border-white/40 flex-col p-5 shadow-xl overflow-y-auto">
@@ -2020,8 +2017,8 @@ export default function Dashboard() {
                     <>
                       {/* Desktop Table View Container - Patched Layout constraints */}
                       <div className="hidden lg:block bg-white shadow-md rounded-xl border border-gray-100 w-full clear-both overflow-hidden">
-  <div className="max-h-[68vh] overflow-auto">
-    <table className="w-full text-left border-collapse min-w-max table-auto bg-white rounded-xl">
+                        <div className="max-h-[68vh] overflow-auto">
+                          <table className="w-full text-left border-collapse min-w-max table-auto bg-white rounded-xl">
                             <thead className="sticky top-0 z-30">
                               <tr
                                 className={`${activeTab === "trash" ? "bg-fuchsia-50 text-fuchsia-950" : "bg-fuchsia-50 text-fuchsia-900"} md:text-[15px] uppercase font-bold border-b border-gray-200`}
@@ -2030,8 +2027,8 @@ export default function Dashboard() {
                                   #
                                 </th>
                                 <th className="sticky left-0 z-40 p-3 bg-fuchsia-50 shadow-sm">
-  Couple Name
-</th>
+                                  Couple Name
+                                </th>
                                 <th className="p-3 bg-inherit">Wedding Date</th>
                                 <th className="p-3 bg-inherit">Hotel</th>
                                 <th className="p-3 bg-inherit">Service Type</th>
@@ -3008,7 +3005,7 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-5">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-5">
                   <div className="bg-fuchsia-50/80 border border-fuchsia-100 rounded-3xl p-5 shadow">
                     <p className="text-xs font-black uppercase text-fuchsia-700">
                       Total Business
@@ -3094,7 +3091,7 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="bg-white/85 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
+                <div className="hidden md:block bg-white/85 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
                   {filteredPayments.length === 0 ? (
                     <div className="p-12 text-center">
                       <div className="text-4xl mb-3">💳</div>
@@ -3278,6 +3275,167 @@ export default function Dashboard() {
                         </tbody>
                       </table>
                     </div>
+                  )}
+                </div>
+                <div className="md:hidden space-y-4">
+                  {filteredPayments.length === 0 ? (
+                    <div className="bg-white/85 rounded-3xl p-6 text-center border border-white/50 shadow">
+                      <p className="text-sm font-bold text-gray-500">
+                        No payment records found.
+                      </p>
+                    </div>
+                  ) : (
+                    filteredPayments.map((item) => {
+                      const transactions = paymentTransactions.filter(
+                        (p) => Number(p.inquiry_id) === Number(item.id),
+                      );
+
+                      const totalPaid = Number(item.paid_amount || 0);
+                      const pending = Number(item.pending_payment || 0);
+
+                      const paymentStatus =
+                        pending <= 0
+                          ? "Fully Paid"
+                          : totalPaid > 0
+                            ? "Partially Paid"
+                            : "Pending";
+
+                      return (
+                        <div
+                          key={item.id}
+                          className="bg-white/90 backdrop-blur-xl rounded-3xl border border-white/50 shadow-lg p-4 space-y-4"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <h3 className="text-base font-black text-fuchsia-950">
+                                {item.couple_name}
+                              </h3>
+
+                              <p className="text-xs font-semibold text-gray-500 mt-1">
+                                📅{" "}
+                                {item.wedding_date || "Wedding date not added"}
+                              </p>
+
+                              <p className="text-xs font-semibold text-gray-500">
+                                📞 {item.contact_no || "Contact not added"}
+                              </p>
+                            </div>
+
+                            <span
+                              className={`px-3 py-1 rounded-full text-[10px] font-black ${
+                                paymentStatus === "Fully Paid"
+                                  ? "bg-emerald-100 text-emerald-700"
+                                  : paymentStatus === "Partially Paid"
+                                    ? "bg-amber-100 text-amber-700"
+                                    : "bg-rose-100 text-rose-700"
+                              }`}
+                            >
+                              {paymentStatus}
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="rounded-2xl bg-gray-50 p-3">
+                              <p className="text-[10px] uppercase font-black text-gray-400">
+                                Package
+                              </p>
+                              <p className="text-sm font-black text-gray-800">
+                                Rs.{" "}
+                                {Number(item.package_price || 0).toLocaleString(
+                                  "en-LK",
+                                )}
+                              </p>
+                            </div>
+
+                            <div className="rounded-2xl bg-cyan-50 p-3">
+                              <p className="text-[10px] uppercase font-black text-cyan-600">
+                                Transport
+                              </p>
+                              <p className="text-sm font-black text-cyan-700">
+                                Rs.{" "}
+                                {Number(
+                                  item.transport_cost || 0,
+                                ).toLocaleString("en-LK")}
+                              </p>
+                            </div>
+
+                            <div className="rounded-2xl bg-fuchsia-50 p-3">
+                              <p className="text-[10px] uppercase font-black text-fuchsia-600">
+                                Agreed
+                              </p>
+                              <p className="text-sm font-black text-fuchsia-900">
+                                Rs.{" "}
+                                {Number(item.agreed_price || 0).toLocaleString(
+                                  "en-LK",
+                                )}
+                              </p>
+
+                              <p className="text-[10px] font-bold text-purple-600 mt-1">
+                                Discount:{" "}
+                                {Number(item.discount_rate || 0) > 0
+                                  ? item.discount_type === "percentage"
+                                    ? `${item.discount_rate}%`
+                                    : `Rs. ${Number(item.discount_rate || 0).toLocaleString("en-LK")}`
+                                  : "No discount"}
+                              </p>
+                            </div>
+
+                            <div className="rounded-2xl bg-rose-50 p-3">
+                              <p className="text-[10px] uppercase font-black text-rose-600">
+                                Pending
+                              </p>
+                              <p className="text-sm font-black text-rose-700">
+                                Rs. {pending.toLocaleString("en-LK")}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="rounded-2xl bg-emerald-50 border border-emerald-100 p-3">
+                            <div className="flex items-center justify-between">
+                              <p className="text-[10px] uppercase font-black text-emerald-600">
+                                Total Paid
+                              </p>
+                              <p className="text-base font-black text-emerald-700">
+                                Rs. {totalPaid.toLocaleString("en-LK")}
+                              </p>
+                            </div>
+
+                            <div className="mt-3 space-y-2">
+                              {Number(item.advance_paid || 0) > 0 && (
+                                <div className="rounded-xl bg-white/70 p-2">
+                                  <p className="text-xs font-black text-amber-700">
+                                    Booking Advance: Rs.{" "}
+                                    {Number(
+                                      item.advance_paid || 0,
+                                    ).toLocaleString("en-LK")}
+                                  </p>
+                                  <p className="text-[10px] text-gray-400 font-semibold">
+                                    {item.advance_paid_date || "No date"}
+                                  </p>
+                                </div>
+                              )}
+
+                              {transactions.map((payment) => (
+                                <div
+                                  key={payment.id}
+                                  className="rounded-xl bg-white/70 p-2"
+                                >
+                                  <p className="text-xs font-black text-emerald-700">
+                                    Partial Payment: Rs.{" "}
+                                    {Number(payment.amount || 0).toLocaleString(
+                                      "en-LK",
+                                    )}
+                                  </p>
+                                  <p className="text-[10px] text-gray-400 font-semibold">
+                                    {payment.payment_date || "No date"}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
                   )}
                 </div>
               </div>
@@ -3801,69 +3959,77 @@ export default function Dashboard() {
       )}
 
       {isWeddingAlertModalOpen && (
-  <div className="fixed inset-0 z-[999999] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-    <div className="relative w-full max-w-lg bg-white/95 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/60 overflow-hidden animate-scale-in">
-      <div className="absolute -top-20 -right-20 w-44 h-44 bg-rose-200/60 rounded-full blur-3xl" />
-      <div className="absolute -bottom-20 -left-20 w-44 h-44 bg-fuchsia-200/60 rounded-full blur-3xl" />
+        <div className="fixed inset-0 z-[999999] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="relative w-full max-w-lg bg-white/95 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/60 overflow-hidden animate-scale-in">
+            <div className="absolute -top-20 -right-20 w-44 h-44 bg-rose-200/60 rounded-full blur-3xl" />
+            <div className="absolute -bottom-20 -left-20 w-44 h-44 bg-fuchsia-200/60 rounded-full blur-3xl" />
 
-      <div className="relative z-10 p-5 border-b border-rose-100 flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-black text-rose-700 flex items-center gap-2">
-            🔔 Wedding Alerts
-          </h3>
-          <p className="text-xs text-gray-500 font-semibold mt-1">
-            Upcoming confirmed weddings within 14 days
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setIsWeddingAlertModalOpen(false)}
-          className="w-9 h-9 rounded-full bg-rose-50 text-rose-600 font-black hover:bg-rose-100 transition"
-        >
-          ✕
-        </button>
-      </div>
-
-      <div className="relative z-10 max-h-[60vh] overflow-y-auto divide-y divide-rose-100">
-        {upcomingWeddings.map((item) => {
-          const daysLeft = moment(item.wedding_date, "YYYY-MM-DD")
-            .startOf("day")
-            .diff(moment().startOf("day"), "days");
-
-          return (
-            <div key={item.id} className="p-4 hover:bg-rose-50/60 transition">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h4 className="font-black text-gray-900 text-sm">
-                    {item.couple_name}
-                  </h4>
-
-                  <div className="mt-1 space-y-1 text-xs text-gray-600 font-semibold">
-                    <div>📅 {moment(item.wedding_date).format("MMMM D, YYYY")}</div>
-                    <div>🏨 {item.hotel || "Venue not added"}</div>
-                    <div>💐 {item.service_type || "Service type not added"}</div>
-                    <div>📞 {item.contact_no || "Contact not added"}</div>
-                  </div>
-                </div>
-
-                <span
-                  className={`px-3 py-1 rounded-full text-[10px] font-black shrink-0 ${
-                    daysLeft <= 3
-                      ? "bg-red-600 text-white animate-pulse"
-                      : "bg-rose-100 text-rose-700"
-                  }`}
-                >
-                  {daysLeft === 0 ? "TODAY" : `${daysLeft} DAYS LEFT`}
-                </span>
+            <div className="relative z-10 p-5 border-b border-rose-100 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-black text-rose-700 flex items-center gap-2">
+                  🔔 Wedding Alerts
+                </h3>
+                <p className="text-xs text-gray-500 font-semibold mt-1">
+                  Upcoming confirmed weddings within 14 days
+                </p>
               </div>
+
+              <button
+                type="button"
+                onClick={() => setIsWeddingAlertModalOpen(false)}
+                className="w-9 h-9 rounded-full bg-rose-50 text-rose-600 font-black hover:bg-rose-100 transition"
+              >
+                ✕
+              </button>
             </div>
-          );
-        })}
-      </div>
-    </div>
-  </div>
-)}
+
+            <div className="relative z-10 max-h-[60vh] overflow-y-auto divide-y divide-rose-100">
+              {upcomingWeddings.map((item) => {
+                const daysLeft = moment(item.wedding_date, "YYYY-MM-DD")
+                  .startOf("day")
+                  .diff(moment().startOf("day"), "days");
+
+                return (
+                  <div
+                    key={item.id}
+                    className="p-4 hover:bg-rose-50/60 transition"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h4 className="font-black text-gray-900 text-sm">
+                          {item.couple_name}
+                        </h4>
+
+                        <div className="mt-1 space-y-1 text-xs text-gray-600 font-semibold">
+                          <div>
+                            📅{" "}
+                            {moment(item.wedding_date).format("MMMM D, YYYY")}
+                          </div>
+                          <div>🏨 {item.hotel || "Venue not added"}</div>
+                          <div>
+                            💐 {item.service_type || "Service type not added"}
+                          </div>
+                          <div>📞 {item.contact_no || "Contact not added"}</div>
+                        </div>
+                      </div>
+
+                      <span
+                        className={`px-3 py-1 rounded-full text-[10px] font-black shrink-0 ${
+                          daysLeft <= 3
+                            ? "bg-red-600 text-white animate-pulse"
+                            : "bg-rose-100 text-rose-700"
+                        }`}
+                      >
+                        {daysLeft === 0 ? "TODAY" : `${daysLeft} DAYS LEFT`}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {statusPopup.show && (
         <div className="fixed inset-0 z-[999999] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
