@@ -2360,39 +2360,46 @@ export default function Dashboard() {
 
                       {/* Mobile Cards View Layout Block */}
                       <div className="block lg:hidden space-y-4">
-                        {filteredRecordsDisplay.map((item, index) => {
+                        {paginatedRecordsDisplay.map((item, index) => {
                           const countryInfo = getCountryDisplay(item.country);
+
                           return (
                             <div
                               key={item.id}
-                              className={`bg-white rounded-xl p-4 shadow border space-y-3 ${activeTab === "trash" ? "border-amber-200" : "border-gray-100"}`}
+                              onClick={() => toggleRecordHighlight(item.id)}
+                              className={`rounded-3xl p-4 shadow-lg border space-y-4 transition active:scale-[0.99] ${
+                                Number(highlightedRecordId) === Number(item.id)
+                                  ? "bg-amber-50 border-amber-300 ring-2 ring-amber-300"
+                                  : activeTab === "trash"
+                                    ? "bg-amber-50 border-amber-100"
+                                    : "bg-white/90 border-white/50"
+                              }`}
                             >
-                              <div className="flex justify-between items-start">
+                              <div className="flex items-start justify-between gap-3">
                                 <div>
-                                  <span className="text-[10px] uppercase font-bold text-gray-400 block">
-                                    Record #{index + 1}
-                                  </span>
-                                  <h3 className="text-base font-bold text-gray-900 flex items-center gap-1.5">
-                                    <span className="emoji-flag text-base select-none">
-                                      {countryInfo.flag}
-                                    </span>
-                                    <span>{item.couple_name}</span>
+                                  <h3 className="text-base font-black text-fuchsia-950">
+                                    {(currentPage - 1) * recordsPerPage +
+                                      index +
+                                      1}
+                                    . {countryInfo.flag} {item.couple_name}
                                   </h3>
 
-                                  <p className="text-xs font-semibold text-gray-500 mt-0.5">
-                                    {item.service_type ||
-                                      "Service type pending"}
+                                  <p className="text-xs font-semibold text-gray-500 mt-1">
+                                    📅{" "}
+                                    {item.wedding_date ||
+                                      "Wedding date not added"}
                                   </p>
-                                  <p className="text-xs font-semibold text-emerald-700">
-                                    {item.wedding_date || "Date Pending"}
+
+                                  <p className="text-xs font-semibold text-gray-500">
+                                    🏨 {item.hotel || "Hotel not added"}
+                                  </p>
+
+                                  <p className="text-xs font-semibold text-gray-500">
+                                    📞 {item.contact_no || "Contact not added"}
                                   </p>
                                 </div>
 
-                                {activeTab === "trash" ? (
-                                  <span className="px-2.5 py-0.5 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">
-                                    {item.status}
-                                  </span>
-                                ) : (
+                                {activeTab !== "trash" && (
                                   <StatusDropdown
                                     currentStatus={item.status}
                                     onStatusChange={(newStatus) =>
@@ -2402,153 +2409,167 @@ export default function Dashboard() {
                                 )}
                               </div>
 
-                              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs border-t border-b border-gray-50 py-2.5">
-                                <div>
-                                  <span className="text-gray-400 block text-[10px] uppercase font-semibold">
-                                    Origin:
-                                  </span>{" "}
-                                  <span className="font-semibold text-gray-800">
-                                    {countryInfo.name}
-                                  </span>
-                                </div>
-                                <div>
-                                  <span className="text-gray-400 block text-[10px] uppercase font-semibold">
-                                    Venue:
-                                  </span>{" "}
-                                  <span className="font-medium text-gray-800">
-                                    {item.hotel || "—"}
-                                  </span>
-                                </div>
-                                <div className="col-span-2 grid grid-cols-2 gap-1 bg-gray-50 p-2 rounded-lg mt-1 border border-gray-100 font-mono">
-                                  <div>
-                                    <span className="text-[9px] text-gray-400 block uppercase font-bold">
-                                      Package:
-                                    </span>
-                                    <span className="text-xs font-bold text-gray-900">
-                                      {item.package_price
-                                        ? Number(
-                                            item.package_price,
-                                          ).toLocaleString("en-LK")
-                                        : "0"}
-                                    </span>
-                                  </div>
+                              <div className="rounded-2xl bg-gray-50 p-3">
+                                <p className="text-[10px] uppercase font-black text-gray-400">
+                                  Service Type
+                                </p>
+                                <p className="text-sm font-bold text-gray-800">
+                                  {item.service_type || "—"}
+                                </p>
+                              </div>
 
-                                  <div>
-                                    <span className="text-[9px] text-gray-400 block uppercase font-bold">
-                                      Discount:
-                                    </span>
-                                    <span className="text-xs font-bold text-purple-700">
-                                      {item.discount_rate
+                              <div className="grid grid-cols-2 gap-3">
+                                <div className="rounded-2xl bg-gray-50 p-3">
+                                  <p className="text-[10px] uppercase font-black text-gray-400">
+                                    Package
+                                  </p>
+                                  <p className="text-sm font-black text-gray-800">
+                                    Rs.{" "}
+                                    {Number(
+                                      item.package_price || 0,
+                                    ).toLocaleString("en-LK")}
+                                  </p>
+                                </div>
+
+                                <div className="rounded-2xl bg-purple-50 p-3">
+                                  <p className="text-[10px] uppercase font-black text-purple-600">
+                                    Discount
+                                  </p>
+                                  <p className="text-sm font-black text-purple-700">
+                                    {Number(item.discount_rate || 0) > 0
+                                      ? item.discount_type === "percentage"
                                         ? `${item.discount_rate}%`
-                                        : "0%"}
-                                    </span>
-                                  </div>
-                                  <div>
-                                    <span className="text-[9px] text-gray-400 block uppercase font-bold">
-                                      Agreed:
-                                    </span>
-                                    <span className="text-xs font-bold text-gray-900">
-                                      {item.agreed_price
-                                        ? item.agreed_price.toLocaleString(
-                                            "en-LK",
-                                          )
-                                        : "0"}
-                                    </span>
-                                  </div>
-                                  <div>
-                                    <span className="text-[9px] text-gray-400 block uppercase font-bold">
-                                      Paid:
-                                    </span>
+                                        : `Rs. ${Number(item.discount_rate || 0).toLocaleString("en-LK")}`
+                                      : "No discount"}
+                                  </p>
+                                </div>
 
-                                    <span className="text-xs font-bold text-amber-800 block">
-                                      {item.advance_paid
-                                        ? item.advance_paid.toLocaleString(
-                                            "en-LK",
-                                          )
-                                        : "0"}
-                                    </span>
+                                <div className="rounded-2xl bg-cyan-50 p-3">
+                                  <p className="text-[10px] uppercase font-black text-cyan-600">
+                                    Transport
+                                  </p>
+                                  <p className="text-sm font-black text-cyan-700">
+                                    Rs.{" "}
+                                    {Number(
+                                      item.transport_cost || 0,
+                                    ).toLocaleString("en-LK")}
+                                  </p>
+                                </div>
 
-                                    {item.advance_paid_date && (
-                                      <span className="block text-[9px] text-gray-400 font-sans mt-0.5">
-                                        ({item.advance_paid_date})
-                                      </span>
-                                    )}
-                                  </div>
-                                  <div>
-                                    <span className="text-[9px] text-gray-400 block uppercase font-bold">
-                                      Pending:
-                                    </span>
-                                    <span className="text-xs font-bold text-red-600">
-                                      {item.pending_payment
-                                        ? item.pending_payment.toLocaleString(
-                                            "en-LK",
-                                          )
-                                        : "0"}
-                                    </span>
-                                  </div>
+                                <div className="rounded-2xl bg-fuchsia-50 p-3">
+                                  <p className="text-[10px] uppercase font-black text-fuchsia-600">
+                                    Agreed
+                                  </p>
+                                  <p className="text-sm font-black text-fuchsia-900">
+                                    Rs.{" "}
+                                    {Number(
+                                      item.agreed_price || 0,
+                                    ).toLocaleString("en-LK")}
+                                  </p>
+                                </div>
+
+                                <div className="rounded-2xl bg-emerald-50 p-3">
+                                  <p className="text-[10px] uppercase font-black text-emerald-600">
+                                    Paid
+                                  </p>
+                                  <p className="text-sm font-black text-emerald-700">
+                                    Rs.{" "}
+                                    {Number(
+                                      item.paid_amount || 0,
+                                    ).toLocaleString("en-LK")}
+                                  </p>
+                                </div>
+
+                                <div className="rounded-2xl bg-rose-50 p-3">
+                                  <p className="text-[10px] uppercase font-black text-rose-600">
+                                    Pending
+                                  </p>
+                                  <p className="text-sm font-black text-rose-700">
+                                    Rs.{" "}
+                                    {Number(
+                                      item.pending_payment || 0,
+                                    ).toLocaleString("en-LK")}
+                                  </p>
                                 </div>
                               </div>
 
-                              <div className="flex justify-between items-center pt-0.5">
+                              {Number(item.advance_paid || 0) > 0 && (
+                                <div className="rounded-2xl bg-amber-50 border border-amber-100 p-3">
+                                  <p className="text-xs font-black text-amber-700">
+                                    Booking Advance: Rs.{" "}
+                                    {Number(
+                                      item.advance_paid || 0,
+                                    ).toLocaleString("en-LK")}
+                                  </p>
+                                  <p className="text-[10px] font-semibold text-gray-400 mt-1">
+                                    {item.advance_paid_date ||
+                                      "No advance date"}
+                                  </p>
+                                </div>
+                              )}
+
+                              {item.remarks && (
                                 <button
                                   type="button"
-                                  onClick={() =>
-                                    setSelectedRemark(
-                                      item.remarks || "No remarks",
-                                    )
-                                  }
-                                  className="text-xs text-gray-500 italic truncate max-w-[45%] text-left"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedRemark(item.remarks);
+                                  }}
+                                  className="w-full text-left rounded-2xl bg-white/70 border border-gray-100 p-3 text-xs font-semibold text-gray-600"
                                 >
-                                  💡 {item.remarks || "No remarks"}
+                                  📝 Tap to view remarks
                                 </button>
+                              )}
 
+                              <div className="grid grid-cols-2 gap-3">
                                 {activeTab === "trash" ? (
-                                  <div className="flex items-center gap-1.5">
+                                  <>
                                     <button
-                                      onClick={() => handleRecoverRecord(item)}
-                                      className="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-black shadow transition"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleRecoverRecord(item);
+                                      }}
+                                      className="rounded-2xl bg-emerald-50 text-emerald-700 p-3 text-xs font-black border border-emerald-100"
                                     >
-                                      Recovery
+                                      Restore
                                     </button>
+
                                     <button
-                                      onClick={() =>
-                                        initiateDelete(item, "permanent")
-                                      }
-                                      className="p-1.5 border border-rose-200 text-rose-600 bg-rose-50 rounded-lg hover:bg-rose-100 transition text-xs font-bold"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        initiateDelete(item, "permanent");
+                                      }}
+                                      className="rounded-2xl bg-red-50 text-red-600 p-3 text-xs font-black border border-red-100"
                                     >
                                       Wipe
                                     </button>
-                                  </div>
+                                  </>
                                 ) : (
-                                  <div className="flex items-center gap-2">
+                                  <>
                                     <button
-                                      onClick={() =>
-                                        initiateDelete(item, "soft")
-                                      }
-                                      className="p-2 border border-red-100 text-red-500 bg-red-50/50 rounded-lg hover:bg-red-50 transition"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        openEditModal(item);
+                                      }}
+                                      className="rounded-2xl bg-fuchsia-50 text-fuchsia-700 p-3 text-xs font-black border border-fuchsia-100"
                                     >
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth={2}
-                                        stroke="currentColor"
-                                        className="w-4 h-4"
-                                      >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                                        />
-                                      </svg>
+                                      Edit
                                     </button>
+
                                     <button
-                                      onClick={() => openEditModal(item)}
-                                      className="bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-100 transition"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        initiateDelete(item, "soft");
+                                      }}
+                                      className="rounded-2xl bg-red-50 text-red-600 p-3 text-xs font-black border border-red-100"
                                     >
-                                      Modify
+                                      Delete
                                     </button>
-                                  </div>
+                                  </>
                                 )}
                               </div>
                             </div>
