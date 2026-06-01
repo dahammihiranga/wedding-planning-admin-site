@@ -2376,27 +2376,13 @@ export default function Dashboard() {
                               }`}
                             >
                               <div className="flex items-start justify-between gap-3">
-                                <div>
+                                <div className="flex-1">
                                   <h3 className="text-base font-black text-fuchsia-950">
                                     {(currentPage - 1) * recordsPerPage +
                                       index +
                                       1}
                                     . {countryInfo.flag} {item.couple_name}
                                   </h3>
-
-                                  <p className="text-xs font-semibold text-gray-500 mt-1">
-                                    📅{" "}
-                                    {item.wedding_date ||
-                                      "Wedding date not added"}
-                                  </p>
-
-                                  <p className="text-xs font-semibold text-gray-500">
-                                    🏨 {item.hotel || "Hotel not added"}
-                                  </p>
-
-                                  <p className="text-xs font-semibold text-gray-500">
-                                    📞 {item.contact_no || "Contact not added"}
-                                  </p>
                                 </div>
 
                                 {activeTab !== "trash" && (
@@ -2407,6 +2393,38 @@ export default function Dashboard() {
                                     }
                                   />
                                 )}
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-3">
+                                <div className="rounded-2xl bg-blue-50 p-3">
+                                  <p className="text-[10px] uppercase font-black text-blue-600">
+                                    Wedding Date
+                                  </p>
+
+                                  <p className="text-sm font-black text-blue-800">
+                                    {item.wedding_date || "Not added"}
+                                  </p>
+                                </div>
+
+                                <div className="rounded-2xl bg-orange-50 p-3">
+                                  <p className="text-[10px] uppercase font-black text-orange-600">
+                                    Venue
+                                  </p>
+
+                                  <p className="text-sm font-black text-orange-800 break-words">
+                                    {item.hotel || "Not added"}
+                                  </p>
+                                </div>
+
+                                <div className="rounded-2xl bg-green-50 p-3 col-span-2">
+                                  <p className="text-[10px] uppercase font-black text-green-600">
+                                    Contact Number
+                                  </p>
+
+                                  <p className="text-sm font-black text-green-800">
+                                    {item.contact_no || "Not added"}
+                                  </p>
+                                </div>
                               </div>
 
                               <div className="rounded-2xl bg-gray-50 p-3">
