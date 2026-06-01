@@ -328,6 +328,8 @@ export default function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 10;
 
+  const [isWeddingAlertModalOpen, setIsWeddingAlertModalOpen] = useState(false);
+
   const [searchTerm, setSearchTerm] = useState("");
 
   const [filters, setFilters] = useState({
@@ -1344,14 +1346,22 @@ export default function Dashboard() {
               </p>
               {upcomingWeddings.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-2">
-                  <div className="inline-flex items-center gap-2 bg-rose-100/90 backdrop-blur-md text-rose-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-rose-200">
-                    🔔 {upcomingWeddings.length} Within 14 Days
-                  </div>
+                  <button
+  type="button"
+  onClick={() => setIsWeddingAlertModalOpen(true)}
+  className="inline-flex items-center gap-2 bg-rose-100/90 backdrop-blur-md text-rose-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-rose-200 hover:bg-rose-200 hover:scale-105 active:scale-95 transition"
+>
+  🔔 {upcomingWeddings.length} Within 14 Days
+</button>
 
                   {urgentUpcomingWeddings.length > 0 && (
-                    <div className="inline-flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-red-700">
-                      🚨 {urgentUpcomingWeddings.length} Within 7 Days
-                    </div>
+                    <button
+  type="button"
+  onClick={() => setIsWeddingAlertModalOpen(true)}
+  className="inline-flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-red-700 hover:bg-red-700 hover:scale-105 active:scale-95 transition"
+>
+  🚨 {urgentUpcomingWeddings.length} Within 7 Days
+</button>
                   )}
                 </div>
               )}
@@ -3708,6 +3718,71 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+
+      {isWeddingAlertModalOpen && (
+  <div className="fixed inset-0 z-[999999] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+    <div className="relative w-full max-w-lg bg-white/95 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/60 overflow-hidden animate-scale-in">
+      <div className="absolute -top-20 -right-20 w-44 h-44 bg-rose-200/60 rounded-full blur-3xl" />
+      <div className="absolute -bottom-20 -left-20 w-44 h-44 bg-fuchsia-200/60 rounded-full blur-3xl" />
+
+      <div className="relative z-10 p-5 border-b border-rose-100 flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-black text-rose-700 flex items-center gap-2">
+            🔔 Wedding Alerts
+          </h3>
+          <p className="text-xs text-gray-500 font-semibold mt-1">
+            Upcoming confirmed weddings within 14 days
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setIsWeddingAlertModalOpen(false)}
+          className="w-9 h-9 rounded-full bg-rose-50 text-rose-600 font-black hover:bg-rose-100 transition"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div className="relative z-10 max-h-[60vh] overflow-y-auto divide-y divide-rose-100">
+        {upcomingWeddings.map((item) => {
+          const daysLeft = moment(item.wedding_date, "YYYY-MM-DD")
+            .startOf("day")
+            .diff(moment().startOf("day"), "days");
+
+          return (
+            <div key={item.id} className="p-4 hover:bg-rose-50/60 transition">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h4 className="font-black text-gray-900 text-sm">
+                    {item.couple_name}
+                  </h4>
+
+                  <div className="mt-1 space-y-1 text-xs text-gray-600 font-semibold">
+                    <div>📅 {moment(item.wedding_date).format("MMMM D, YYYY")}</div>
+                    <div>🏨 {item.hotel || "Venue not added"}</div>
+                    <div>💐 {item.service_type || "Service type not added"}</div>
+                    <div>📞 {item.contact_no || "Contact not added"}</div>
+                  </div>
+                </div>
+
+                <span
+                  className={`px-3 py-1 rounded-full text-[10px] font-black shrink-0 ${
+                    daysLeft <= 3
+                      ? "bg-red-600 text-white animate-pulse"
+                      : "bg-rose-100 text-rose-700"
+                  }`}
+                >
+                  {daysLeft === 0 ? "TODAY" : `${daysLeft} DAYS LEFT`}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+)}
 
       {statusPopup.show && (
         <div className="fixed inset-0 z-[999999] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
