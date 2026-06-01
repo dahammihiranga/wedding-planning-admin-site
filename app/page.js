@@ -300,6 +300,7 @@ export default function Dashboard() {
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
   const [activePage, setActivePage] = useState("dashboard");
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [vendors, setVendors] = useState([]);
   const [isVendorModalOpen, setIsVendorModalOpen] = useState(false);
   const [vendorForm, setVendorForm] = useState({
@@ -1324,6 +1325,13 @@ export default function Dashboard() {
           }}
         >
           <div className="flex items-center gap-3">
+            <button
+  type="button"
+  onClick={() => setIsMobileSidebarOpen(true)}
+  className="md:hidden w-10 h-10 rounded-2xl bg-white/50 border border-white/40 shadow-sm flex items-center justify-center text-fuchsia-950 font-black active:scale-95 transition"
+>
+  ☰
+</button>
             <img
               src="/official Logo.png"
               alt="Chathu Wedding Planners"
@@ -1388,6 +1396,79 @@ export default function Dashboard() {
             </button>
           </div>
         </header>
+
+        {isMobileSidebarOpen && (
+  <div className="fixed inset-0 z-[999999] md:hidden">
+    <div
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-fade-in"
+      onClick={() => setIsMobileSidebarOpen(false)}
+    />
+
+    <div className="absolute left-0 top-0 h-full w-[82%] max-w-sm bg-white/90 backdrop-blur-2xl shadow-2xl border-r border-white/50 p-5 animate-scale-in">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <img
+            src="/official Logo.png"
+            alt="Chathu Wedding Planners"
+            className="w-12 h-12 object-contain rounded-full shadow-sm"
+          />
+
+          <div>
+            <h2 className="text-sm font-black text-fuchsia-950">
+              Chathu Wedding
+            </h2>
+            <p className="text-[10px] font-bold text-gray-500 uppercase">
+              Admin Menu
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setIsMobileSidebarOpen(false)}
+          className="w-9 h-9 rounded-full bg-rose-50 text-rose-600 font-black"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div className="space-y-2">
+        {[
+          { key: "dashboard", label: "Dashboard", icon: "🏠" },
+          { key: "customers", label: "Customers", icon: "👰" },
+          { key: "vendors", label: "Vendors", icon: "🤝" },
+          { key: "payments", label: "Payments", icon: "💳" },
+          { key: "packages", label: "Our Packages", icon: "📦" },
+        ].map((nav) => (
+          <button
+            key={nav.key}
+            type="button"
+            onClick={() => {
+              setActivePage(nav.key);
+
+              if (
+                nav.key === "customers" ||
+                nav.key === "payments"
+              ) {
+                setActiveTab("allRecords");
+              }
+
+              setIsMobileSidebarOpen(false);
+            }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-black transition ${
+              activePage === nav.key
+                ? "bg-emerald-100 text-emerald-800 shadow-sm"
+                : "bg-white/60 text-gray-700 hover:bg-white"
+            }`}
+          >
+            <span className="text-lg">{nav.icon}</span>
+            <span>{nav.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
 
         <div className="flex flex-1 min-h-0">
           <div className="hidden md:flex w-72 h-[calc(100vh-88px)] sticky top-[88px] bg-white/70 backdrop-blur-2xl border-r border-white/40 flex-col p-5 shadow-xl overflow-y-auto">
