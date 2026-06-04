@@ -3582,9 +3582,9 @@ export default function Dashboard() {
       </div>
       {/* INPUT / EDIT DIALOG FORM MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/55 backdrop-blur-md flex items-start md:items-center justify-center p-3 md:p-4 z-[999999] overflow-y-auto pb-[env(safe-area-inset-bottom)]">
-          <div className="relative z-[1000000] bg-white rounded-2xl w-full max-w-lg p-4 md:p-6 shadow-2xl space-y-4 my-4 md:my-8 border border-gray-100 max-h-[92vh] overflow-y-auto pb-28 md:pb-6">
-            <div className="flex items-center justify-between border-b pb-3">
+        <div className="fixed inset-0 bg-black/55 backdrop-blur-md flex items-end md:items-center justify-center z-[999999] md:p-4">
+          <div className="relative z-[1000000] bg-white w-full md:max-w-3xl md:rounded-3xl rounded-t-[2rem] shadow-2xl border border-gray-100 max-h-[94vh] overflow-hidden flex flex-col animate-scale-in">
+            <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-xl flex items-center justify-between border-b px-4 md:px-6 py-4">
               <h2 className="text-lg font-bold text-gray-900">
                 {formData.id ? "Modify Wedding File" : "Add New Wedding Record"}
               </h2>
@@ -3597,7 +3597,8 @@ export default function Dashboard() {
                 ✕
               </button>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
+  <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 pb-28">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
                 <div className="col-span-2">
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
@@ -4020,8 +4021,9 @@ export default function Dashboard() {
                   className="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-fuchsia-300 outline-none"
                 ></textarea>
               </div>
+              </div>
 
-              <div className="flex justify-end gap-3 pt-4 pb-6 md:pb-0 border-t">
+              <div className="sticky bottom-0 z-20 bg-white/95 backdrop-blur-xl border-t p-4 flex gap-2">
                 <button
                   type="button"
                   onClick={() => {
