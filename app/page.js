@@ -3585,27 +3585,33 @@ export default function Dashboard() {
       {/* INPUT / EDIT DIALOG FORM MODAL */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/55 backdrop-blur-md flex items-end md:items-center justify-center z-[999999] md:p-4">
-          <div className="relative z-[1000000] bg-white w-full md:max-w-3xl md:rounded-3xl rounded-t-[2rem] shadow-2xl border border-gray-100 max-h-[94vh] overflow-hidden flex flex-col animate-scale-in">
-            <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-xl flex items-center justify-between border-b px-4 md:px-6 py-4">
-              <h2 className="text-lg font-bold text-gray-900">
-                {formData.id ? "Modify Wedding File" : "Add New Wedding Record"}
-              </h2>
+          <div className="relative z-[1000000] bg-white w-full md:max-w-3xl md:rounded-3xl rounded-t-[2rem] shadow-2xl border border-gray-100 h-[92vh] md:h-auto md:max-h-[92vh] overflow-hidden flex flex-col animate-scale-in">
+            <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-xl border-b px-4 md:px-6 py-4">
+              <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-3 md:hidden" />
 
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition flex items-center justify-center text-lg font-bold active:scale-95"
-              >
-                ✕
-              </button>
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold text-gray-900">
+                  {formData.id
+                    ? "Modify Wedding File"
+                    : "Add New Wedding Record"}
+                </h2>
+
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition flex items-center justify-center text-lg font-bold active:scale-95"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
             <form
               onSubmit={handleSubmit}
               className="flex-1 flex flex-col overflow-hidden"
             >
-              <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 pb-28">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
-                  <div className="col-span-2">
+              <div className="flex-1 overflow-y-auto px-4 py-5 md:p-6 space-y-5 pb-32">
+                <div className="grid grid-cols-[1fr_105px] md:grid-cols-3 gap-3 items-end">
+                  <div className="col-span-1 md:col-span-2">
                     <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
                       Couple Name *
                     </label>
@@ -3615,7 +3621,7 @@ export default function Dashboard() {
                       required
                       value={formData.couple_name}
                       onChange={handleInputChange}
-                      className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                      className="w-full p-3.5 md:p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                     />
                   </div>
                   <div>
@@ -3626,7 +3632,7 @@ export default function Dashboard() {
                       name="country"
                       value={formData.country}
                       onChange={handleInputChange}
-                      className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none font-medium text-gray-700"
+                      className="w-full p-3.5 md:p-2.5 bg-white border rounded-lg text-sm outline-none font-medium text-gray-700"
                     >
                       {COUNTRIES.map((c) => (
                         <option key={c.code} value={c.code}>
@@ -3647,7 +3653,7 @@ export default function Dashboard() {
                       name="wedding_date"
                       value={formData.wedding_date}
                       onChange={handleInputChange}
-                      className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm bg-white"
+                      className="w-full p-3.5 md:p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm bg-white"
                     />
                   </div>
                   <div>
@@ -3665,7 +3671,7 @@ export default function Dashboard() {
                             : ""
                         }
                         onChange={handleInputChange}
-                        className="w-1/2 p-2.5 bg-white border rounded-lg text-sm outline-none"
+                        className="w-1/2 p-3.5 md:p-2.5 bg-white border rounded-lg text-sm outline-none"
                       >
                         <option value="">Select count</option>
                         <option value="100">100</option>
@@ -3682,7 +3688,7 @@ export default function Dashboard() {
                         placeholder="Or type..."
                         value={formData.guest_count}
                         onChange={handleInputChange}
-                        className="w-1/2 p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                        className="w-1/2 p-3.5 md:p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                       />
                     </div>
                   </div>
@@ -3697,7 +3703,7 @@ export default function Dashboard() {
                     name="hotel"
                     value={formData.hotel}
                     onChange={handleInputChange}
-                    className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                    className="w-full p-3.5 md:p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                   />
                 </div>
 
@@ -3712,7 +3718,7 @@ export default function Dashboard() {
                       onClick={() =>
                         setIsServiceDropdownOpen(!isServiceDropdownOpen)
                       }
-                      className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none text-left flex items-center justify-between"
+                      className="w-full p-3.5 md:p-2.5 bg-white border rounded-lg text-sm outline-none text-left flex items-center justify-between"
                     >
                       <span className="truncate">
                         {Array.isArray(formData.service_type) &&
@@ -3795,7 +3801,7 @@ export default function Dashboard() {
                       name="wedding_type"
                       value={formData.wedding_type}
                       onChange={handleInputChange}
-                      className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
+                      className="w-full p-3.5 md:p-2.5 bg-white border rounded-lg text-sm outline-none"
                     >
                       <option value="One day">One day</option>
                       <option value="Two days">Two days</option>
@@ -3812,7 +3818,7 @@ export default function Dashboard() {
                       name="bridesmaid_option"
                       value={formData.bridesmaid_option}
                       onChange={handleInputChange}
-                      className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
+                      className="w-full p-3.5 md:p-2.5 bg-white border rounded-lg text-sm outline-none"
                     >
                       <option value="">Please select</option>
                       <option value="Without bridesmaid">
@@ -3829,7 +3835,7 @@ export default function Dashboard() {
                       name="status"
                       value={formData.status}
                       onChange={handleInputChange}
-                      className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
+                      className="w-full p-3.5 md:p-2.5 bg-white border rounded-lg text-sm outline-none"
                     >
                       <option value="Inquiry">Inquiry</option>
                       <option value="Confirmed">Confirmed</option>
@@ -3838,7 +3844,7 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-fuchsia-50/50 p-3 rounded-xl border border-fuchsia-100">
+                <div className="grid grid-cols-2 md:grid-cols-2 gap-3 bg-fuchsia-50/50 p-3 rounded-xl border border-fuchsia-100">
                   <div className="flex items-center justify-between col-span-2 mb-1">
                     <h3 className="text-xs font-black uppercase tracking-wider text-fuchsia-700">
                       Price Details
@@ -3862,7 +3868,7 @@ export default function Dashboard() {
                       placeholder="Enter package price"
                       value={formData.package_price}
                       onChange={handleInputChange}
-                      className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                      className="w-full p-3.5 md:p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                     />
                   </div>
 
@@ -3884,14 +3890,14 @@ export default function Dashboard() {
                             ? "Enter LKR amount"
                             : "Enter % amount"
                         }
-                        className="w-full p-2.5 bg-white border rounded-l-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                        className="w-full p-3.5 md:p-2.5 bg-white border rounded-l-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                       />
 
                       <select
                         name="discount_type"
                         value={formData.discount_type}
                         onChange={handleInputChange}
-                        className="w-[50px] p-2.5 border rounded-r-xl bg-fuchsia-50 text-fuchsia-800 font-black outline-none focus:ring-2 focus:ring-fuchsia-300 text-xs"
+                        className="w-[50px] p-3.5 md:p-2.5 border rounded-r-xl bg-fuchsia-50 text-fuchsia-800 font-black outline-none focus:ring-2 focus:ring-fuchsia-300 text-xs"
                       >
                         <option value="percentage">%</option>
                         <option value="fixed" className="text-[12px]">
@@ -3912,7 +3918,7 @@ export default function Dashboard() {
                       value={formData.transport_cost}
                       onChange={handleInputChange}
                       placeholder="Enter transport cost"
-                      className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                      className="w-full p-3.5 md:p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                     />
                   </div>
 
@@ -3926,7 +3932,7 @@ export default function Dashboard() {
                       placeholder="Final agreed price"
                       value={formData.agreed_price}
                       readOnly
-                      className="w-full p-2.5 bg-gray-100 border rounded-lg outline-none text-sm font-bold text-fuchsia-800"
+                      className="w-full p-3.5 md:p-2.5 bg-gray-100 border rounded-lg outline-none text-sm font-bold text-fuchsia-800"
                     />
                   </div>
 
@@ -3940,7 +3946,7 @@ export default function Dashboard() {
                       placeholder="Booking advance"
                       value={formData.advance_paid}
                       onChange={handleInputChange}
-                      className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                      className="w-full p-3.5 md:p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                     />
                   </div>
 
@@ -3953,7 +3959,7 @@ export default function Dashboard() {
                       name="advance_paid_date"
                       value={formData.advance_paid_date || ""}
                       onChange={handleInputChange}
-                      className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                      className="w-full p-3.5 md:p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                     />
                   </div>
                   <div>
@@ -4010,7 +4016,7 @@ export default function Dashboard() {
                     name="contact_no"
                     value={formData.contact_no}
                     onChange={handleInputChange}
-                    className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                    className="w-full p-3.5 md:p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                   />
                 </div>
 
@@ -4023,12 +4029,12 @@ export default function Dashboard() {
                     rows="2"
                     value={formData.remarks}
                     onChange={handleInputChange}
-                    className="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-fuchsia-300 outline-none"
+                    className="w-full p-3.5 md:p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-fuchsia-300 outline-none"
                   ></textarea>
                 </div>
               </div>
 
-              <div className="sticky bottom-0 z-20 bg-white/95 backdrop-blur-xl border-t p-4 flex gap-2">
+              <div className="mx-auto sticky bottom-0 z-20 bg-white/95 backdrop-blur-xl border-t p-4 flex gap-3 shadow-[0_-10px_30px_rgba(0,0,0,0.08)]">
                 <button
                   type="button"
                   onClick={() => {
