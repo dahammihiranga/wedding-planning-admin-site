@@ -1316,7 +1316,7 @@ export default function Dashboard() {
       <div className="absolute inset-0 bg-white/75 backdrop-blur-[2px] pointer-events-none"></div>
       <div className="relative z-10 flex flex-col w-full">
         <header
-          className="w-full text-emerald-950 shadow-xl backdrop-blur-xl p-4 sticky top-0 z-[999] flex items-center justify-between border-b border-white/30"
+          className="w-full text-emerald-950 shadow-xl backdrop-blur-xl px-3 py-3 md:p-4 sticky top-0 z-[999] border-b border-white/30"
           style={{
             backgroundImage: "url('/header-nav-img.jpg')",
             backgroundSize: "cover",
@@ -1324,76 +1324,78 @@ export default function Dashboard() {
             backgroundRepeat: "no-repeat",
           }}
         >
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setIsMobileSidebarOpen(true)}
-              className="md:hidden w-10 h-10 rounded-2xl bg-white/50 border border-white/40 shadow-sm flex items-center justify-center text-fuchsia-950 font-black active:scale-95 transition"
-            >
-              ☰
-            </button>
-            <img
-              src="/official Logo.png"
-              alt="Chathu Wedding Planners"
-              className="w-12 h-12 object-contain rounded-full shadow-sm"
-            />
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setIsMobileSidebarOpen(true)}
+                className="md:hidden w-10 h-10 rounded-2xl bg-white/50 border border-white/40 shadow-sm flex items-center justify-center text-fuchsia-950 font-black active:scale-95 transition"
+              >
+                ☰
+              </button>
+              <img
+                src="/official Logo.png"
+                alt="Chathu Wedding Planners"
+                className="w-12 h-12 object-contain rounded-full shadow-sm"
+              />
 
-            <div>
-              <h1 className="text-xl font-bold tracking-wide text-fuchsia-950">
-                Chathu Wedding Planners
-              </h1>
+              <div>
+                <h1 className="text-xl font-bold tracking-wide text-fuchsia-950">
+                  Chathu Wedding Planners
+                </h1>
 
-              <p className="text-xs text-fuchsia-900 mt-0.5 uppercase tracking-wider">
-                {activeTab === "allRecords"
-                  ? "ALL WEDDING RECORDS"
-                  : activeTab === "all"
-                    ? "ACTIVE WEDDING INQUIRIES"
-                    : activeTab === "completed"
-                      ? "OUR WEDDING ENQUIRIES"
-                      : "RECYCLE TRACK STORAGE"}
-              </p>
-              {upcomingWeddings.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsWeddingAlertModalOpen(true)}
-                    className="inline-flex items-center gap-2 bg-rose-100/90 backdrop-blur-md text-rose-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-rose-200 hover:bg-rose-200 hover:scale-105 active:scale-95 transition"
-                  >
-                    🔔 {upcomingWeddings.length} Within 14 Days
-                  </button>
-
-                  {urgentUpcomingWeddings.length > 0 && (
+                <p className="text-xs text-fuchsia-900 mt-0.5 uppercase tracking-wider">
+                  {activeTab === "allRecords"
+                    ? "ALL WEDDING RECORDS"
+                    : activeTab === "all"
+                      ? "ACTIVE WEDDING INQUIRIES"
+                      : activeTab === "completed"
+                        ? "OUR WEDDING ENQUIRIES"
+                        : "RECYCLE TRACK STORAGE"}
+                </p>
+                {upcomingWeddings.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
                     <button
                       type="button"
                       onClick={() => setIsWeddingAlertModalOpen(true)}
-                      className="inline-flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-red-700 hover:bg-red-700 hover:scale-105 active:scale-95 transition"
+                      className="inline-flex items-center gap-2 bg-rose-100/90 backdrop-blur-md text-rose-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-rose-200 hover:bg-rose-200 hover:scale-105 active:scale-95 transition"
                     >
-                      🚨 {urgentUpcomingWeddings.length} Within 7 Days
+                      🔔 {upcomingWeddings.length} Within 14 Days
                     </button>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
 
-          <div className="flex items-center gap-2 ml-2">
-            <div className="text-right leading-tight max-w-[105px] md:max-w-none">
-              <p className="text-[8px] md:text-[10px] uppercase tracking-wider font-bold text-fuchsia-900">
-                Sri Lanka
-              </p>
-
-              <p className="text-[9px] md:text-sm font-bold text-fuchsia-950 whitespace-nowrap">
-                {currentSLTime}
-              </p>
+                    {urgentUpcomingWeddings.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setIsWeddingAlertModalOpen(true)}
+                        className="inline-flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-sm border border-red-700 hover:bg-red-700 hover:scale-105 active:scale-95 transition"
+                      >
+                        🚨 {urgentUpcomingWeddings.length} Within 7 Days
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="px-2 md:px-3 py-2 rounded-xl bg-white/40 hover:bg-white/60 text-fuchsia-900 text-[10px] md:text-xs font-bold border border-white/40"
-            >
-              Logout
-            </button>
+            <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
+              <div className="text-right leading-tight max-w-[105px] md:max-w-none">
+                <p className="text-[8px] md:text-[10px] uppercase tracking-wider font-bold text-fuchsia-900">
+                  Sri Lanka
+                </p>
+
+                <p className="text-[9px] md:text-sm font-bold text-fuchsia-950 whitespace-nowrap">
+                  {currentSLTime}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="px-2 md:px-3 py-2 rounded-xl bg-white/40 hover:bg-white/60 text-fuchsia-900 text-[10px] md:text-xs font-bold border border-white/40"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </header>
 
@@ -1406,18 +1408,18 @@ export default function Dashboard() {
 
             <div className="absolute left-0 top-0 h-full w-[82%] max-w-sm bg-white/90 backdrop-blur-2xl shadow-2xl border-r border-white/50 p-5 animate-scale-in">
               <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
                   <img
                     src="/official Logo.png"
                     alt="Chathu Wedding Planners"
-                    className="w-12 h-12 object-contain rounded-full shadow-sm"
+                    className="w-10 h-10 md:w-12 md:h-12 object-contain rounded-full shadow-sm shrink-0"
                   />
 
-                  <div>
-                    <h2 className="text-sm font-black text-fuchsia-950">
-                      Chathu Wedding
-                    </h2>
-                    <p className="text-[10px] font-bold text-gray-500 uppercase">
+                  <div className="min-w-0 flex-1">
+                    <h1 className="text-sm md:text-xl font-black tracking-wide text-fuchsia-950 truncate">
+                      Chathu Wedding Planners
+                    </h1>
+                    <p className="text-[9px] md:text-xs text-fuchsia-900 mt-0.5 uppercase tracking-wider truncate">
                       Admin Menu
                     </p>
                   </div>
@@ -3597,430 +3599,433 @@ export default function Dashboard() {
                 ✕
               </button>
             </div>
-            <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
-  <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 pb-28">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
-                <div className="col-span-2">
+            <form
+              onSubmit={handleSubmit}
+              className="flex-1 flex flex-col overflow-hidden"
+            >
+              <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 pb-28">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+                  <div className="col-span-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                      Couple Name *
+                    </label>
+                    <input
+                      type="text"
+                      name="couple_name"
+                      required
+                      value={formData.couple_name}
+                      onChange={handleInputChange}
+                      className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                      Country
+                    </label>
+                    <select
+                      name="country"
+                      value={formData.country}
+                      onChange={handleInputChange}
+                      className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none font-medium text-gray-700"
+                    >
+                      {COUNTRIES.map((c) => (
+                        <option key={c.code} value={c.code}>
+                          {c.flag} {c.code}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                      Wedding Date
+                    </label>
+                    <input
+                      type="date"
+                      name="wedding_date"
+                      value={formData.wedding_date}
+                      onChange={handleInputChange}
+                      className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                      Guest Count
+                    </label>
+                    <div className="flex gap-1">
+                      <select
+                        name="guest_count"
+                        value={
+                          [100, 150, 200, 250, 300, 350, 400].includes(
+                            Number(formData.guest_count),
+                          )
+                            ? formData.guest_count
+                            : ""
+                        }
+                        onChange={handleInputChange}
+                        className="w-1/2 p-2.5 bg-white border rounded-lg text-sm outline-none"
+                      >
+                        <option value="">Select count</option>
+                        <option value="100">100</option>
+                        <option value="150">150</option>
+                        <option value="200">200</option>
+                        <option value="250">250</option>
+                        <option value="300">300</option>
+                        <option value="350">350</option>
+                        <option value="400">400</option>
+                      </select>
+                      <input
+                        type="number"
+                        name="guest_count"
+                        placeholder="Or type..."
+                        value={formData.guest_count}
+                        onChange={handleInputChange}
+                        className="w-1/2 p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Couple Name *
+                    Hotel / Venue
                   </label>
                   <input
                     type="text"
-                    name="couple_name"
-                    required
-                    value={formData.couple_name}
+                    name="hotel"
+                    value={formData.hotel}
                     onChange={handleInputChange}
                     className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                   />
                 </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Country
-                  </label>
-                  <select
-                    name="country"
-                    value={formData.country}
-                    onChange={handleInputChange}
-                    className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none font-medium text-gray-700"
-                  >
-                    {COUNTRIES.map((c) => (
-                      <option key={c.code} value={c.code}>
-                        {c.flag} {c.code}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Wedding Date
-                  </label>
-                  <input
-                    type="date"
-                    name="wedding_date"
-                    value={formData.wedding_date}
-                    onChange={handleInputChange}
-                    className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm bg-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Guest Count
-                  </label>
-                  <div className="flex gap-1">
-                    <select
-                      name="guest_count"
-                      value={
-                        [100, 150, 200, 250, 300, 350, 400].includes(
-                          Number(formData.guest_count),
-                        )
-                          ? formData.guest_count
-                          : ""
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="relative">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                      Service Type
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setIsServiceDropdownOpen(!isServiceDropdownOpen)
                       }
-                      onChange={handleInputChange}
-                      className="w-1/2 p-2.5 bg-white border rounded-lg text-sm outline-none"
+                      className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none text-left flex items-center justify-between"
                     >
-                      <option value="">Select count</option>
-                      <option value="100">100</option>
-                      <option value="150">150</option>
-                      <option value="200">200</option>
-                      <option value="250">250</option>
-                      <option value="300">300</option>
-                      <option value="350">350</option>
-                      <option value="400">400</option>
-                    </select>
-                    <input
-                      type="number"
-                      name="guest_count"
-                      placeholder="Or type..."
-                      value={formData.guest_count}
-                      onChange={handleInputChange}
-                      className="w-1/2 p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                    />
-                  </div>
-                </div>
-              </div>
+                      <span className="truncate">
+                        {Array.isArray(formData.service_type) &&
+                        formData.service_type.length > 0
+                          ? formData.service_type.join(", ")
+                          : "Please select service type"}
+                      </span>
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                  Hotel / Venue
-                </label>
-                <input
-                  type="text"
-                  name="hotel"
-                  value={formData.hotel}
-                  onChange={handleInputChange}
-                  className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                />
-              </div>
+                      <span className="text-gray-400">▾</span>
+                    </button>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="relative">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Service Type
-                  </label>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setIsServiceDropdownOpen(!isServiceDropdownOpen)
-                    }
-                    className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none text-left flex items-center justify-between"
-                  >
-                    <span className="truncate">
-                      {Array.isArray(formData.service_type) &&
-                      formData.service_type.length > 0
-                        ? formData.service_type.join(", ")
-                        : "Please select service type"}
-                    </span>
-
-                    <span className="text-gray-400">▾</span>
-                  </button>
-
-                  {isServiceDropdownOpen && (
-                    <div className="absolute z-[10000] mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl p-2 space-y-1">
-                      {SERVICE_TYPE_OPTIONS.map((service) => (
-                        <label
-                          key={service}
-                          className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-emerald-50 cursor-pointer text-sm"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={
-                              Array.isArray(formData.service_type) &&
-                              formData.service_type.includes(service)
-                            }
-                            onChange={(e) => {
-                              const current = Array.isArray(
-                                formData.service_type,
-                              )
-                                ? formData.service_type
-                                : [];
-
-                              if (e.target.checked) {
-                                const updatedForm = {
-                                  ...formData,
-                                  service_type: [...current, service],
-                                };
-
-                                setFormData(updatedForm);
-
-                                if (!updatedForm.id) {
-                                  localStorage.setItem(
-                                    DRAFT_KEY,
-                                    JSON.stringify(updatedForm),
-                                  );
-                                }
-                              } else {
-                                const updatedForm = {
-                                  ...formData,
-                                  service_type: current.filter(
-                                    (s) => s !== service,
-                                  ),
-                                };
-
-                                setFormData(updatedForm);
-
-                                if (!updatedForm.id) {
-                                  localStorage.setItem(
-                                    DRAFT_KEY,
-                                    JSON.stringify(updatedForm),
-                                  );
-                                }
+                    {isServiceDropdownOpen && (
+                      <div className="absolute z-[10000] mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl p-2 space-y-1">
+                        {SERVICE_TYPE_OPTIONS.map((service) => (
+                          <label
+                            key={service}
+                            className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-emerald-50 cursor-pointer text-sm"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={
+                                Array.isArray(formData.service_type) &&
+                                formData.service_type.includes(service)
                               }
-                            }}
-                            className="accent-emerald-600"
-                          />
+                              onChange={(e) => {
+                                const current = Array.isArray(
+                                  formData.service_type,
+                                )
+                                  ? formData.service_type
+                                  : [];
 
-                          <span className="font-medium text-gray-700">
-                            {service}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Wedding Type
-                  </label>
-                  <select
-                    name="wedding_type"
-                    value={formData.wedding_type}
-                    onChange={handleInputChange}
-                    className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
-                  >
-                    <option value="One day">One day</option>
-                    <option value="Two days">Two days</option>
-                  </select>
-                </div>
-              </div>
+                                if (e.target.checked) {
+                                  const updatedForm = {
+                                    ...formData,
+                                    service_type: [...current, service],
+                                  };
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Bridesmaid
-                  </label>
-                  <select
-                    name="bridesmaid_option"
-                    value={formData.bridesmaid_option}
-                    onChange={handleInputChange}
-                    className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
-                  >
-                    <option value="">Please select</option>
-                    <option value="Without bridesmaid">
-                      Without bridesmaid
-                    </option>
-                    <option value="With bridesmaid">With bridesmaid</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Status
-                  </label>
-                  <select
-                    name="status"
-                    value={formData.status}
-                    onChange={handleInputChange}
-                    className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
-                  >
-                    <option value="Inquiry">Inquiry</option>
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Completed">Completed</option>
-                  </select>
-                </div>
-              </div>
+                                  setFormData(updatedForm);
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-fuchsia-50/50 p-3 rounded-xl border border-fuchsia-100">
-                <div className="flex items-center justify-between col-span-2 mb-1">
-                  <h3 className="text-xs font-black uppercase tracking-wider text-fuchsia-700">
-                    Price Details
-                  </h3>
+                                  if (!updatedForm.id) {
+                                    localStorage.setItem(
+                                      DRAFT_KEY,
+                                      JSON.stringify(updatedForm),
+                                    );
+                                  }
+                                } else {
+                                  const updatedForm = {
+                                    ...formData,
+                                    service_type: current.filter(
+                                      (s) => s !== service,
+                                    ),
+                                  };
 
-                  <button
-                    type="button"
-                    onClick={clearPriceFields}
-                    className="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 border border-rose-100 text-[11px] font-black hover:bg-rose-100 transition"
-                  >
-                    Clear Prices
-                  </button>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
-                    Package Price (LKR)
-                  </label>
-                  <input
-                    type="number"
-                    name="package_price"
-                    placeholder="Enter package price"
-                    value={formData.package_price}
-                    onChange={handleInputChange}
-                    className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                  />
-                </div>
+                                  setFormData(updatedForm);
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
-                    {formData.discount_type === "fixed"
-                      ? "Discount Amount"
-                      : "Discount Rate"}
-                  </label>
+                                  if (!updatedForm.id) {
+                                    localStorage.setItem(
+                                      DRAFT_KEY,
+                                      JSON.stringify(updatedForm),
+                                    );
+                                  }
+                                }
+                              }}
+                              className="accent-emerald-600"
+                            />
 
-                  <div className="flex">
-                    <input
-                      type="number"
-                      name="discount_rate"
-                      value={formData.discount_rate}
-                      onChange={handleInputChange}
-                      placeholder={
-                        formData.discount_type === "fixed"
-                          ? "Enter LKR amount"
-                          : "Enter % amount"
-                      }
-                      className="w-full p-2.5 bg-white border rounded-l-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                    />
-
+                            <span className="font-medium text-gray-700">
+                              {service}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                      Wedding Type
+                    </label>
                     <select
-                      name="discount_type"
-                      value={formData.discount_type}
+                      name="wedding_type"
+                      value={formData.wedding_type}
                       onChange={handleInputChange}
-                      className="w-[50px] p-2.5 border rounded-r-xl bg-fuchsia-50 text-fuchsia-800 font-black outline-none focus:ring-2 focus:ring-fuchsia-300 text-xs"
+                      className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
                     >
-                      <option value="percentage">%</option>
-                      <option value="fixed" className="text-[12px]">
-                        LKR
-                      </option>
+                      <option value="One day">One day</option>
+                      <option value="Two days">Two days</option>
                     </select>
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
-                    Transport Cost
-                  </label>
-
-                  <input
-                    type="number"
-                    name="transport_cost"
-                    value={formData.transport_cost}
-                    onChange={handleInputChange}
-                    placeholder="Enter transport cost"
-                    className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                      Bridesmaid
+                    </label>
+                    <select
+                      name="bridesmaid_option"
+                      value={formData.bridesmaid_option}
+                      onChange={handleInputChange}
+                      className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
+                    >
+                      <option value="">Please select</option>
+                      <option value="Without bridesmaid">
+                        Without bridesmaid
+                      </option>
+                      <option value="With bridesmaid">With bridesmaid</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                      Status
+                    </label>
+                    <select
+                      name="status"
+                      value={formData.status}
+                      onChange={handleInputChange}
+                      className="w-full p-2.5 bg-white border rounded-lg text-sm outline-none"
+                    >
+                      <option value="Inquiry">Inquiry</option>
+                      <option value="Confirmed">Confirmed</option>
+                      <option value="Completed">Completed</option>
+                    </select>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
-                    Agreed Price (LKR)
-                  </label>
-                  <input
-                    type="number"
-                    name="agreed_price"
-                    placeholder="Final agreed price"
-                    value={formData.agreed_price}
-                    readOnly
-                    className="w-full p-2.5 bg-gray-100 border rounded-lg outline-none text-sm font-bold text-fuchsia-800"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-fuchsia-50/50 p-3 rounded-xl border border-fuchsia-100">
+                  <div className="flex items-center justify-between col-span-2 mb-1">
+                    <h3 className="text-xs font-black uppercase tracking-wider text-fuchsia-700">
+                      Price Details
+                    </h3>
+
+                    <button
+                      type="button"
+                      onClick={clearPriceFields}
+                      className="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 border border-rose-100 text-[11px] font-black hover:bg-rose-100 transition"
+                    >
+                      Clear Prices
+                    </button>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
+                      Package Price (LKR)
+                    </label>
+                    <input
+                      type="number"
+                      name="package_price"
+                      placeholder="Enter package price"
+                      value={formData.package_price}
+                      onChange={handleInputChange}
+                      className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
+                      {formData.discount_type === "fixed"
+                        ? "Discount Amount"
+                        : "Discount Rate"}
+                    </label>
+
+                    <div className="flex">
+                      <input
+                        type="number"
+                        name="discount_rate"
+                        value={formData.discount_rate}
+                        onChange={handleInputChange}
+                        placeholder={
+                          formData.discount_type === "fixed"
+                            ? "Enter LKR amount"
+                            : "Enter % amount"
+                        }
+                        className="w-full p-2.5 bg-white border rounded-l-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                      />
+
+                      <select
+                        name="discount_type"
+                        value={formData.discount_type}
+                        onChange={handleInputChange}
+                        className="w-[50px] p-2.5 border rounded-r-xl bg-fuchsia-50 text-fuchsia-800 font-black outline-none focus:ring-2 focus:ring-fuchsia-300 text-xs"
+                      >
+                        <option value="percentage">%</option>
+                        <option value="fixed" className="text-[12px]">
+                          LKR
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
+                      Transport Cost
+                    </label>
+
+                    <input
+                      type="number"
+                      name="transport_cost"
+                      value={formData.transport_cost}
+                      onChange={handleInputChange}
+                      placeholder="Enter transport cost"
+                      className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
+                      Agreed Price (LKR)
+                    </label>
+                    <input
+                      type="number"
+                      name="agreed_price"
+                      placeholder="Final agreed price"
+                      value={formData.agreed_price}
+                      readOnly
+                      className="w-full p-2.5 bg-gray-100 border rounded-lg outline-none text-sm font-bold text-fuchsia-800"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
+                      Advance Paid (LKR)
+                    </label>
+                    <input
+                      type="number"
+                      name="advance_paid"
+                      placeholder="Booking advance"
+                      value={formData.advance_paid}
+                      onChange={handleInputChange}
+                      className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
+                      Advance Paid Date
+                    </label>
+                    <input
+                      type="date"
+                      name="advance_paid_date"
+                      value={formData.advance_paid_date || ""}
+                      onChange={handleInputChange}
+                      className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                      Paid Amount (LKR)
+                    </label>
+                    <input
+                      type="number"
+                      name="paid_amount"
+                      placeholder="Total received"
+                      value={formData.paid_amount}
+                      readOnly
+                      className="w-full p-3 border rounded-xl bg-gray-50 text-gray-500 outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                      Paid Date
+                    </label>
+                    <input
+                      type="date"
+                      name="paid_date"
+                      value={formData.paid_date}
+                      onChange={handleInputChange}
+                      className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                      New Payment Amount
+                    </label>
+                    <input
+                      type="number"
+                      name="new_payment"
+                      value={formData.new_payment}
+                      onChange={handleInputChange}
+                      placeholder="Enter latest payment only"
+                      className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                    />
+                    <p className="text-[10px] text-gray-400 mt-1">
+                      Enter only the amount customer paid now. System will add
+                      it to total paid.
+                    </p>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
-                    Advance Paid (LKR)
-                  </label>
-                  <input
-                    type="number"
-                    name="advance_paid"
-                    placeholder="Booking advance"
-                    value={formData.advance_paid}
-                    onChange={handleInputChange}
-                    className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-fuchsia-800 mb-1">
-                    Advance Paid Date
-                  </label>
-                  <input
-                    type="date"
-                    name="advance_paid_date"
-                    value={formData.advance_paid_date || ""}
-                    onChange={handleInputChange}
-                    className="w-full p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                  />
-                </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Paid Amount (LKR)
+                    Contact No.
                   </label>
                   <input
-                    type="number"
-                    name="paid_amount"
-                    placeholder="Total received"
-                    value={formData.paid_amount}
-                    readOnly
-                    className="w-full p-3 border rounded-xl bg-gray-50 text-gray-500 outline-none"
+                    type="text"
+                    name="contact_no"
+                    value={formData.contact_no}
+                    onChange={handleInputChange}
+                    className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Paid Date
+                    Remarks
                   </label>
-                  <input
-                    type="date"
-                    name="paid_date"
-                    value={formData.paid_date}
+                  <textarea
+                    name="remarks"
+                    rows="2"
+                    value={formData.remarks}
                     onChange={handleInputChange}
-                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-                  />
+                    className="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-fuchsia-300 outline-none"
+                  ></textarea>
                 </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    New Payment Amount
-                  </label>
-                  <input
-                    type="number"
-                    name="new_payment"
-                    value={formData.new_payment}
-                    onChange={handleInputChange}
-                    placeholder="Enter latest payment only"
-                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-                  />
-                  <p className="text-[10px] text-gray-400 mt-1">
-                    Enter only the amount customer paid now. System will add it
-                    to total paid.
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                  Contact No.
-                </label>
-                <input
-                  type="text"
-                  name="contact_no"
-                  value={formData.contact_no}
-                  onChange={handleInputChange}
-                  className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                  Remarks
-                </label>
-                <textarea
-                  name="remarks"
-                  rows="2"
-                  value={formData.remarks}
-                  onChange={handleInputChange}
-                  className="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-fuchsia-300 outline-none"
-                ></textarea>
-              </div>
               </div>
 
               <div className="sticky bottom-0 z-20 bg-white/95 backdrop-blur-xl border-t p-4 flex gap-2">
