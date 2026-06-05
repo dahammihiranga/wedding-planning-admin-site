@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 // Country list mapping with flags and labels
 const COUNTRIES = [
@@ -319,6 +321,9 @@ export default function Dashboard() {
   const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
   const [paymentTransactions, setPaymentTransactions] = useState([]);
   const [highlightedRecordId, setHighlightedRecordId] = useState(null);
+  const [selectedInvoiceItem, setSelectedInvoiceItem] = useState(null);
+  const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+  const invoiceRef = useRef(null);
 
   const [statusPopup, setStatusPopup] = useState({
     show: false,
@@ -903,6 +908,93 @@ export default function Dashboard() {
     if (!updatedForm.id) {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(updatedForm));
     }
+  };
+
+  const getDiscountAmount = (item) => {
+    const packagePrice = Number(item.package_price || 0);
+    const discount = Number(item.discount_rate || 0);
+
+    if (item.discount_type === "percentage") {
+      return (packagePrice * discount) / 100;
+    }
+
+    return discount;
+  };
+
+  const getInvoiceRows = (item) => {
+    const services = item.service_type
+      ? String(item.service_type)
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [];
+
+    const serviceRows = services.map((service) => ({
+      description: service,
+      rate: 0,
+      total: 0,
+    }));
+
+    const transportCost = Number(item.transport_cost || 0);
+
+    if (transportCost > 0) {
+      serviceRows.push({
+        description: "Transportation Cost",
+        rate: transportCost,
+        total: transportCost,
+      });
+    }
+
+    const advancePaid = Number(item.advance_paid || 0);
+
+    if (advancePaid > 0) {
+      serviceRows.push({
+        description: `Advance - Paid (${item.advance_paid_date || "No date"})`,
+        rate: advancePaid,
+        total: advancePaid,
+      });
+    }
+
+    return serviceRows;
+  };
+
+  const openInvoiceModal = (item) => {
+    setSelectedInvoiceItem(item);
+    setIsInvoiceModalOpen(true);
+  };
+
+  const downloadInvoicePdf = async () => {
+    if (!invoiceRef.current || !selectedInvoiceItem) return;
+
+    const canvas = await html2canvas(invoiceRef.current, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+
+    const pdfWidth = 210;
+    const pdfHeight = 297;
+    const imgWidth = pdfWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+    heightLeft -= pdfHeight;
+
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight;
+    }
+
+    const invoiceNo = String(selectedInvoiceItem.id).padStart(4, "0");
+    pdf.save(`invoice-${invoiceNo}-${selectedInvoiceItem.couple_name}.pdf`);
   };
 
   const getCountryDisplay = (code) => {
@@ -2354,9 +2446,24 @@ export default function Dashboard() {
                                           </button>
                                         </div>
                                       ) : (
-                                        <div className="flex items-center justify-center gap-3">
+                                        <div className="flex items-center justify-center gap-2">
                                           <button
-                                            onClick={() => openEditModal(item)}
+                                            type="button"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              openInvoiceModal(item);
+                                            }}
+                                            className="text-emerald-600 font-bold hover:underline"
+                                          >
+                                            Invoice
+                                          </button>
+
+                                          <button
+                                            type="button"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              openEditModal(item);
+                                            }}
                                             className="text-fuchsia-600 font-bold hover:underline"
                                           >
                                             Edit
@@ -2609,7 +2716,7 @@ export default function Dashboard() {
                                 </button>
                               )}
 
-                              <div className="grid grid-cols-2 gap-3">
+                              <div className="grid grid-cols-3 gap-3">
                                 {activeTab === "trash" ? (
                                   <>
                                     <button
@@ -2636,6 +2743,16 @@ export default function Dashboard() {
                                   </>
                                 ) : (
                                   <>
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        openInvoiceModal(item);
+                                      }}
+                                      className="rounded-2xl bg-emerald-50 text-emerald-700 p-3 text-xs font-black border border-emerald-100"
+                                    >
+                                      Invoice
+                                    </button>
                                     <button
                                       type="button"
                                       onClick={(e) => {
@@ -4178,6 +4295,191 @@ export default function Dashboard() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {isInvoiceModalOpen && selectedInvoiceItem && (
+        <div className="fixed inset-0 z-[999999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 md:p-6">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between px-4 md:px-6 py-4 border-b bg-white">
+              <div>
+                <h2 className="text-lg font-black text-fuchsia-950">
+                  Invoice Preview
+                </h2>
+                <p className="text-xs text-gray-500 font-semibold">
+                  {selectedInvoiceItem.couple_name}
+                </p>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={downloadInvoicePdf}
+                  className="px-4 py-2 rounded-xl bg-emerald-100 text-emerald-700 text-xs font-black"
+                >
+                  Download PDF
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsInvoiceModalOpen(false)}
+                  className="w-9 h-9 rounded-xl bg-gray-100 text-gray-600 font-black"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <div className="overflow-y-auto bg-gray-100 p-3 md:p-6">
+              <div
+                ref={invoiceRef}
+                className="mx-auto bg-white text-black p-8 md:p-12 shadow-xl"
+                style={{
+                  width: "794px",
+                  minHeight: "1123px",
+                  fontFamily: "Arial, sans-serif",
+                }}
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h1 className="text-[54px] font-light text-gray-500">
+                      Invoice
+                    </h1>
+
+                    <div className="mt-8 text-sm">
+                      <p className="font-black">ISSUED TO:</p>
+                      <p>{selectedInvoiceItem.couple_name}</p>
+                      <p>{selectedInvoiceItem.contact_no || ""}</p>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <img
+                      src="/official Logo.png"
+                      alt="Logo"
+                      className="w-40 h-28 object-contain ml-auto"
+                    />
+
+                    <div className="mt-4 grid grid-cols-2 gap-x-6 text-sm">
+                      <p className="font-black text-left">INVOICE NUMBER:</p>
+                      <p>{String(selectedInvoiceItem.id).padStart(4, "0")}</p>
+
+                      <p className="font-black text-left">DATE:</p>
+                      <p>{moment().format("MMMM D, YYYY")}</p>
+
+                      <p className="font-black text-left">DUE DATE:</p>
+                      <p>
+                        {selectedInvoiceItem.wedding_date
+                          ? moment(selectedInvoiceItem.wedding_date).format(
+                              "MMMM D, YYYY",
+                            )
+                          : "-"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <table className="w-full mt-12 border-separate border-spacing-y-3">
+                  <thead>
+                    <tr className="bg-[#e7e8e1] text-sm">
+                      <th className="w-14 p-4"></th>
+                      <th className="p-4 text-left">DESCRIPTION</th>
+                      <th className="p-4 text-right">RATE</th>
+                      <th className="p-4 text-right">TOTAL</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {getInvoiceRows(selectedInvoiceItem).map((row, idx) => (
+                      <tr key={idx} className="border border-gray-100">
+                        <td className="p-4 text-center border border-gray-100">
+                          {idx + 1}
+                        </td>
+                        <td className="p-4 border border-gray-100">
+                          {row.description}
+                        </td>
+                        <td className="p-4 text-right border border-gray-100">
+                          Rs.{Number(row.rate || 0).toLocaleString("en-LK")}
+                        </td>
+                        <td className="p-4 text-right border border-gray-100">
+                          Rs.{Number(row.total || 0).toLocaleString("en-LK")}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <div className="flex justify-end mt-8">
+                  <div className="w-80 text-right space-y-3">
+                    <div className="flex justify-between">
+                      <span className="font-black">Sub Total</span>
+                      <span>
+                        Rs.
+                        {(
+                          Number(selectedInvoiceItem.package_price || 0) +
+                          Number(selectedInvoiceItem.transport_cost || 0)
+                        ).toLocaleString("en-LK")}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="font-black">
+                        Discount{" "}
+                        {selectedInvoiceItem.discount_type === "percentage"
+                          ? `- ${selectedInvoiceItem.discount_rate}%`
+                          : ""}
+                      </span>
+                      <span>
+                        (RS.
+                        {getDiscountAmount(selectedInvoiceItem).toLocaleString(
+                          "en-LK",
+                        )}
+                        )
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="font-black">Advance (Paid)</span>
+                      <span>
+                        (RS.
+                        {Number(
+                          selectedInvoiceItem.advance_paid || 0,
+                        ).toLocaleString("en-LK")}
+                        )
+                      </span>
+                    </div>
+
+                    <div className="border-t border-black pt-4 flex justify-between text-lg">
+                      <span className="font-black">Due Amount</span>
+                      <span>
+                        Rs.
+                        {Number(
+                          selectedInvoiceItem.pending_payment || 0,
+                        ).toLocaleString("en-LK")}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-12 border border-rose-100 p-6 w-80">
+                  <h3 className="tracking-[0.2em] text-gray-500 font-semibold mb-4">
+                    PAYMENT INFORMATION
+                  </h3>
+
+                  <p>Name: A V C T Perera</p>
+                  <p>Account No: 003020751136</p>
+                  <p>Bank Name: Hatton National Bank</p>
+                  <p>Branch: Head Office</p>
+                </div>
+
+                <div className="text-center mt-16 text-sm">
+                  <p>Chathu Wedding Planners - 076 2606777</p>
+                  <p>chathuweddings@gmail.com</p>
+                  <p className="mt-3">www.chathuweddings.com</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
