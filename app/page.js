@@ -910,6 +910,11 @@ export default function Dashboard() {
     }
   };
 
+  const money = (value) => {
+    const num = Number(value || 0);
+    return num > 0 ? `Rs.${num.toLocaleString("en-LK")}` : "";
+  };
+
   const getDiscountAmount = (item) => {
     const packagePrice = Number(item.package_price || 0);
     const discount = Number(item.discount_rate || 0);
@@ -921,6 +926,31 @@ export default function Dashboard() {
     return discount;
   };
 
+  const canGenerateInvoice = (item) => {
+    return item.status === "Confirmed" && Number(item.advance_paid || 0) > 0;
+  };
+
+  const getInvoiceNumber = (item) => {
+    const eligibleInvoices = data
+      .filter((record) => canGenerateInvoice(record))
+      .sort((a, b) => {
+        const dateA = a.advance_paid_date || a.created_at || "";
+        const dateB = b.advance_paid_date || b.created_at || "";
+
+        if (dateA === dateB) {
+          return Number(a.id) - Number(b.id);
+        }
+
+        return dateA.localeCompare(dateB);
+      });
+
+    const index = eligibleInvoices.findIndex(
+      (record) => Number(record.id) === Number(item.id),
+    );
+
+    return String(11 + Math.max(index, 0)).padStart(4, "0");
+  };
+
   const getInvoiceRows = (item) => {
     const services = item.service_type
       ? String(item.service_type)
@@ -929,33 +959,48 @@ export default function Dashboard() {
           .filter(Boolean)
       : [];
 
-    const serviceRows = services.map((service) => ({
-      description: service,
-      rate: 0,
-      total: 0,
-    }));
+    const rows = services.length
+      ? services.map((service, index) => ({
+          description: service,
+          rate: index === 0 ? Number(item.package_price || 0) : "",
+          total: index === 0 ? Number(item.package_price || 0) : "",
+        }))
+      : [
+          {
+            description: "Wedding Planning Service",
+            rate: Number(item.package_price || 0),
+            total: Number(item.package_price || 0),
+          },
+        ];
 
-    const transportCost = Number(item.transport_cost || 0);
-
-    if (transportCost > 0) {
-      serviceRows.push({
+    if (Number(item.transport_cost || 0) > 0) {
+      rows.push({
         description: "Transportation Cost",
-        rate: transportCost,
-        total: transportCost,
+        rate: Number(item.transport_cost || 0),
+        total: Number(item.transport_cost || 0),
       });
     }
 
-    const advancePaid = Number(item.advance_paid || 0);
+    if (Number(item.discount_rate || 0) > 0) {
+      rows.push({
+        description:
+          item.discount_type === "percentage"
+            ? `Promotional Discount - ${item.discount_rate}%`
+            : `Promotional Discount - LKR ${Number(item.discount_rate || 0).toLocaleString("en-LK")}`,
+        rate: "",
+        total: "",
+      });
+    }
 
-    if (advancePaid > 0) {
-      serviceRows.push({
+    if (Number(item.advance_paid || 0) > 0) {
+      rows.push({
         description: `Advance - Paid (${item.advance_paid_date || "No date"})`,
-        rate: advancePaid,
-        total: advancePaid,
+        rate: "",
+        total: "",
       });
     }
 
-    return serviceRows;
+    return rows;
   };
 
   const openInvoiceModal = (item) => {
@@ -975,25 +1020,9 @@ export default function Dashboard() {
     const imgData = canvas.toDataURL("image/png");
     const pdf = new jsPDF("p", "mm", "a4");
 
-    const pdfWidth = 210;
-    const pdfHeight = 297;
-    const imgWidth = pdfWidth;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    pdf.addImage(imgData, "PNG", 0, 0, 210, 297);
 
-    let heightLeft = imgHeight;
-    let position = 0;
-
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    heightLeft -= pdfHeight;
-
-    while (heightLeft > 0) {
-      position = heightLeft - imgHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-      heightLeft -= pdfHeight;
-    }
-
-    const invoiceNo = String(selectedInvoiceItem.id).padStart(4, "0");
+    const invoiceNo = getInvoiceNumber(selectedInvoiceItem);
     pdf.save(`invoice-${invoiceNo}-${selectedInvoiceItem.couple_name}.pdf`);
   };
 
@@ -2447,16 +2476,18 @@ export default function Dashboard() {
                                         </div>
                                       ) : (
                                         <div className="flex items-center justify-center gap-2">
-                                          <button
-                                            type="button"
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              openInvoiceModal(item);
-                                            }}
-                                            className="text-emerald-600 font-bold hover:underline"
-                                          >
-                                            Invoice
-                                          </button>
+                                          {canGenerateInvoice(item) && (
+                                            <button
+                                              type="button"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                openInvoiceModal(item);
+                                              }}
+                                              className="text-emerald-600 font-bold hover:underline"
+                                            >
+                                              Invoice
+                                            </button>
+                                          )}
 
                                           <button
                                             type="button"
@@ -2743,16 +2774,18 @@ export default function Dashboard() {
                                   </>
                                 ) : (
                                   <>
-                                    <button
-                                      type="button"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        openInvoiceModal(item);
-                                      }}
-                                      className="rounded-2xl bg-emerald-50 text-emerald-700 p-3 text-xs font-black border border-emerald-100"
-                                    >
-                                      Invoice
-                                    </button>
+                                    {canGenerateInvoice(item) && (
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          openInvoiceModal(item);
+                                        }}
+                                        className="rounded-2xl bg-emerald-50 text-emerald-700 p-3 text-xs font-black border border-emerald-100"
+                                      >
+                                        Invoice
+                                      </button>
+                                    )}
                                     <button
                                       type="button"
                                       onClick={(e) => {
@@ -4334,149 +4367,119 @@ export default function Dashboard() {
             <div className="overflow-y-auto bg-gray-100 p-3 md:p-6">
               <div
                 ref={invoiceRef}
-                className="mx-auto bg-white text-black p-8 md:p-12 shadow-xl"
+                className="relative mx-auto bg-white text-black shadow-xl overflow-hidden"
                 style={{
                   width: "794px",
-                  minHeight: "1123px",
+                  height: "1123px",
                   fontFamily: "Arial, sans-serif",
                 }}
               >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h1 className="text-[54px] font-light text-gray-500">
-                      Invoice
-                    </h1>
+                <img
+                  src="/invoice-template.png"
+                  alt="Invoice Template"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
 
-                    <div className="mt-8 text-sm">
-                      <p className="font-black">ISSUED TO:</p>
-                      <p>{selectedInvoiceItem.couple_name}</p>
-                      <p>{selectedInvoiceItem.contact_no || ""}</p>
-                    </div>
-                  </div>
-
-                  <div className="text-right">
-                    <img
-                      src="/official Logo.png"
-                      alt="Logo"
-                      className="w-40 h-28 object-contain ml-auto"
-                    />
-
-                    <div className="mt-4 grid grid-cols-2 gap-x-6 text-sm">
-                      <p className="font-black text-left">INVOICE NUMBER:</p>
-                      <p>{String(selectedInvoiceItem.id).padStart(4, "0")}</p>
-
-                      <p className="font-black text-left">DATE:</p>
-                      <p>{moment().format("MMMM D, YYYY")}</p>
-
-                      <p className="font-black text-left">DUE DATE:</p>
-                      <p>
-                        {selectedInvoiceItem.wedding_date
-                          ? moment(selectedInvoiceItem.wedding_date).format(
-                              "MMMM D, YYYY",
-                            )
-                          : "-"}
-                      </p>
-                    </div>
-                  </div>
+                {/* ISSUED TO */}
+                <div className="absolute left-[78px] top-[250px] text-[14px] leading-6">
+                  <p className="font-bold uppercase">ISSUED TO:</p>
+                  <p>{selectedInvoiceItem.couple_name}</p>
+                  <p>{selectedInvoiceItem.contact_no || ""}</p>
                 </div>
 
-                <table className="w-full mt-12 border-separate border-spacing-y-3">
-                  <thead>
-                    <tr className="bg-[#e7e8e1] text-sm">
-                      <th className="w-14 p-4"></th>
-                      <th className="p-4 text-left">DESCRIPTION</th>
-                      <th className="p-4 text-right">RATE</th>
-                      <th className="p-4 text-right">TOTAL</th>
-                    </tr>
-                  </thead>
+                {/* INVOICE INFO */}
+                <div className="absolute right-[80px] top-[250px] text-[13px] leading-7 w-[260px]">
+                  <div className="grid grid-cols-2 gap-x-4">
+                    <p className="font-bold">INVOICE NUMBER:</p>
+                    <p className="text-right">
+                      {getInvoiceNumber(selectedInvoiceItem)}
+                    </p>
 
-                  <tbody>
-                    {getInvoiceRows(selectedInvoiceItem).map((row, idx) => (
-                      <tr key={idx} className="border border-gray-100">
-                        <td className="p-4 text-center border border-gray-100">
-                          {idx + 1}
-                        </td>
-                        <td className="p-4 border border-gray-100">
-                          {row.description}
-                        </td>
-                        <td className="p-4 text-right border border-gray-100">
-                          Rs.{Number(row.rate || 0).toLocaleString("en-LK")}
-                        </td>
-                        <td className="p-4 text-right border border-gray-100">
-                          Rs.{Number(row.total || 0).toLocaleString("en-LK")}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    <p className="font-bold">DATE:</p>
+                    <p className="text-right">
+                      {selectedInvoiceItem.advance_paid_date
+                        ? moment(selectedInvoiceItem.advance_paid_date).format(
+                            "MMMM D, YYYY",
+                          )
+                        : "-"}
+                    </p>
 
-                <div className="flex justify-end mt-8">
-                  <div className="w-80 text-right space-y-3">
-                    <div className="flex justify-between">
-                      <span className="font-black">Sub Total</span>
-                      <span>
-                        Rs.
-                        {(
-                          Number(selectedInvoiceItem.package_price || 0) +
-                          Number(selectedInvoiceItem.transport_cost || 0)
-                        ).toLocaleString("en-LK")}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between">
-                      <span className="font-black">
-                        Discount{" "}
-                        {selectedInvoiceItem.discount_type === "percentage"
-                          ? `- ${selectedInvoiceItem.discount_rate}%`
-                          : ""}
-                      </span>
-                      <span>
-                        (RS.
-                        {getDiscountAmount(selectedInvoiceItem).toLocaleString(
-                          "en-LK",
-                        )}
-                        )
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between">
-                      <span className="font-black">Advance (Paid)</span>
-                      <span>
-                        (RS.
-                        {Number(
-                          selectedInvoiceItem.advance_paid || 0,
-                        ).toLocaleString("en-LK")}
-                        )
-                      </span>
-                    </div>
-
-                    <div className="border-t border-black pt-4 flex justify-between text-lg">
-                      <span className="font-black">Due Amount</span>
-                      <span>
-                        Rs.
-                        {Number(
-                          selectedInvoiceItem.pending_payment || 0,
-                        ).toLocaleString("en-LK")}
-                      </span>
-                    </div>
+                    <p className="font-bold">DUE DATE:</p>
+                    <p className="text-right">
+                      {selectedInvoiceItem.wedding_date
+                        ? moment(selectedInvoiceItem.wedding_date)
+                            .subtract(1, "day")
+                            .format("MMMM D, YYYY")
+                        : "-"}
+                    </p>
                   </div>
                 </div>
 
-                <div className="mt-12 border border-rose-100 p-6 w-80">
-                  <h3 className="tracking-[0.2em] text-gray-500 font-semibold mb-4">
-                    PAYMENT INFORMATION
-                  </h3>
+                {/* DESCRIPTION TABLE */}
+                <div className="absolute left-[76px] top-[430px] w-[645px]">
+                  {getInvoiceRows(selectedInvoiceItem).map((row, idx) => (
+                    <div
+                      key={idx}
+                      className="grid grid-cols-[55px_1fr_120px_120px] min-h-[46px] text-[13px]"
+                    >
+                      <div className="flex items-center justify-center border border-gray-200">
+                        {idx + 1}
+                      </div>
 
-                  <p>Name: A V C T Perera</p>
-                  <p>Account No: 003020751136</p>
-                  <p>Bank Name: Hatton National Bank</p>
-                  <p>Branch: Head Office</p>
+                      <div className="flex items-center border border-gray-200 px-4">
+                        {row.description}
+                      </div>
+
+                      <div className="flex items-center justify-end border border-gray-200 px-4">
+                        {row.rate === "" ? "" : money(row.rate)}
+                      </div>
+
+                      <div className="flex items-center justify-end border border-gray-200 px-4">
+                        {row.total === "" ? "" : money(row.total)}
+                      </div>
+                    </div>
+                  ))}
                 </div>
 
-                <div className="text-center mt-16 text-sm">
-                  <p>Chathu Wedding Planners - 076 2606777</p>
-                  <p>chathuweddings@gmail.com</p>
-                  <p className="mt-3">www.chathuweddings.com</p>
+                {/* TOTALS */}
+                <div className="absolute right-[78px] top-[735px] w-[310px] text-[14px] leading-8">
+                  <div className="flex justify-between">
+                    <span className="font-bold">Sub Total</span>
+                    <span>
+                      {money(
+                        Number(selectedInvoiceItem.package_price || 0) +
+                          Number(selectedInvoiceItem.transport_cost || 0),
+                      )}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="font-bold">Discount</span>
+                    <span>
+                      ({money(getDiscountAmount(selectedInvoiceItem))})
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="font-bold">Advance Paid</span>
+                    <span>({money(selectedInvoiceItem.advance_paid)})</span>
+                  </div>
+
+                  <div className="border-t border-black mt-3 pt-3 flex justify-between text-[18px]">
+                    <span className="font-black">
+                      {Number(selectedInvoiceItem.paid_amount || 0) >=
+                      Number(selectedInvoiceItem.agreed_price || 0)
+                        ? "Paid Amount"
+                        : "Due Amount"}
+                    </span>
+
+                    <span className="font-black">
+                      {Number(selectedInvoiceItem.paid_amount || 0) >=
+                      Number(selectedInvoiceItem.agreed_price || 0)
+                        ? money(selectedInvoiceItem.paid_amount)
+                        : money(selectedInvoiceItem.pending_payment)}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
