@@ -3450,7 +3450,7 @@ export default function Dashboard() {
                                       Number(item.agreed_price || 0) &&
                                       Number(item.agreed_price || 0) > 0 && (
                                         <p className="text-[10px] font-bold text-emerald-600 mt-1">
-                                          ✓ Matches agreed price
+                                          ✓ Fully Paid
                                         </p>
                                       )}
                                   </div>
