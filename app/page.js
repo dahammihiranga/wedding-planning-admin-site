@@ -982,21 +982,23 @@ export default function Dashboard() {
     }
 
     if (Number(item.discount_rate || 0) > 0) {
+      const discountAmount = getDiscountAmount(item);
+
       rows.push({
         description:
           item.discount_type === "percentage"
             ? `Promotional Discount - ${item.discount_rate}%`
             : `Promotional Discount - LKR ${Number(item.discount_rate || 0).toLocaleString("en-LK")}`,
-        rate: "",
-        total: "",
+        rate: discountAmount,
+        total: discountAmount,
       });
     }
 
     if (Number(item.advance_paid || 0) > 0) {
       rows.push({
         description: `Advance - Paid (${item.advance_paid_date || "No date"})`,
-        rate: "",
-        total: "",
+        rate: Number(item.advance_paid || 0),
+        total: Number(item.advance_paid || 0),
       });
     }
 
@@ -4438,7 +4440,7 @@ export default function Dashboard() {
 
                 {/* TOTAL AREA */}
 
-                <div className="absolute right-[110px] top-[675px] w-[320px] text-[18px] leading-[35px]">
+                <div className="absolute right-[110px] top-[641px] w-[320px] text-[18px] leading-[35px]">
                   <div className="flex justify-between">
                     <span></span>
                     <span>
@@ -4461,7 +4463,7 @@ export default function Dashboard() {
                     <span>({money(selectedInvoiceItem.advance_paid)})</span>
                   </div>
 
-                  <div className="mt-[35px] flex justify-between font-bold text-[20px]">
+                  <div className="mt-[30px] flex justify-between font-bold text-[20px]">
                     <span></span>
 
                     <span>
