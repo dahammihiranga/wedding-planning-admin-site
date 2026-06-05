@@ -4382,18 +4382,18 @@ export default function Dashboard() {
                 />
 
                 {/* CUSTOMER DETAILS */}
-                <div className="absolute left-[80px] top-[190px] text-[15px] leading-[23px]">
+                <div className="absolute left-[80px] top-[183px] text-[15px] leading-[23px]">
                   <p>{selectedInvoiceItem.couple_name}</p>
                   <p>{selectedInvoiceItem.contact_no}</p>
                 </div>
 
                 {/* INVOICE NUMBER */}
-                <div className="absolute right-[90px] top-[190px] text-[15px]">
+                <div className="absolute right-[90px] top-[161px] text-[15px]">
                   {getInvoiceNumber(selectedInvoiceItem)}
                 </div>
 
                 {/* DATE */}
-                <div className="absolute right-[90px] top-[220px] text-[15px]">
+                <div className="absolute right-[90px] top-[181px] text-[15px]">
                   {selectedInvoiceItem.advance_paid_date
                     ? moment(selectedInvoiceItem.advance_paid_date).format(
                         "MMMM D, YYYY",
@@ -4402,7 +4402,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* DUE DATE */}
-                <div className="absolute right-[90px] top-[247px] text-[15px]">
+                <div className="absolute right-[90px] top-[202px] text-[15px]">
                   {selectedInvoiceItem.wedding_date
                     ? moment(selectedInvoiceItem.wedding_date)
                         .subtract(1, "day")
@@ -4411,11 +4411,11 @@ export default function Dashboard() {
                 </div>
 
                 {/* TABLE ROWS */}
-                <div className="absolute left-[80px] top-[330px] w-[640px]">
+                <div className="absolute left-[80px] top-[308px] w-[640px]">
                   {getInvoiceRows(selectedInvoiceItem).map((row, idx) => (
                     <div
                       key={idx}
-                      className="grid grid-cols-[60px_1fr_140px_140px] h-[60px] text-[16px]"
+                      className="grid grid-cols-[60px_1fr_140px_140px] h-[57px] text-[16px]"
                     >
                       <div className="flex items-center justify-center">
                         {idx + 1}
