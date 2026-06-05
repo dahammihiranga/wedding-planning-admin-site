@@ -4415,7 +4415,7 @@ export default function Dashboard() {
                   {getInvoiceRows(selectedInvoiceItem).map((row, idx) => (
                     <div
                       key={idx}
-                      className="grid grid-cols-[60px_1fr_140px_140px] h-[57px] text-[16px]"
+                      className="grid grid-cols-[48px_1fr_54px_190px] h-[57px] text-[16px]"
                     >
                       <div className="flex items-center justify-center">
                         {idx + 1}
