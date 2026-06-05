@@ -4367,84 +4367,80 @@ export default function Dashboard() {
             <div className="overflow-y-auto bg-gray-100 p-3 md:p-6">
               <div
                 ref={invoiceRef}
-                className="relative mx-auto bg-white text-black shadow-xl overflow-hidden"
+                className="relative mx-auto bg-white text-black overflow-hidden"
                 style={{
                   width: "794px",
                   height: "1123px",
                   fontFamily: "Arial, sans-serif",
                 }}
               >
+                {/* TEMPLATE */}
                 <img
                   src="/invoice-template.png"
                   alt="Invoice Template"
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full"
                 />
 
-                {/* ISSUED TO */}
-                <div className="absolute left-[78px] top-[250px] text-[14px] leading-6">
-                  <p className="font-bold uppercase">ISSUED TO:</p>
+                {/* CUSTOMER DETAILS */}
+                <div className="absolute left-[80px] top-[190px] text-[15px] leading-[23px]">
                   <p>{selectedInvoiceItem.couple_name}</p>
-                  <p>{selectedInvoiceItem.contact_no || ""}</p>
+                  <p>{selectedInvoiceItem.contact_no}</p>
                 </div>
 
-                {/* INVOICE INFO */}
-                <div className="absolute right-[80px] top-[250px] text-[13px] leading-7 w-[260px]">
-                  <div className="grid grid-cols-2 gap-x-4">
-                    <p className="font-bold">INVOICE NUMBER:</p>
-                    <p className="text-right">
-                      {getInvoiceNumber(selectedInvoiceItem)}
-                    </p>
-
-                    <p className="font-bold">DATE:</p>
-                    <p className="text-right">
-                      {selectedInvoiceItem.advance_paid_date
-                        ? moment(selectedInvoiceItem.advance_paid_date).format(
-                            "MMMM D, YYYY",
-                          )
-                        : "-"}
-                    </p>
-
-                    <p className="font-bold">DUE DATE:</p>
-                    <p className="text-right">
-                      {selectedInvoiceItem.wedding_date
-                        ? moment(selectedInvoiceItem.wedding_date)
-                            .subtract(1, "day")
-                            .format("MMMM D, YYYY")
-                        : "-"}
-                    </p>
-                  </div>
+                {/* INVOICE NUMBER */}
+                <div className="absolute right-[90px] top-[190px] text-[15px]">
+                  {getInvoiceNumber(selectedInvoiceItem)}
                 </div>
 
-                {/* DESCRIPTION TABLE */}
-                <div className="absolute left-[76px] top-[430px] w-[645px]">
+                {/* DATE */}
+                <div className="absolute right-[90px] top-[220px] text-[15px]">
+                  {selectedInvoiceItem.advance_paid_date
+                    ? moment(selectedInvoiceItem.advance_paid_date).format(
+                        "MMMM D, YYYY",
+                      )
+                    : "-"}
+                </div>
+
+                {/* DUE DATE */}
+                <div className="absolute right-[90px] top-[247px] text-[15px]">
+                  {selectedInvoiceItem.wedding_date
+                    ? moment(selectedInvoiceItem.wedding_date)
+                        .subtract(1, "day")
+                        .format("MMMM D, YYYY")
+                    : "-"}
+                </div>
+
+                {/* TABLE ROWS */}
+                <div className="absolute left-[80px] top-[330px] w-[640px]">
                   {getInvoiceRows(selectedInvoiceItem).map((row, idx) => (
                     <div
                       key={idx}
-                      className="grid grid-cols-[55px_1fr_120px_120px] min-h-[46px] text-[13px]"
+                      className="grid grid-cols-[60px_1fr_140px_140px] h-[60px] text-[16px]"
                     >
-                      <div className="flex items-center justify-center border border-gray-200">
+                      <div className="flex items-center justify-center">
                         {idx + 1}
                       </div>
 
-                      <div className="flex items-center border border-gray-200 px-4">
+                      <div className="flex items-center px-5">
                         {row.description}
                       </div>
 
-                      <div className="flex items-center justify-end border border-gray-200 px-4">
+                      <div className="flex items-center justify-center">
                         {row.rate === "" ? "" : money(row.rate)}
                       </div>
 
-                      <div className="flex items-center justify-end border border-gray-200 px-4">
+                      <div className="flex items-center justify-center">
                         {row.total === "" ? "" : money(row.total)}
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {/* TOTALS */}
-                <div className="absolute right-[78px] top-[735px] w-[310px] text-[14px] leading-8">
+                {/* TOTAL AREA */}
+
+                <div className="absolute right-[110px] top-[675px] w-[320px] text-[18px] leading-[35px]">
                   <div className="flex justify-between">
-                    <span className="font-bold">Sub Total</span>
+                    <span></span>
                     <span>
                       {money(
                         Number(selectedInvoiceItem.package_price || 0) +
@@ -4454,26 +4450,21 @@ export default function Dashboard() {
                   </div>
 
                   <div className="flex justify-between">
-                    <span className="font-bold">Discount</span>
+                    <span></span>
                     <span>
                       ({money(getDiscountAmount(selectedInvoiceItem))})
                     </span>
                   </div>
 
                   <div className="flex justify-between">
-                    <span className="font-bold">Advance Paid</span>
+                    <span></span>
                     <span>({money(selectedInvoiceItem.advance_paid)})</span>
                   </div>
 
-                  <div className="border-t border-black mt-3 pt-3 flex justify-between text-[18px]">
-                    <span className="font-black">
-                      {Number(selectedInvoiceItem.paid_amount || 0) >=
-                      Number(selectedInvoiceItem.agreed_price || 0)
-                        ? "Paid Amount"
-                        : "Due Amount"}
-                    </span>
+                  <div className="mt-[35px] flex justify-between font-bold text-[20px]">
+                    <span></span>
 
-                    <span className="font-black">
+                    <span>
                       {Number(selectedInvoiceItem.paid_amount || 0) >=
                       Number(selectedInvoiceItem.agreed_price || 0)
                         ? money(selectedInvoiceItem.paid_amount)
