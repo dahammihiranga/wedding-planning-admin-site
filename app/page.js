@@ -2065,7 +2065,11 @@ export default function Dashboard() {
                                   Pending Balance
                                 </th>
                                 <th className="p-3 text-right bg-inherit">
-                                  Paid Amount
+                                  Paid Details
+                                </th>
+
+                                <th className="p-3 text-right bg-inherit">
+                                  Total Paid
                                 </th>
                                 <th className="p-3 text-center bg-inherit">
                                   Status
@@ -2215,22 +2219,67 @@ export default function Dashboard() {
                                         : "0.00"}
                                     </td>
 
-                                    <td className="p-3 text-right font-mono font-bold text-emerald-700">
-                                      <div>
-                                        {item.paid_amount
-                                          ? Number(
-                                              item.paid_amount,
-                                            ).toLocaleString("en-LK", {
-                                              minimumFractionDigits: 2,
-                                            })
-                                          : "0.00"}
-                                      </div>
+                                    <td className="p-3 text-right">
+                                      <div className="text-[10px] space-y-1">
+                                        {Number(item.advance_paid || 0) > 0 && (
+                                          <div className="rounded-lg bg-amber-50 border border-amber-100 px-2 py-1 text-left">
+                                            <div className="font-black text-amber-700">
+                                              Booking Advance: Rs.{" "}
+                                              {Number(
+                                                item.advance_paid || 0,
+                                              ).toLocaleString("en-LK")}
+                                            </div>
+                                            <div className="text-gray-400 font-semibold">
+                                              {item.advance_paid_date ||
+                                                "No date"}
+                                            </div>
+                                          </div>
+                                        )}
 
-                                      {item.paid_date && (
-                                        <div className="text-[10px] text-gray-400 font-sans mt-0.5">
-                                          ({item.paid_date})
-                                        </div>
-                                      )}
+                                        {paymentTransactions
+                                          .filter(
+                                            (p) =>
+                                              Number(p.inquiry_id) ===
+                                              Number(item.id),
+                                          )
+                                          .map((payment) => (
+                                            <div
+                                              key={payment.id}
+                                              className="rounded-lg bg-emerald-50 border border-emerald-100 px-2 py-1 text-left"
+                                            >
+                                              <div className="font-black text-emerald-700">
+                                                Partial: Rs.{" "}
+                                                {Number(
+                                                  payment.amount || 0,
+                                                ).toLocaleString("en-LK")}
+                                              </div>
+                                              <div className="text-gray-400 font-semibold">
+                                                {payment.payment_date ||
+                                                  "No date"}
+                                              </div>
+                                            </div>
+                                          ))}
+                                      </div>
+                                    </td>
+
+                                    <td className="p-3 text-right font-mono font-black">
+                                      <div className="inline-flex flex-col bg-emerald-50 px-3 py-2 rounded-xl border border-emerald-100">
+                                        <span className="text-emerald-700">
+                                          Rs.{" "}
+                                          {Number(
+                                            item.paid_amount || 0,
+                                          ).toLocaleString("en-LK")}
+                                        </span>
+
+                                        {Number(item.paid_amount || 0) >=
+                                          Number(item.agreed_price || 0) &&
+                                          Number(item.agreed_price || 0) >
+                                            0 && (
+                                            <span className="text-[10px] text-emerald-600 font-bold mt-1">
+                                              ✓ Fully Paid
+                                            </span>
+                                          )}
+                                      </div>
                                     </td>
 
                                     <td className="p-3 text-center">
@@ -3233,7 +3282,8 @@ export default function Dashboard() {
                             <th className="p-4 text-right">Package</th>
                             <th className="p-4 text-right">Transport</th>
                             <th className="p-4 text-right">Agreed</th>
-                            <th className="p-4 text-right">Paid</th>
+                            <th className="p-4 text-right">Paid Details</th>
+                            <th className="p-4 text-right">Total Paid</th>
                             <th className="p-4 text-right">Pending</th>
                             <th className="p-4 text-center">Payment Status</th>
                           </tr>
@@ -3372,6 +3422,25 @@ export default function Dashboard() {
                                         </div>
                                       </div>
                                     ))}
+                                  </div>
+                                </td>
+
+                                <td className="p-4 text-right">
+                                  <div className="rounded-xl bg-emerald-50 border border-emerald-100 px-3 py-2 inline-block">
+                                    <p className="font-mono font-black text-emerald-700">
+                                      Rs.{" "}
+                                      {Number(
+                                        item.paid_amount || 0,
+                                      ).toLocaleString("en-LK")}
+                                    </p>
+
+                                    {Number(item.paid_amount || 0) >=
+                                      Number(item.agreed_price || 0) &&
+                                      Number(item.agreed_price || 0) > 0 && (
+                                        <p className="text-[10px] font-bold text-emerald-600 mt-1">
+                                          ✓ Matches agreed price
+                                        </p>
+                                      )}
                                   </div>
                                 </td>
 
