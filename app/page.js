@@ -567,23 +567,16 @@ export default function Dashboard() {
     }
 
     if (name === "new_payment") {
-  const advancePaid = parseFloat(updatedForm.advance_paid) || 0;
+      const advancePaid = parseFloat(updatedForm.advance_paid) || 0;
 
-  const existingPartialTotal = paymentTransactions
-    .filter(
-      (p) =>
-        Number(p.inquiry_id) === Number(updatedForm.id)
-    )
-    .reduce(
-      (sum, p) => sum + Number(p.amount || 0),
-      0
-    );
+      const existingPartialTotal = paymentTransactions
+        .filter((p) => Number(p.inquiry_id) === Number(updatedForm.id))
+        .reduce((sum, p) => sum + Number(p.amount || 0), 0);
 
-  const newPayment = parseFloat(value) || 0;
+      const newPayment = parseFloat(value) || 0;
 
-  updatedForm.paid_amount =
-    advancePaid + existingPartialTotal + newPayment;
-}
+      updatedForm.paid_amount = advancePaid + existingPartialTotal + newPayment;
+    }
 
     const agreedPrice = parseFloat(updatedForm.agreed_price) || 0;
     const paidAmount = parseFloat(updatedForm.paid_amount) || 0;
@@ -815,8 +808,23 @@ export default function Dashboard() {
     const method = formData.id ? "PUT" : "POST";
     const url = formData.id ? `${API_URL}?id=${formData.id}` : API_URL;
 
+    const existingPartialTotal = paymentTransactions
+      .filter((p) => Number(p.inquiry_id) === Number(formData.id))
+      .reduce((sum, p) => sum + Number(p.amount || 0), 0);
+
+    const newPaymentAmount = Number(formData.new_payment || 0);
+    const advancePaid = Number(formData.advance_paid || 0);
+    const agreedPrice = Number(formData.agreed_price || 0);
+
+    const finalPaidAmount =
+      formData.id && newPaymentAmount > 0
+        ? advancePaid + existingPartialTotal + newPaymentAmount
+        : Number(formData.paid_amount || 0);
+
     const adjustedData = {
       ...formData,
+      paid_amount: finalPaidAmount,
+      pending_payment: Math.max(agreedPrice - finalPaidAmount, 0),
       service_type: Array.isArray(formData.service_type)
         ? formData.service_type.join(", ")
         : formData.service_type,
@@ -1208,12 +1216,11 @@ export default function Dashboard() {
     const totalPaid = Number(item.paid_amount || 0);
 
     const paymentStatus =
-  Number(item.paid_amount || 0) >=
-  Number(item.agreed_price || 0)
-    ? "Fully Paid"
-    : Number(item.paid_amount || 0) > 0
-      ? "Partially Paid"
-      : "Pending";
+      Number(item.paid_amount || 0) >= Number(item.agreed_price || 0)
+        ? "Fully Paid"
+        : Number(item.paid_amount || 0) > 0
+          ? "Partially Paid"
+          : "Pending";
 
     const matchesSearch =
       !search ||
@@ -3308,7 +3315,8 @@ export default function Dashboard() {
                             const paid = Number(item.paid_amount || 0);
 
                             const paymentStatus =
-                              pending <= 0
+                              paid >= Number(item.agreed_price || 0) &&
+                              Number(item.agreed_price || 0) > 0
                                 ? "Fully Paid"
                                 : paid > 0
                                   ? "Partially Paid"
@@ -3498,7 +3506,8 @@ export default function Dashboard() {
                       const pending = Number(item.pending_payment || 0);
 
                       const paymentStatus =
-                        pending <= 0
+                        totalPaid >= Number(item.agreed_price || 0) &&
+                        Number(item.agreed_price || 0) > 0
                           ? "Fully Paid"
                           : totalPaid > 0
                             ? "Partially Paid"
