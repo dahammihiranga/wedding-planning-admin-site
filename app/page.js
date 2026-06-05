@@ -567,12 +567,23 @@ export default function Dashboard() {
     }
 
     if (name === "new_payment") {
-      const previousNewPayment = parseFloat(formData.new_payment) || 0;
-      const currentPaid = parseFloat(formData.paid_amount) || 0;
-      const newPayment = parseFloat(value) || 0;
+  const advancePaid = parseFloat(updatedForm.advance_paid) || 0;
 
-      updatedForm.paid_amount = currentPaid - previousNewPayment + newPayment;
-    }
+  const existingPartialTotal = paymentTransactions
+    .filter(
+      (p) =>
+        Number(p.inquiry_id) === Number(updatedForm.id)
+    )
+    .reduce(
+      (sum, p) => sum + Number(p.amount || 0),
+      0
+    );
+
+  const newPayment = parseFloat(value) || 0;
+
+  updatedForm.paid_amount =
+    advancePaid + existingPartialTotal + newPayment;
+}
 
     const agreedPrice = parseFloat(updatedForm.agreed_price) || 0;
     const paidAmount = parseFloat(updatedForm.paid_amount) || 0;
@@ -1197,11 +1208,12 @@ export default function Dashboard() {
     const totalPaid = Number(item.paid_amount || 0);
 
     const paymentStatus =
-      Number(item.pending_payment || 0) <= 0
-        ? "Fully Paid"
-        : totalPaid > 0
-          ? "Partially Paid"
-          : "Pending";
+  Number(item.paid_amount || 0) >=
+  Number(item.agreed_price || 0)
+    ? "Fully Paid"
+    : Number(item.paid_amount || 0) > 0
+      ? "Partially Paid"
+      : "Pending";
 
     const matchesSearch =
       !search ||
