@@ -2556,19 +2556,6 @@ export default function Dashboard() {
                                         </div>
                                       ) : (
                                         <div className="flex items-center justify-center gap-2">
-                                          {canGenerateInvoice(item) && (
-                                            <button
-                                              type="button"
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                openInvoiceModal(item);
-                                              }}
-                                              className="text-emerald-600 font-bold hover:underline"
-                                            >
-                                              Invoice
-                                            </button>
-                                          )}
-
                                           <button
                                             type="button"
                                             onClick={(e) => {
@@ -2579,6 +2566,18 @@ export default function Dashboard() {
                                           >
                                             Edit
                                           </button>
+                                          {canGenerateInvoice(item) && (
+                                            <button
+                                              type="button"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                openInvoiceModal(item);
+                                              }}
+                                              className="text-emerald-600 font-bold hover:underline"
+                                            >
+                                              📝
+                                            </button>
+                                          )}
                                           <button
                                             onClick={() =>
                                               initiateDelete(item, "soft")
