@@ -564,13 +564,19 @@ export default function Dashboard() {
     }
 
     if (name === "advance_paid") {
-      const advancePaid = parseFloat(updatedForm.advance_paid) || 0;
-      const currentPaid = parseFloat(updatedForm.paid_amount) || 0;
+  const advancePaidRaw = updatedForm.advance_paid;
 
-      if (currentPaid === 0 || currentPaid < advancePaid) {
-        updatedForm.paid_amount = advancePaid;
-      }
-    }
+  const existingPartialTotal = paymentTransactions
+    .filter((p) => Number(p.inquiry_id) === Number(updatedForm.id))
+    .reduce((sum, p) => sum + Number(p.amount || 0), 0);
+
+  if (advancePaidRaw === "") {
+    updatedForm.paid_amount = existingPartialTotal > 0 ? existingPartialTotal : "";
+  } else {
+    const advancePaid = parseFloat(advancePaidRaw) || 0;
+    updatedForm.paid_amount = advancePaid + existingPartialTotal;
+  }
+}
 
     if (name === "new_payment") {
       const advancePaid = parseFloat(updatedForm.advance_paid) || 0;
