@@ -22,9 +22,7 @@ def get_vendors():
     client = create_client_sync(url=url, auth_token=auth_token)
 
     try:
-        result = client.execute(
-            "SELECT * FROM vendors ORDER BY id ASC"
-        )
+        result = client.execute("SELECT * FROM vendors ORDER BY id ASC")
 
         rows = [dict(zip(result.columns, row)) for row in result.rows]
 
@@ -44,26 +42,47 @@ async def create_vendor(request: Request):
     if not data.get("name"):
         return {"success": False, "error": "Vendor name is required"}
 
+    vendor_package_price = float(data.get("vendor_package_price") or 0)
+
+
+    commission_value = float(data.get("commission_value") or 0)
+    commission_type = data.get("commission_type") or "percentage"
+
+    if commission_type == "fixed":
+        commission_amount = commission_value
+    else:
+        commission_amount = (vendor_package_price * commission_value) / 100
+
     client = create_client_sync(url=url, auth_token=auth_token)
 
     try:
         client.execute(
             """
-            INSERT INTO vendors (
-                name,
-                service,
-                contact_number,
-                location,
-                remarks
-            )
-            VALUES (?, ?, ?, ?, ?)
-            """,
+    INSERT INTO vendors (
+        name,
+        service,
+        contact_number,
+        location,
+        remarks,
+        customer_name,
+        vendor_package_price,
+        commission_type,
+        commission_value,
+        commission_amount
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """,
             [
                 data.get("name"),
                 data.get("service"),
                 data.get("contact_number"),
                 data.get("location"),
                 data.get("remarks"),
+                data.get("customer_name"),
+                vendor_package_price,
+                commission_type,
+                commission_value,
+                commission_amount,
             ],
         )
 
@@ -86,23 +105,44 @@ async def update_vendor(request: Request):
 
     client = create_client_sync(url=url, auth_token=auth_token)
 
+    vendor_package_price = float(data.get("vendor_package_price") or 0)
+
+
+    commission_value = float(data.get("commission_value") or 0)
+    commission_type = data.get("commission_type") or "percentage"
+
+    if commission_type == "fixed":
+        commission_amount = commission_value
+    else:
+        commission_amount = (vendor_package_price * commission_value) / 100
+
     try:
         client.execute(
             """
-            UPDATE vendors SET
-                name = ?,
-                service = ?,
-                contact_number = ?,
-                location = ?,
-                remarks = ?
-            WHERE id = ?
-            """,
+    UPDATE vendors SET
+        name = ?,
+        service = ?,
+        contact_number = ?,
+        location = ?,
+        remarks = ?,
+        customer_name = ?,
+        vendor_package_price = ?,
+        commission_type = ?,
+        commission_value = ?,
+        commission_amount = ?
+    WHERE id = ?
+    """,
             [
                 data.get("name"),
                 data.get("service"),
                 data.get("contact_number"),
                 data.get("location"),
                 data.get("remarks"),
+                data.get("customer_name"),
+                vendor_package_price,
+                commission_type,
+                commission_value,
+                commission_amount,
                 int(vendor_id),
             ],
         )

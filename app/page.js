@@ -312,6 +312,11 @@ export default function Dashboard() {
     contact_number: "",
     location: "",
     remarks: "",
+    customer_name: "",
+    vendor_package_price: "",
+    commission_type: "percentage",
+    commission_value: "",
+    commission_amount: "",
   });
   const [vendorLoading, setVendorLoading] = useState(false);
   const [customerSearch, setCustomerSearch] = useState("");
@@ -1256,6 +1261,11 @@ export default function Dashboard() {
         contact_number: "",
         location: "",
         remarks: "",
+        customer_name: "",
+        vendor_package_price: "",
+        commission_type: "percentage",
+        commission_value: "",
+        commission_amount: "",
       });
     }
 
@@ -1265,10 +1275,20 @@ export default function Dashboard() {
   const handleVendorChange = (e) => {
     const { name, value } = e.target;
 
-    setVendorForm({
+    const updatedForm = {
       ...vendorForm,
       [name]: value,
-    });
+    };
+
+    const packagePrice = Number(updatedForm.vendor_package_price || 0);
+    const commissionValue = Number(updatedForm.commission_value || 0);
+
+    updatedForm.commission_amount =
+      updatedForm.commission_type === "fixed"
+        ? commissionValue
+        : (packagePrice * commissionValue) / 100;
+
+    setVendorForm(updatedForm);
   };
 
   const handleVendorSubmit = async (e) => {
@@ -1306,6 +1326,11 @@ export default function Dashboard() {
         contact_number: "",
         location: "",
         remarks: "",
+        customer_name: "",
+        vendor_package_price: "",
+        commission_type: "percentage",
+        commission_value: "",
+        commission_amount: "",
       });
     } catch (error) {
       console.error("Vendor save error:", error);
@@ -3333,6 +3358,65 @@ export default function Dashboard() {
                   </button>
                 </div>
 
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-5">
+                  <div className="bg-fuchsia-50/80 border border-fuchsia-100 rounded-3xl p-5 shadow">
+                    <p className="text-xs font-black uppercase text-fuchsia-700">
+                      Total Vendor Business
+                    </p>
+                    <h2 className="text-2xl font-black text-fuchsia-700 mt-2">
+                      LKR{" "}
+                      {vendors
+                        .reduce(
+                          (sum, v) => sum + Number(v.vendor_package_price || 0),
+                          0,
+                        )
+                        .toLocaleString("en-LK")}
+                    </h2>
+                  </div>
+
+                  <div className="bg-emerald-50/80 border border-emerald-100 rounded-3xl p-5 shadow">
+                    <p className="text-xs font-black uppercase text-emerald-700">
+                      Total Commission
+                    </p>
+                    <h2 className="text-2xl font-black text-emerald-700 mt-2">
+                      LKR{" "}
+                      {vendors
+                        .reduce(
+                          (sum, v) => sum + Number(v.commission_amount || 0),
+                          0,
+                        )
+                        .toLocaleString("en-LK")}
+                    </h2>
+                  </div>
+
+                  <div className="bg-blue-50/80 border border-blue-100 rounded-3xl p-5 shadow">
+                    <p className="text-xs font-black uppercase text-blue-700">
+                      Vendor Records
+                    </p>
+                    <h2 className="text-2xl font-black text-blue-700 mt-2">
+                      {vendors.length}
+                    </h2>
+                  </div>
+
+                  <div className="bg-orange-50/80 border border-orange-100 rounded-3xl p-5 shadow">
+                    <p className="text-xs font-black uppercase text-orange-700">
+                      Average Commission
+                    </p>
+                    <h2 className="text-2xl font-black text-orange-700 mt-2">
+                      LKR{" "}
+                      {vendors.length
+                        ? Math.round(
+                            vendors.reduce(
+                              (sum, v) =>
+                                sum + Number(v.commission_amount || 0),
+                              0,
+                            ) / vendors.length,
+                          ).toLocaleString("en-LK")
+                        : "0"}
+                    </h2>
+                  </div>
+                </div>
+
                 <div className="mb-4 bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl p-3 shadow">
                   <input
                     type="text"
@@ -3364,11 +3448,13 @@ export default function Dashboard() {
                         <thead>
                           <tr className="bg-fuchsia-50 text-fuchsia-900 uppercase text-xs md:text-[15px] font-black border-b border-gray-200">
                             <th className="p-4">Name</th>
+                            <th className="p-4">Customer</th>
                             <th className="p-4">Service</th>
+                            <th className="p-4 text-right">Package</th>
+                            <th className="p-4 text-right">Commission</th>
                             <th className="p-4">Contact Number</th>
                             <th className="p-4">Location</th>
                             <th className="p-4">Remarks</th>
-                            <th className="p-4 text-center">Actions</th>
                           </tr>
                         </thead>
 
@@ -3381,8 +3467,33 @@ export default function Dashboard() {
                               <td className="p-4 font-bold text-gray-900">
                                 🧾 {vendor.name}
                               </td>
+                              <td className="p-4 text-gray-700 font-bold">
+                                {vendor.customer_name || "—"}
+                              </td>
                               <td className="p-4 text-gray-700 font-medium">
                                 {vendor.service || "—"}
+                              </td>
+                              <td className="p-4 text-right font-mono font-black text-gray-800">
+                                Rs.{" "}
+                                {Number(
+                                  vendor.vendor_package_price || 0,
+                                ).toLocaleString("en-LK")}
+                              </td>
+
+                              <td className="p-4 text-right">
+                                <div className="inline-flex flex-col bg-emerald-50 px-3 py-2 rounded-xl border border-emerald-100">
+                                  <span className="font-mono font-black text-emerald-700">
+                                    Rs.{" "}
+                                    {Number(
+                                      vendor.commission_amount || 0,
+                                    ).toLocaleString("en-LK")}
+                                  </span>
+                                  <span className="text-[10px] text-gray-500 font-bold mt-1">
+                                    {vendor.commission_type === "fixed"
+                                      ? `LKR ${Number(vendor.commission_value || 0).toLocaleString("en-LK")}`
+                                      : `${vendor.commission_value || 0}%`}
+                                  </span>
+                                </div>
                               </td>
                               <td className="p-4 font-mono text-gray-700">
                                 {vendor.contact_number || "—"}
@@ -4803,101 +4914,189 @@ export default function Dashboard() {
       )}
 
       {isVendorModalOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start md:items-center justify-center p-4 z-[9999] overflow-y-auto">
-          <div className="bg-white rounded-3xl w-full max-w-lg p-5 shadow-2xl border border-gray-100 my-6">
-            <div className="flex items-center justify-between border-b pb-3 mb-4">
-              <h2 className="text-xl font-black text-gray-900">
-                {vendorForm.id ? "Edit Vendor" : "Add Vendor"}
-              </h2>
+        <div className="fixed inset-0 bg-black/55 backdrop-blur-md flex items-end md:items-center justify-center z-[999999] md:p-4">
+          <div className="relative z-[1000000] bg-white w-full md:max-w-3xl md:rounded-3xl rounded-t-[2rem] shadow-2xl border border-gray-100 h-[92vh] md:h-auto md:max-h-[92vh] overflow-hidden flex flex-col animate-scale-in">
+            <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-xl border-b px-4 md:px-6 py-4">
+              <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-3 md:hidden" />
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-black text-gray-900">
+                  {vendorForm.id ? "Edit Vendor" : "Add Vendor"}
+                </h2>
 
-              <button
-                type="button"
-                onClick={() => setIsVendorModalOpen(false)}
-                className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold"
-              >
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleVendorSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                  Name *
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  required
-                  value={vendorForm.name}
-                  onChange={handleVendorChange}
-                  className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                  Service
-                </label>
-                <input
-                  type="text"
-                  name="service"
-                  value={vendorForm.service}
-                  onChange={handleVendorChange}
-                  className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                  Contact Number
-                </label>
-                <input
-                  type="text"
-                  name="contact_number"
-                  value={vendorForm.contact_number}
-                  onChange={handleVendorChange}
-                  className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                  Location
-                </label>
-                <input
-                  type="text"
-                  name="location"
-                  value={vendorForm.location}
-                  onChange={handleVendorChange}
-                  className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                  Remarks
-                </label>
-                <textarea
-                  name="remarks"
-                  rows="3"
-                  value={vendorForm.remarks}
-                  onChange={handleVendorChange}
-                  className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-                />
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t">
                 <button
                   type="button"
                   onClick={() => setIsVendorModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border text-gray-600 font-bold"
+                  className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <form
+              onSubmit={handleVendorSubmit}
+              className="flex-1 flex flex-col overflow-hidden"
+            >
+              <div className="flex-1 overflow-y-auto px-4 py-5 md:p-6 space-y-5 pb-32">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    required
+                    value={vendorForm.name}
+                    onChange={handleVendorChange}
+                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Service
+                  </label>
+                  <input
+                    type="text"
+                    name="service"
+                    value={vendorForm.service}
+                    onChange={handleVendorChange}
+                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Customer / Couple Name
+                  </label>
+                  <input
+                    type="text"
+                    name="customer_name"
+                    list="customer-name-list"
+                    value={vendorForm.customer_name}
+                    onChange={handleVendorChange}
+                    placeholder="Search or select couple name"
+                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                  />
+
+                  <datalist id="customer-name-list">
+                    {data.map((item) => (
+                      <option key={item.id} value={item.couple_name} />
+                    ))}
+                  </datalist>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-emerald-50/60 border border-emerald-100 rounded-2xl p-3">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">
+                      Vendor Package Price
+                    </label>
+                    <input
+                      type="number"
+                      name="vendor_package_price"
+                      value={vendorForm.vendor_package_price}
+                      onChange={handleVendorChange}
+                      placeholder="Enter vendor's package price"
+                      className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-emerald-300"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">
+                      Commission
+                    </label>
+
+                    <div className="flex">
+                      <input
+                        type="number"
+                        name="commission_value"
+                        value={vendorForm.commission_value}
+                        onChange={handleVendorChange}
+                        placeholder={
+                          vendorForm.commission_type === "fixed"
+                            ? "Enter LKR amount"
+                            : "Enter % amount"
+                        }
+                        className="w-full p-3 border rounded-l-xl outline-none focus:ring-2 focus:ring-emerald-300"
+                      />
+
+                      <select
+                        name="commission_type"
+                        value={vendorForm.commission_type}
+                        onChange={handleVendorChange}
+                        className="w-[72px] p-3 border rounded-r-xl bg-emerald-50 text-emerald-800 font-black outline-none"
+                      >
+                        <option value="percentage">%</option>
+                        <option value="fixed">LKR</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-2 rounded-2xl bg-white p-3 border border-emerald-100">
+                    <p className="text-[10px] uppercase font-black text-gray-400">
+                      Commission Amount
+                    </p>
+                    <p className="text-xl font-black text-emerald-700">
+                      LKR{" "}
+                      {Number(vendorForm.commission_amount || 0).toLocaleString(
+                        "en-LK",
+                      )}
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Contact Number
+                  </label>
+                  <input
+                    type="text"
+                    name="contact_number"
+                    value={vendorForm.contact_number}
+                    onChange={handleVendorChange}
+                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Location
+                  </label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={vendorForm.location}
+                    onChange={handleVendorChange}
+                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Remarks
+                  </label>
+                  <textarea
+                    name="remarks"
+                    rows="3"
+                    value={vendorForm.remarks}
+                    onChange={handleVendorChange}
+                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
+                  />
+                </div>
+              </div>
+
+              <div className="sticky bottom-0 z-20 bg-white/95 backdrop-blur-xl border-t p-4 flex gap-3 shadow-[0_-10px_30px_rgba(0,0,0,0.08)]">
+                <button
+                  type="button"
+                  onClick={() => setIsVendorModalOpen(false)}
+                  className="flex-1 py-3.5 rounded-2xl border text-gray-600 font-bold"
                 >
                   Cancel
                 </button>
 
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-fuchsia-300 hover:bg-fuchsia-400 text-black font-black"
+                  className="flex-1 py-3.5 rounded-2xl bg-fuchsia-300 hover:bg-fuchsia-400 text-black font-black"
                 >
                   {vendorForm.id ? "Update Vendor" : "Save Vendor"}
                 </button>
