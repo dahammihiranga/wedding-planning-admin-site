@@ -862,6 +862,10 @@ export default function Dashboard() {
       guest_count:
         formData.guest_count === "" ? null : parseInt(formData.guest_count, 10),
       bridesmaid_option: formData.bridesmaid_option || "-",
+      service_prices:
+        typeof formData.service_prices === "string"
+          ? formData.service_prices
+          : JSON.stringify(formData.service_prices || {}),
     };
 
     try {
@@ -985,12 +989,27 @@ export default function Dashboard() {
           .filter(Boolean)
       : [];
 
+    const servicePrices =
+      typeof item.service_prices === "string"
+        ? JSON.parse(item.service_prices || "{}")
+        : item.service_prices || {};
+
     const rows = services.length
-      ? services.map((service, index) => ({
-          description: service,
-          rate: index === 0 ? Number(item.package_price || 0) : "",
-          total: index === 0 ? Number(item.package_price || 0) : "",
-        }))
+      ? services.map((service, index) => {
+          const customPrice = Number(servicePrices[service] || 0);
+
+          return {
+            description: service,
+            rate:
+              services.length > 1
+                ? customPrice || ""
+                : Number(item.package_price || 0),
+            total:
+              services.length > 1
+                ? customPrice || ""
+                : Number(item.package_price || 0),
+          };
+        })
       : [
           {
             description: "Wedding Planning Service",
@@ -2293,9 +2312,42 @@ export default function Dashboard() {
                                       </div>
                                     </td>
                                     <td className="p-3">
-                                      <span className="px-2 py-0.5 bg-gray-100 text-gray-800 rounded font-medium">
+                                      <span className="bg-gray-100 px-3 py-1 rounded-lg whitespace-nowrap">
                                         {item.service_type}
                                       </span>
+
+                                      {(() => {
+                                        const prices =
+                                          typeof item.service_prices ===
+                                          "string"
+                                            ? JSON.parse(
+                                                item.service_prices || "{}",
+                                              )
+                                            : item.service_prices || {};
+
+                                        const services = item.service_type
+                                          ? String(item.service_type)
+                                              .split(",")
+                                              .map((s) => s.trim())
+                                              .filter(Boolean)
+                                          : [];
+
+                                        return services.length > 1 ? (
+                                          <div className="mt-1 space-y-0.5">
+                                            {services.map((service) => (
+                                              <div
+                                                key={service}
+                                                className="text-[10px] text-gray-500 font-semibold"
+                                              >
+                                                {service}: Rs.{" "}
+                                                {Number(
+                                                  prices[service] || 0,
+                                                ).toLocaleString("en-LK")}
+                                              </div>
+                                            ))}
+                                          </div>
+                                        ) : null;
+                                      })()}
                                     </td>
                                     <td className="p-3 text-gray-600">
                                       {item.wedding_type}
@@ -2670,6 +2722,35 @@ export default function Dashboard() {
                                 <p className="text-sm font-bold text-gray-800">
                                   {item.service_type || "—"}
                                 </p>
+                                {(() => {
+                                  const prices =
+                                    typeof item.service_prices === "string"
+                                      ? JSON.parse(item.service_prices || "{}")
+                                      : item.service_prices || {};
+
+                                  const services = item.service_type
+                                    ? String(item.service_type)
+                                        .split(",")
+                                        .map((s) => s.trim())
+                                        .filter(Boolean)
+                                    : [];
+
+                                  return services.length > 1 ? (
+                                    <div className="mt-2 space-y-1">
+                                      {services.map((service) => (
+                                        <div
+                                          key={service}
+                                          className="text-[10px] text-gray-500 font-bold"
+                                        >
+                                          {service}: Rs.{" "}
+                                          {Number(
+                                            prices[service] || 0,
+                                          ).toLocaleString("en-LK")}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  ) : null;
+                                })()}
                               </div>
 
                               <div className="grid grid-cols-2 gap-3">
