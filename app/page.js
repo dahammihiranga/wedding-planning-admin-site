@@ -564,19 +564,20 @@ export default function Dashboard() {
     }
 
     if (name === "advance_paid") {
-  const advancePaidRaw = updatedForm.advance_paid;
+      const advancePaidRaw = updatedForm.advance_paid;
 
-  const existingPartialTotal = paymentTransactions
-    .filter((p) => Number(p.inquiry_id) === Number(updatedForm.id))
-    .reduce((sum, p) => sum + Number(p.amount || 0), 0);
+      const existingPartialTotal = paymentTransactions
+        .filter((p) => Number(p.inquiry_id) === Number(updatedForm.id))
+        .reduce((sum, p) => sum + Number(p.amount || 0), 0);
 
-  if (advancePaidRaw === "") {
-    updatedForm.paid_amount = existingPartialTotal > 0 ? existingPartialTotal : "";
-  } else {
-    const advancePaid = parseFloat(advancePaidRaw) || 0;
-    updatedForm.paid_amount = advancePaid + existingPartialTotal;
-  }
-}
+      if (advancePaidRaw === "") {
+        updatedForm.paid_amount =
+          existingPartialTotal > 0 ? existingPartialTotal : "";
+      } else {
+        const advancePaid = parseFloat(advancePaidRaw) || 0;
+        updatedForm.paid_amount = advancePaid + existingPartialTotal;
+      }
+    }
 
     if (name === "new_payment") {
       const advancePaid = parseFloat(updatedForm.advance_paid) || 0;
@@ -4652,12 +4653,18 @@ export default function Dashboard() {
                     </span>
                   </div>
 
-                  <div className="flex justify-between">
-                    <span></span>
-                    <span>
-                      ({money(getDiscountAmount(selectedInvoiceItem))})
-                    </span>
-                  </div>
+                  {Number(getDiscountAmount(selectedInvoiceItem)) > 0 ? (
+                    <div className="flex justify-between">
+                      <span></span>
+                      <span>
+                        ({money(getDiscountAmount(selectedInvoiceItem))})
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="relative h-[35px]">
+                      <div className="absolute -left-[185px] top-0 w-[310px] h-[35px] bg-white" />
+                    </div>
+                  )}
 
                   <div className="flex justify-between">
                     <span></span>
