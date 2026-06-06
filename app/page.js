@@ -4615,7 +4615,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* TABLE ROWS */}
-                <div className="absolute left-[80px] top-[308px] w-[640px]">
+                <div className="absolute left-[80px] top-[300px] w-[640px]">
                   {getInvoiceRows(selectedInvoiceItem).map((row, idx) => (
                     <div
                       key={idx}
@@ -4642,7 +4642,7 @@ export default function Dashboard() {
 
                 {/* TOTAL AREA */}
 
-                <div className="absolute right-[110px] top-[641px] w-[320px] text-[18px] leading-[35px]">
+                <div className="absolute right-[110px] top-[637px] w-[320px] text-[18px] leading-[35px]">
                   <div className="flex justify-between">
                     <span></span>
                     <span>
