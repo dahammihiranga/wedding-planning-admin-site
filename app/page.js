@@ -392,6 +392,7 @@ export default function Dashboard() {
     new_payment: "",
     discount_type: "percentage",
     transport_cost: "",
+    service_prices: {},
   });
 
   const API_URL = "/api/inquiries";
@@ -593,6 +594,30 @@ export default function Dashboard() {
     if (!updatedForm.id) {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(updatedForm));
     }
+  };
+
+  const calculateAgreedPrice = (updatedForm) => {
+    const packagePrice = parseFloat(updatedForm.package_price) || 0;
+    const discountValue = parseFloat(updatedForm.discount_rate) || 0;
+    const transportCost = parseFloat(updatedForm.transport_cost) || 0;
+
+    let agreedPrice = packagePrice;
+
+    if (updatedForm.discount_type === "percentage") {
+      agreedPrice = packagePrice - (packagePrice * discountValue) / 100;
+    } else {
+      agreedPrice = packagePrice - discountValue;
+    }
+
+    updatedForm.agreed_price = Math.max(agreedPrice, 0) + transportCost;
+
+    const paidAmount = parseFloat(updatedForm.paid_amount) || 0;
+    updatedForm.pending_payment = Math.max(
+      updatedForm.agreed_price - paidAmount,
+      0,
+    );
+
+    return updatedForm;
   };
 
   const openCustomerInDashboard = (item) => {
@@ -802,6 +827,7 @@ export default function Dashboard() {
         new_payment: "",
         discount_type: "percentage",
         transport_cost: "",
+        service_prices: {},
       });
     }
 
@@ -3992,36 +4018,50 @@ export default function Dashboard() {
                                   ? formData.service_type
                                   : [];
 
-                                if (e.target.checked) {
-                                  const updatedForm = {
-                                    ...formData,
-                                    service_type: [...current, service],
-                                  };
+                                const updatedServices = e.target.checked
+                                  ? [...current, service]
+                                  : current.filter((s) => s !== service);
 
-                                  setFormData(updatedForm);
+                                const updatedServicePrices = {
+                                  ...(formData.service_prices || {}),
+                                };
 
-                                  if (!updatedForm.id) {
-                                    localStorage.setItem(
-                                      DRAFT_KEY,
-                                      JSON.stringify(updatedForm),
+                                if (!e.target.checked) {
+                                  delete updatedServicePrices[service];
+                                }
+
+                                let updatedForm = {
+                                  ...formData,
+                                  service_type: updatedServices,
+                                  service_prices: updatedServicePrices,
+                                };
+
+                                if (updatedServices.length > 1) {
+                                  const totalServicePrice =
+                                    updatedServices.reduce(
+                                      (sum, selectedService) =>
+                                        sum +
+                                        Number(
+                                          updatedServicePrices[
+                                            selectedService
+                                          ] || 0,
+                                        ),
+                                      0,
                                     );
-                                  }
-                                } else {
-                                  const updatedForm = {
-                                    ...formData,
-                                    service_type: current.filter(
-                                      (s) => s !== service,
-                                    ),
-                                  };
 
-                                  setFormData(updatedForm);
+                                  updatedForm.package_price =
+                                    totalServicePrice || "";
+                                }
 
-                                  if (!updatedForm.id) {
-                                    localStorage.setItem(
-                                      DRAFT_KEY,
-                                      JSON.stringify(updatedForm),
-                                    );
-                                  }
+                                updatedForm = calculateAgreedPrice(updatedForm);
+
+                                setFormData(updatedForm);
+
+                                if (!updatedForm.id) {
+                                  localStorage.setItem(
+                                    DRAFT_KEY,
+                                    JSON.stringify(updatedForm),
+                                  );
                                 }
                               }}
                               className="accent-emerald-600"
@@ -4035,6 +4075,72 @@ export default function Dashboard() {
                       </div>
                     )}
                   </div>
+                  {Array.isArray(formData.service_type) &&
+                    formData.service_type.length > 1 && (
+                      <div className="md:col-span-2 rounded-2xl bg-fuchsia-50/70 border border-fuchsia-100 p-3 space-y-3">
+                        <div>
+                          <p className="text-xs font-black text-fuchsia-700 uppercase">
+                            Service Prices
+                          </p>
+                          <p className="text-[10px] text-gray-500 font-semibold">
+                            Enter custom price for each selected service. Total
+                            will become package price.
+                          </p>
+                        </div>
+
+                        {formData.service_type.map((service) => (
+                          <div
+                            key={service}
+                            className="grid grid-cols-[1fr_120px] md:grid-cols-[1fr_150px] gap-3 items-center"
+                          >
+                            <label className="text-xs font-bold text-gray-700">
+                              {service}
+                            </label>
+
+                            <input
+                              type="number"
+                              value={formData.service_prices?.[service] || ""}
+                              onChange={(e) => {
+                                const updatedServicePrices = {
+                                  ...(formData.service_prices || {}),
+                                  [service]: e.target.value,
+                                };
+
+                                const totalServicePrice =
+                                  formData.service_type.reduce(
+                                    (sum, selectedService) =>
+                                      sum +
+                                      Number(
+                                        updatedServicePrices[selectedService] ||
+                                          0,
+                                      ),
+                                    0,
+                                  );
+
+                                let updatedForm = {
+                                  ...formData,
+                                  service_prices: updatedServicePrices,
+                                  package_price: totalServicePrice || "",
+                                };
+
+                                updatedForm = calculateAgreedPrice(updatedForm);
+
+                                setFormData(updatedForm);
+
+                                if (!updatedForm.id) {
+                                  localStorage.setItem(
+                                    DRAFT_KEY,
+                                    JSON.stringify(updatedForm),
+                                  );
+                                }
+                              }}
+                              placeholder="LKR"
+                              className="w-full p-3.5 md:p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
                       Wedding Type
@@ -4107,10 +4213,19 @@ export default function Dashboard() {
                     <input
                       type="number"
                       name="package_price"
-                      placeholder="Enter package price"
+                      placeholder={
+                        Array.isArray(formData.service_type) &&
+                        formData.service_type.length > 1
+                          ? "Auto total from services"
+                          : "Enter package price"
+                      }
                       value={formData.package_price}
                       onChange={handleInputChange}
-                      className="w-full p-3.5 md:p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                      disabled={
+                        Array.isArray(formData.service_type) &&
+                        formData.service_type.length > 1
+                      }
+                      className="w-full p-3.5 md:p-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm disabled:bg-gray-100 disabled:text-gray-400"
                     />
                   </div>
 
