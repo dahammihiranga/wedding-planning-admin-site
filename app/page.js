@@ -326,6 +326,7 @@ export default function Dashboard() {
   const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
   const [paymentTransactions, setPaymentTransactions] = useState([]);
   const [highlightedRecordId, setHighlightedRecordId] = useState(null);
+  const [expandedMobileRecordId, setExpandedMobileRecordId] = useState(null);
   const [selectedInvoiceItem, setSelectedInvoiceItem] = useState(null);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const invoiceRef = useRef(null);
@@ -2681,11 +2682,12 @@ export default function Dashboard() {
                       <div className="block lg:hidden space-y-4">
                         {paginatedRecordsDisplay.map((item, index) => {
                           const countryInfo = getCountryDisplay(item.country);
+                          const isExpanded =
+                            Number(expandedMobileRecordId) === Number(item.id);
 
                           return (
                             <div
                               key={item.id}
-                              onClick={() => toggleRecordHighlight(item.id)}
                               className={`rounded-3xl p-4 shadow-lg border space-y-4 transition active:scale-[0.99] ${
                                 Number(highlightedRecordId) === Number(item.id)
                                   ? "bg-amber-50 border-amber-300 ring-2 ring-amber-300"
@@ -2735,219 +2737,240 @@ export default function Dashboard() {
                                   </p>
                                 </div>
 
-                                <div className="rounded-2xl bg-green-50 p-3 col-span-2">
-                                  <p className="text-[10px] uppercase font-black text-green-600">
-                                    Contact Number
-                                  </p>
-
-                                  <p className="text-sm font-black text-green-800">
-                                    {item.contact_no || "Not added"}
-                                  </p>
-                                </div>
-                              </div>
-
-                              <div className="rounded-2xl bg-gray-50 p-3">
-                                <p className="text-[10px] uppercase font-black text-gray-400">
-                                  Service Type
-                                </p>
-                                <p className="text-sm font-bold text-gray-800">
-                                  {item.service_type || "—"}
-                                </p>
-                                {(() => {
-                                  const prices =
-                                    typeof item.service_prices === "string"
-                                      ? JSON.parse(item.service_prices || "{}")
-                                      : item.service_prices || {};
-
-                                  const services = item.service_type
-                                    ? String(item.service_type)
-                                        .split(",")
-                                        .map((s) => s.trim())
-                                        .filter(Boolean)
-                                    : [];
-
-                                  return services.length > 1 ? (
-                                    <div className="mt-2 space-y-1">
-                                      {services.map((service) => (
-                                        <div
-                                          key={service}
-                                          className="text-[10px] text-gray-500 font-bold"
-                                        >
-                                          {service}: Rs.{" "}
-                                          {Number(
-                                            prices[service] || 0,
-                                          ).toLocaleString("en-LK")}
-                                        </div>
-                                      ))}
-                                    </div>
-                                  ) : null;
-                                })()}
-                              </div>
-
-                              <div className="grid grid-cols-2 gap-3">
-                                <div className="rounded-2xl bg-gray-50 p-3">
-                                  <p className="text-[10px] uppercase font-black text-gray-400">
-                                    Package
-                                  </p>
-                                  <p className="text-sm font-black text-gray-800">
-                                    Rs.{" "}
-                                    {Number(
-                                      item.package_price || 0,
-                                    ).toLocaleString("en-LK")}
-                                  </p>
-                                </div>
-
-                                <div className="rounded-2xl bg-purple-50 p-3">
-                                  <p className="text-[10px] uppercase font-black text-purple-600">
-                                    Discount
-                                  </p>
-                                  <p className="text-sm font-black text-purple-700">
-                                    {Number(item.discount_rate || 0) > 0
-                                      ? item.discount_type === "percentage"
-                                        ? `${item.discount_rate}%`
-                                        : `Rs. ${Number(item.discount_rate || 0).toLocaleString("en-LK")}`
-                                      : "No discount"}
-                                  </p>
-                                </div>
-
-                                <div className="rounded-2xl bg-cyan-50 p-3">
-                                  <p className="text-[10px] uppercase font-black text-cyan-600">
-                                    Transport
-                                  </p>
-                                  <p className="text-sm font-black text-cyan-700">
-                                    Rs.{" "}
-                                    {Number(
-                                      item.transport_cost || 0,
-                                    ).toLocaleString("en-LK")}
-                                  </p>
-                                </div>
-
-                                <div className="rounded-2xl bg-fuchsia-50 p-3">
-                                  <p className="text-[10px] uppercase font-black text-fuchsia-600">
-                                    Agreed
-                                  </p>
-                                  <p className="text-sm font-black text-fuchsia-900">
-                                    Rs.{" "}
-                                    {Number(
-                                      item.agreed_price || 0,
-                                    ).toLocaleString("en-LK")}
-                                  </p>
-                                </div>
-
-                                <div className="rounded-2xl bg-emerald-50 p-3">
-                                  <p className="text-[10px] uppercase font-black text-emerald-600">
-                                    Paid
-                                  </p>
-                                  <p className="text-sm font-black text-emerald-700">
-                                    Rs.{" "}
-                                    {Number(
-                                      item.paid_amount || 0,
-                                    ).toLocaleString("en-LK")}
-                                  </p>
-                                </div>
-
-                                <div className="rounded-2xl bg-rose-50 p-3">
-                                  <p className="text-[10px] uppercase font-black text-rose-600">
-                                    Pending
-                                  </p>
-                                  <p className="text-sm font-black text-rose-700">
-                                    Rs.{" "}
-                                    {Number(
-                                      item.pending_payment || 0,
-                                    ).toLocaleString("en-LK")}
-                                  </p>
-                                </div>
-                              </div>
-
-                              {Number(item.advance_paid || 0) > 0 && (
-                                <div className="rounded-2xl bg-amber-50 border border-amber-100 p-3">
-                                  <p className="text-xs font-black text-amber-700">
-                                    Booking Advance: Rs.{" "}
-                                    {Number(
-                                      item.advance_paid || 0,
-                                    ).toLocaleString("en-LK")}
-                                  </p>
-                                  <p className="text-[10px] font-semibold text-gray-400 mt-1">
-                                    {item.advance_paid_date ||
-                                      "No advance date"}
-                                  </p>
-                                </div>
-                              )}
-
-                              {item.remarks && (
                                 <button
                                   type="button"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    setSelectedRemark(item.remarks);
+                                    setExpandedMobileRecordId(
+                                      isExpanded ? null : item.id,
+                                    );
                                   }}
-                                  className="w-full text-left rounded-2xl bg-white/70 border border-gray-100 p-3 text-xs font-semibold text-gray-600"
+                                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-50 to-emerald-50 border border-white/70 py-3 text-xs font-black text-fuchsia-900 shadow-sm active:scale-95 transition"
                                 >
-                                  📝 Tap to view remarks
+                                  {isExpanded
+                                    ? "Hide Details"
+                                    : "View Full Details"}
+
+                                  <span
+                                    className={`inline-flex w-7 h-7 items-center justify-center rounded-full bg-white shadow text-sm transition-transform duration-300 ${
+                                      isExpanded ? "rotate-180" : ""
+                                    }`}
+                                  >
+                                    ↓
+                                  </span>
                                 </button>
-                              )}
 
-                              <div className="grid grid-cols-3 gap-3">
-                                {activeTab === "trash" ? (
-                                  <>
-                                    <button
-                                      type="button"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleRecoverRecord(item);
-                                      }}
-                                      className="rounded-2xl bg-emerald-50 text-emerald-700 p-3 text-xs font-black border border-emerald-100"
-                                    >
-                                      Restore
-                                    </button>
+                                {isExpanded && (
+                                  <div className="space-y-4 animate-fade-in">
+                                    <div className="rounded-2xl bg-gray-50 p-3">
+                                      <p className="text-[10px] uppercase font-black text-gray-400">
+                                        Service Type
+                                      </p>
+                                      <p className="text-sm font-bold text-gray-800">
+                                        {item.service_type || "—"}
+                                      </p>
+                                      {(() => {
+                                        const prices =
+                                          typeof item.service_prices ===
+                                          "string"
+                                            ? JSON.parse(
+                                                item.service_prices || "{}",
+                                              )
+                                            : item.service_prices || {};
 
-                                    <button
-                                      type="button"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        initiateDelete(item, "permanent");
-                                      }}
-                                      className="rounded-2xl bg-red-50 text-red-600 p-3 text-xs font-black border border-red-100"
-                                    >
-                                      Wipe
-                                    </button>
-                                  </>
-                                ) : (
-                                  <>
-                                    {canGenerateInvoice(item) && (
+                                        const services = item.service_type
+                                          ? String(item.service_type)
+                                              .split(",")
+                                              .map((s) => s.trim())
+                                              .filter(Boolean)
+                                          : [];
+
+                                        return services.length > 1 ? (
+                                          <div className="mt-2 space-y-1">
+                                            {services.map((service) => (
+                                              <div
+                                                key={service}
+                                                className="text-[10px] text-gray-500 font-bold"
+                                              >
+                                                {service}: Rs.{" "}
+                                                {Number(
+                                                  prices[service] || 0,
+                                                ).toLocaleString("en-LK")}
+                                              </div>
+                                            ))}
+                                          </div>
+                                        ) : null;
+                                      })()}
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-3">
+                                      <div className="rounded-2xl bg-gray-50 p-3">
+                                        <p className="text-[10px] uppercase font-black text-gray-400">
+                                          Package
+                                        </p>
+                                        <p className="text-sm font-black text-gray-800">
+                                          Rs.{" "}
+                                          {Number(
+                                            item.package_price || 0,
+                                          ).toLocaleString("en-LK")}
+                                        </p>
+                                      </div>
+
+                                      <div className="rounded-2xl bg-purple-50 p-3">
+                                        <p className="text-[10px] uppercase font-black text-purple-600">
+                                          Discount
+                                        </p>
+                                        <p className="text-sm font-black text-purple-700">
+                                          {Number(item.discount_rate || 0) > 0
+                                            ? item.discount_type ===
+                                              "percentage"
+                                              ? `${item.discount_rate}%`
+                                              : `Rs. ${Number(item.discount_rate || 0).toLocaleString("en-LK")}`
+                                            : "No discount"}
+                                        </p>
+                                      </div>
+
+                                      <div className="rounded-2xl bg-cyan-50 p-3">
+                                        <p className="text-[10px] uppercase font-black text-cyan-600">
+                                          Transport
+                                        </p>
+                                        <p className="text-sm font-black text-cyan-700">
+                                          Rs.{" "}
+                                          {Number(
+                                            item.transport_cost || 0,
+                                          ).toLocaleString("en-LK")}
+                                        </p>
+                                      </div>
+
+                                      <div className="rounded-2xl bg-fuchsia-50 p-3">
+                                        <p className="text-[10px] uppercase font-black text-fuchsia-600">
+                                          Agreed
+                                        </p>
+                                        <p className="text-sm font-black text-fuchsia-900">
+                                          Rs.{" "}
+                                          {Number(
+                                            item.agreed_price || 0,
+                                          ).toLocaleString("en-LK")}
+                                        </p>
+                                      </div>
+
+                                      <div className="rounded-2xl bg-emerald-50 p-3">
+                                        <p className="text-[10px] uppercase font-black text-emerald-600">
+                                          Paid
+                                        </p>
+                                        <p className="text-sm font-black text-emerald-700">
+                                          Rs.{" "}
+                                          {Number(
+                                            item.paid_amount || 0,
+                                          ).toLocaleString("en-LK")}
+                                        </p>
+                                      </div>
+
+                                      <div className="rounded-2xl bg-rose-50 p-3">
+                                        <p className="text-[10px] uppercase font-black text-rose-600">
+                                          Pending
+                                        </p>
+                                        <p className="text-sm font-black text-rose-700">
+                                          Rs.{" "}
+                                          {Number(
+                                            item.pending_payment || 0,
+                                          ).toLocaleString("en-LK")}
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                    {Number(item.advance_paid || 0) > 0 && (
+                                      <div className="rounded-2xl bg-amber-50 border border-amber-100 p-3">
+                                        <p className="text-xs font-black text-amber-700">
+                                          Booking Advance: Rs.{" "}
+                                          {Number(
+                                            item.advance_paid || 0,
+                                          ).toLocaleString("en-LK")}
+                                        </p>
+                                        <p className="text-[10px] font-semibold text-gray-400 mt-1">
+                                          {item.advance_paid_date ||
+                                            "No advance date"}
+                                        </p>
+                                      </div>
+                                    )}
+
+                                    {item.remarks && (
                                       <button
                                         type="button"
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          openInvoiceModal(item);
+                                          setSelectedRemark(item.remarks);
                                         }}
-                                        className="rounded-2xl bg-emerald-50 text-emerald-700 p-3 text-xs font-black border border-emerald-100"
+                                        className="w-full text-left rounded-2xl bg-white/70 border border-gray-100 p-3 text-xs font-semibold text-gray-600"
                                       >
-                                        Invoice
+                                        📝 Tap to view remarks
                                       </button>
                                     )}
-                                    <button
-                                      type="button"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        openEditModal(item);
-                                      }}
-                                      className="rounded-2xl bg-fuchsia-50 text-fuchsia-700 p-3 text-xs font-black border border-fuchsia-100"
-                                    >
-                                      Edit
-                                    </button>
 
-                                    <button
-                                      type="button"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        initiateDelete(item, "soft");
-                                      }}
-                                      className="rounded-2xl bg-red-50 text-red-600 p-3 text-xs font-black border border-red-100"
-                                    >
-                                      Delete
-                                    </button>
-                                  </>
+                                    <div className="grid grid-cols-3 gap-3">
+                                      {activeTab === "trash" ? (
+                                        <>
+                                          <button
+                                            type="button"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleRecoverRecord(item);
+                                            }}
+                                            className="rounded-2xl bg-emerald-50 text-emerald-700 p-3 text-xs font-black border border-emerald-100"
+                                          >
+                                            Restore
+                                          </button>
+
+                                          <button
+                                            type="button"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              initiateDelete(item, "permanent");
+                                            }}
+                                            className="rounded-2xl bg-red-50 text-red-600 p-3 text-xs font-black border border-red-100"
+                                          >
+                                            Wipe
+                                          </button>
+                                        </>
+                                      ) : (
+                                        <>
+                                          {canGenerateInvoice(item) && (
+                                            <button
+                                              type="button"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                openInvoiceModal(item);
+                                              }}
+                                              className="rounded-2xl bg-emerald-50 text-emerald-700 p-3 text-xs font-black border border-emerald-100"
+                                            >
+                                              Invoice
+                                            </button>
+                                          )}
+                                          <button
+                                            type="button"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              openEditModal(item);
+                                            }}
+                                            className="rounded-2xl bg-fuchsia-50 text-fuchsia-700 p-3 text-xs font-black border border-fuchsia-100"
+                                          >
+                                            Edit
+                                          </button>
+
+                                          <button
+                                            type="button"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              initiateDelete(item, "soft");
+                                            }}
+                                            className="rounded-2xl bg-red-50 text-red-600 p-3 text-xs font-black border border-red-100"
+                                          >
+                                            Delete
+                                          </button>
+                                        </>
+                                      )}
+                                    </div>
+                                  </div>
                                 )}
                               </div>
                             </div>
