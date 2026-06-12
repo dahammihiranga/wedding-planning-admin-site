@@ -2689,6 +2689,8 @@ export default function Dashboard() {
                             <div
                               key={item.id}
                               className={`relative rounded-3xl p-4 shadow-lg border space-y-4 transition active:scale-[0.99] ${
+                                isExpanded ? "pb-6" : "pb-20"
+                              } ${
                                 Number(highlightedRecordId) === Number(item.id)
                                   ? "bg-amber-50 border-amber-300 ring-2 ring-amber-300"
                                   : activeTab === "trash"
@@ -2736,6 +2738,7 @@ export default function Dashboard() {
                                     {item.hotel || "Not added"}
                                   </p>
                                 </div>
+                                </div>
 
                                 <button
                                   type="button"
@@ -2745,7 +2748,7 @@ export default function Dashboard() {
                                       isExpanded ? null : item.id,
                                     );
                                   }}
-                                  className="absolute right-4 bottom-4 w-11 h-11 rounded-full bg-white shadow-lg flex items-center justify-center text-fuchsia-900 font-black text-xl active:scale-95 transition z-20"
+                                  className="absolute right-5 bottom-5 w-14 h-14 rounded-full bg-white shadow-[0_10px_30px_rgba(88,28,135,0.22)] border border-fuchsia-100 flex items-center justify-center text-fuchsia-800 font-black text-3xl active:scale-90 transition z-20"
                                 >
                                   <span
                                     className={`transition-transform duration-300 ${
@@ -2968,7 +2971,7 @@ export default function Dashboard() {
                                     </div>
                                   </div>
                                 )}
-                              </div>
+                              
                             </div>
                           );
                         })}
