@@ -2688,7 +2688,7 @@ export default function Dashboard() {
                           return (
                             <div
                               key={item.id}
-                              className={`rounded-3xl p-4 shadow-lg border space-y-4 transition active:scale-[0.99] ${
+                              className={`relative rounded-3xl p-4 shadow-lg border space-y-4 transition active:scale-[0.99] ${
                                 Number(highlightedRecordId) === Number(item.id)
                                   ? "bg-amber-50 border-amber-300 ring-2 ring-amber-300"
                                   : activeTab === "trash"
@@ -2745,14 +2745,10 @@ export default function Dashboard() {
                                       isExpanded ? null : item.id,
                                     );
                                   }}
-                                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-50 to-emerald-50 border border-white/70 py-3 text-xs font-black text-fuchsia-900 shadow-sm active:scale-95 transition"
+                                  className="absolute right-4 bottom-4 w-11 h-11 rounded-full bg-white shadow-lg flex items-center justify-center text-fuchsia-900 font-black text-xl active:scale-95 transition z-20"
                                 >
-                                  {isExpanded
-                                    ? "Hide Details"
-                                    : "View Full Details"}
-
                                   <span
-                                    className={`inline-flex w-7 h-7 items-center justify-center rounded-full bg-white shadow text-sm transition-transform duration-300 ${
+                                    className={`transition-transform duration-300 ${
                                       isExpanded ? "rotate-180" : ""
                                     }`}
                                   >
