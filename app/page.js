@@ -2505,7 +2505,7 @@ export default function Dashboard() {
                                                     discounts[service].value ||
                                                       0,
                                                   ) > 0 && (
-                                                    <span className="text-purple-600 font-bold ml-1">
+                                                    <span className="text-gray-500 font-bold ml-1">
                                                       ( Discount -{" "}
                                                       {discounts[service]
                                                         .type === "fixed"
@@ -2972,7 +2972,7 @@ export default function Dashboard() {
                                                 Number(
                                                   discounts[service].value || 0,
                                                 ) > 0 && (
-                                                  <span className="text-purple-600 font-bold ml-1">
+                                                  <span className="text-gray-500 font-bold ml-1">
                                                     ( Discount -{" "}
                                                     {discounts[service].type ===
                                                     "fixed"
@@ -5045,13 +5045,28 @@ export default function Dashboard() {
                     <div className="flex justify-between">
                       <span></span>
                       <span>
-                        {money(
-                          getDiscountAmount(selectedInvoiceItem) +
-                            getServiceDiscountRows(selectedInvoiceItem).reduce(
-                              (sum, row) => sum + Number(row.total || 0),
-                              0,
-                            ),
-                        )}
+                        {selectedInvoiceItem.discount_type === "percentage" &&
+                        Number(selectedInvoiceItem.discount_rate || 0) > 0
+                          ? `${selectedInvoiceItem.discount_rate}% - (${money(
+                              getDiscountAmount(selectedInvoiceItem) +
+                                getServiceDiscountRows(
+                                  selectedInvoiceItem,
+                                ).reduce(
+                                  (sum, row) => sum + Number(row.total || 0),
+                                  0,
+                                ),
+                            )})`
+                          : `LKR ${Number(
+                              selectedInvoiceItem.discount_rate || 0,
+                            ).toLocaleString("en-LK")} - (${money(
+                              getDiscountAmount(selectedInvoiceItem) +
+                                getServiceDiscountRows(
+                                  selectedInvoiceItem,
+                                ).reduce(
+                                  (sum, row) => sum + Number(row.total || 0),
+                                  0,
+                                ),
+                            )})`}
                       </span>
                     </div>
                   ) : (
