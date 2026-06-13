@@ -4936,7 +4936,13 @@ export default function Dashboard() {
                     </span>
                   </div>
 
-                  {Number(getDiscountAmount(selectedInvoiceItem)) > 0 ? (
+                  {Number(
+                    getDiscountAmount(selectedInvoiceItem) +
+                      getServiceDiscountRows(selectedInvoiceItem).reduce(
+                        (sum, row) => sum + Number(row.total || 0),
+                        0,
+                      ),
+                  ) > 0 ? (
                     <div className="flex justify-between">
                       <span></span>
                       <span>
