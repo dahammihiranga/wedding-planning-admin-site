@@ -5045,28 +5045,35 @@ export default function Dashboard() {
                     <div className="flex justify-between">
                       <span></span>
                       <span>
-                        {selectedInvoiceItem.discount_type === "percentage" &&
-                        Number(selectedInvoiceItem.discount_rate || 0) > 0
-                          ? `${selectedInvoiceItem.discount_rate}% - (${money(
-                              getDiscountAmount(selectedInvoiceItem) +
-                                getServiceDiscountRows(
-                                  selectedInvoiceItem,
-                                ).reduce(
-                                  (sum, row) => sum + Number(row.total || 0),
-                                  0,
-                                ),
-                            )})`
-                          : `LKR ${Number(
-                              selectedInvoiceItem.discount_rate || 0,
-                            ).toLocaleString("en-LK")} - (${money(
-                              getDiscountAmount(selectedInvoiceItem) +
-                                getServiceDiscountRows(
-                                  selectedInvoiceItem,
-                                ).reduce(
-                                  (sum, row) => sum + Number(row.total || 0),
-                                  0,
-                                ),
-                            )})`}
+                        {(() => {
+                          const normalDiscountAmount =
+                            getDiscountAmount(selectedInvoiceItem);
+
+                          const serviceDiscountAmount = getServiceDiscountRows(
+                            selectedInvoiceItem,
+                          ).reduce(
+                            (sum, row) => sum + Number(row.total || 0),
+                            0,
+                          );
+
+                          const totalDiscountAmount =
+                            normalDiscountAmount + serviceDiscountAmount;
+
+                          if (
+                            Number(selectedInvoiceItem.discount_rate || 0) > 0
+                          ) {
+                            return selectedInvoiceItem.discount_type ===
+                              "percentage"
+                              ? `${selectedInvoiceItem.discount_rate}% - (${money(totalDiscountAmount)})`
+                              : `LKR ${Number(
+                                  selectedInvoiceItem.discount_rate || 0,
+                                ).toLocaleString(
+                                  "en-LK",
+                                )} - (${money(totalDiscountAmount)})`;
+                          }
+
+                          return `(${money(totalDiscountAmount)})`;
+                        })()}
                       </span>
                     </div>
                   ) : (
