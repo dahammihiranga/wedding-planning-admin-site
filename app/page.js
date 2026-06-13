@@ -1063,6 +1063,30 @@ export default function Dashboard() {
       });
   };
 
+  const getServiceDiscountLabels = (item) => {
+    let serviceDiscounts = {};
+
+    try {
+      serviceDiscounts =
+        typeof item.service_discounts === "string"
+          ? JSON.parse(item.service_discounts || "{}")
+          : item.service_discounts || {};
+    } catch {
+      serviceDiscounts = {};
+    }
+
+    return Object.entries(serviceDiscounts)
+      .filter(([service, discount]) => Number(discount.value || 0) > 0)
+      .map(([service, discount]) => {
+        const discountText =
+          discount.type === "fixed"
+            ? `Rs. ${Number(discount.value || 0).toLocaleString("en-LK")}`
+            : `${discount.value}%`;
+
+        return `Discount: ${discountText} (${service})`;
+      });
+  };
+
   const getDiscountAmount = (item) => {
     const packagePrice = Number(item.package_price || 0);
     const discount = Number(item.discount_rate || 0);
@@ -3982,14 +4006,30 @@ export default function Dashboard() {
                                   </div>
 
                                   <div className="mt-2 space-y-1 text-[10px]">
-                                    {Number(item.discount_rate || 0) > 0 ? (
-                                      <div className="rounded-lg bg-purple-50 border border-purple-100 px-2 py-1 text-left">
-                                        <div className="font-black text-purple-700">
-                                          Discount:{" "}
-                                          {item.discount_type === "percentage"
-                                            ? `${item.discount_rate}%`
-                                            : `Rs. ${Number(item.discount_rate || 0).toLocaleString("en-LK")}`}
-                                        </div>
+                                    {Number(item.discount_rate || 0) > 0 ||
+                                    getServiceDiscountLabels(item).length >
+                                      0 ? (
+                                      <div className="rounded-lg bg-purple-50 border border-purple-100 px-2 py-1 text-left space-y-1">
+                                        {Number(item.discount_rate || 0) >
+                                          0 && (
+                                          <div className="font-black text-purple-700">
+                                            Discount:{" "}
+                                            {item.discount_type === "percentage"
+                                              ? `${item.discount_rate}%`
+                                              : `Rs. ${Number(item.discount_rate || 0).toLocaleString("en-LK")}`}
+                                          </div>
+                                        )}
+
+                                        {getServiceDiscountLabels(item).map(
+                                          (label) => (
+                                            <div
+                                              key={label}
+                                              className="font-black text-purple-700"
+                                            >
+                                              {label}
+                                            </div>
+                                          ),
+                                        )}
 
                                         <div className="text-gray-400 font-semibold">
                                           Package: Rs.{" "}
@@ -4188,14 +4228,36 @@ export default function Dashboard() {
                                 )}
                               </p>
 
-                              <p className="text-[10px] font-bold text-purple-600 mt-1">
-                                Discount:{" "}
-                                {Number(item.discount_rate || 0) > 0
-                                  ? item.discount_type === "percentage"
-                                    ? `${item.discount_rate}%`
-                                    : `Rs. ${Number(item.discount_rate || 0).toLocaleString("en-LK")}`
-                                  : "No discount"}
-                              </p>
+                              <div className="mt-1 space-y-0.5">
+                                {Number(item.discount_rate || 0) > 0 ||
+                                getServiceDiscountLabels(item).length > 0 ? (
+                                  <>
+                                    {Number(item.discount_rate || 0) > 0 && (
+                                      <p className="text-[10px] font-bold text-purple-600">
+                                        Discount:{" "}
+                                        {item.discount_type === "percentage"
+                                          ? `${item.discount_rate}%`
+                                          : `Rs. ${Number(item.discount_rate || 0).toLocaleString("en-LK")}`}
+                                      </p>
+                                    )}
+
+                                    {getServiceDiscountLabels(item).map(
+                                      (label) => (
+                                        <p
+                                          key={label}
+                                          className="text-[10px] font-bold text-purple-600"
+                                        >
+                                          {label}
+                                        </p>
+                                      ),
+                                    )}
+                                  </>
+                                ) : (
+                                  <p className="text-[10px] font-bold text-gray-300">
+                                    No discount
+                                  </p>
+                                )}
+                              </div>
                             </div>
 
                             <div className="rounded-2xl bg-rose-50 p-3">
