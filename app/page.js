@@ -1000,6 +1000,46 @@ export default function Dashboard() {
     return num > 0 ? `Rs.${num.toLocaleString("en-LK")}` : "";
   };
 
+  const getServiceDiscountRows = (item) => {
+    let serviceDiscounts = {};
+    let servicePrices = {};
+
+    try {
+      serviceDiscounts =
+        typeof item.service_discounts === "string"
+          ? JSON.parse(item.service_discounts || "{}")
+          : item.service_discounts || {};
+
+      servicePrices =
+        typeof item.service_prices === "string"
+          ? JSON.parse(item.service_prices || "{}")
+          : item.service_prices || {};
+    } catch {
+      serviceDiscounts = {};
+      servicePrices = {};
+    }
+
+    return Object.entries(serviceDiscounts)
+      .filter(([service, discount]) => Number(discount.value || 0) > 0)
+      .map(([service, discount]) => {
+        const price = Number(servicePrices[service] || 0);
+
+        const amount =
+          discount.type === "fixed"
+            ? Number(discount.value || 0)
+            : (price * Number(discount.value || 0)) / 100;
+
+        return {
+          description:
+            discount.type === "percentage"
+              ? `Promotional Discount - ${discount.value}% (${service})`
+              : `Promotional Discount - LKR ${Number(discount.value || 0).toLocaleString("en-LK")} (${service})`,
+          rate: amount,
+          total: amount,
+        };
+      });
+  };
+
   const getDiscountAmount = (item) => {
     const packagePrice = Number(item.package_price || 0);
     const discount = Number(item.discount_rate || 0);
@@ -1079,6 +1119,12 @@ export default function Dashboard() {
         rate: Number(item.transport_cost || 0),
         total: Number(item.transport_cost || 0),
       });
+    }
+
+    const serviceDiscountRows = getServiceDiscountRows(item);
+
+    if (serviceDiscountRows.length > 0) {
+      rows.push(...serviceDiscountRows);
     }
 
     if (Number(item.discount_rate || 0) > 0) {
@@ -4894,7 +4940,13 @@ export default function Dashboard() {
                     <div className="flex justify-between">
                       <span></span>
                       <span>
-                        ({money(getDiscountAmount(selectedInvoiceItem))})
+                        {money(
+                          getDiscountAmount(selectedInvoiceItem) +
+                            getServiceDiscountRows(selectedInvoiceItem).reduce(
+                              (sum, row) => sum + Number(row.total || 0),
+                              0,
+                            ),
+                        )}
                       </span>
                     </div>
                   ) : (
