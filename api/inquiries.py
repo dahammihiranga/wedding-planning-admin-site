@@ -1,4 +1,5 @@
 import os
+import json
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -75,7 +76,6 @@ async def get_inquiries(tab: str = "all"):
 
 @app.post("/api/inquiries")
 async def create_inquiry(data: dict):
-
     client = create_client_sync(url=url, auth_token=auth_token)
 
     try:
@@ -83,6 +83,27 @@ async def create_inquiry(data: dict):
 
         if not couple_name:
             return {"success": False, "error": "Couple name is required"}
+
+        service_discounts_raw = data.get("service_discounts") or "{}"
+
+        try:
+            service_prices = json.loads(data.get("service_prices") or "{}")
+            service_discounts = json.loads(service_discounts_raw)
+        except Exception:
+            service_prices = {}
+            service_discounts = {}
+
+        service_discount_total = 0
+
+        for service, discount in service_discounts.items():
+            service_price = float(service_prices.get(service) or 0)
+            discount_value = float(discount.get("value") or 0)
+            discount_type_each = discount.get("type") or "percentage"
+
+            if discount_type_each == "fixed":
+                service_discount_total += discount_value
+            else:
+                service_discount_total += (service_price * discount_value) / 100
 
         package_price = float(data.get("package_price") or 0)
         discount_rate = float(data.get("discount_rate") or 0)
@@ -94,20 +115,18 @@ async def create_inquiry(data: dict):
         else:
             agreed_price = package_price - ((package_price * discount_rate) / 100)
 
-        agreed_price = max(agreed_price, 0) + transport_cost
+        agreed_price = max(agreed_price - service_discount_total, 0) + transport_cost
+
         advance_paid = float(data.get("advance_paid") or 0)
         paid_amount = float(data.get("paid_amount") or 0)
 
-        # Paid amount means total received, so it should never be less than advance
         if paid_amount < advance_paid:
             paid_amount = advance_paid
 
         pending_payment = agreed_price - paid_amount
 
         guest_count_raw = data.get("guest_count")
-        guest_count = (
-            int(guest_count_raw) if guest_count_raw not in [None, ""] else None
-        )
+        guest_count = int(guest_count_raw) if guest_count_raw not in [None, ""] else None
 
         query = """
         INSERT INTO inquiries (
@@ -132,9 +151,10 @@ async def create_inquiry(data: dict):
             paid_date,
             discount_type,
             transport_cost,
-            service_prices
+            service_prices,
+            service_discounts
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
         client.execute(
@@ -162,11 +182,11 @@ async def create_inquiry(data: dict):
                 data.get("discount_type") or "percentage",
                 transport_cost,
                 data.get("service_prices") or None,
+                data.get("service_discounts") or None,
             ],
         )
 
         client.close()
-
         return {"success": True}
 
     except Exception as e:
@@ -176,7 +196,6 @@ async def create_inquiry(data: dict):
 
 @app.put("/api/inquiries")
 async def update_inquiry(id: int, data: dict):
-
     client = create_client_sync(url=url, auth_token=auth_token)
 
     try:
@@ -184,6 +203,27 @@ async def update_inquiry(id: int, data: dict):
 
         if not couple_name:
             return {"success": False, "error": "Couple name is required"}
+
+        service_discounts_raw = data.get("service_discounts") or "{}"
+
+        try:
+            service_prices = json.loads(data.get("service_prices") or "{}")
+            service_discounts = json.loads(service_discounts_raw)
+        except Exception:
+            service_prices = {}
+            service_discounts = {}
+
+        service_discount_total = 0
+
+        for service, discount in service_discounts.items():
+            service_price = float(service_prices.get(service) or 0)
+            discount_value = float(discount.get("value") or 0)
+            discount_type_each = discount.get("type") or "percentage"
+
+            if discount_type_each == "fixed":
+                service_discount_total += discount_value
+            else:
+                service_discount_total += (service_price * discount_value) / 100
 
         package_price = float(data.get("package_price") or 0)
         discount_rate = float(data.get("discount_rate") or 0)
@@ -195,46 +235,47 @@ async def update_inquiry(id: int, data: dict):
         else:
             agreed_price = package_price - ((package_price * discount_rate) / 100)
 
-        agreed_price = max(agreed_price, 0) + transport_cost
+        agreed_price = max(agreed_price - service_discount_total, 0) + transport_cost
+
         advance_paid = float(data.get("advance_paid") or 0)
         paid_amount = float(data.get("paid_amount") or 0)
+
         if paid_amount < advance_paid:
             paid_amount = advance_paid
 
         pending_payment = agreed_price - paid_amount
 
         guest_count_raw = data.get("guest_count")
-        guest_count = (
-            int(guest_count_raw) if guest_count_raw not in [None, ""] else None
-        )
+        guest_count = int(guest_count_raw) if guest_count_raw not in [None, ""] else None
 
         client.execute(
             """
-    UPDATE inquiries SET 
-        couple_name=?,
-        wedding_date=?,
-        hotel=?,
-        service_type=?,
-        wedding_type=?,
-        guest_count=?,
-        contact_no=?,
-        bridesmaid_option=?,
-        package_price=?,
-        discount_rate=?,
-        discount_type=?,
-        transport_cost=?,
-        service_prices=?,
-        agreed_price=?,
-        advance_paid=?,
-        advance_paid_date=?,
-        paid_amount=?,
-        paid_date=?,
-        pending_payment=?,
-        status=?,
-        remarks=?,
-        country=?
-    WHERE id=?
-""",
+            UPDATE inquiries SET 
+                couple_name=?,
+                wedding_date=?,
+                hotel=?,
+                service_type=?,
+                wedding_type=?,
+                guest_count=?,
+                contact_no=?,
+                bridesmaid_option=?,
+                package_price=?,
+                discount_rate=?,
+                discount_type=?,
+                transport_cost=?,
+                service_prices=?,
+                service_discounts=?,
+                agreed_price=?,
+                advance_paid=?,
+                advance_paid_date=?,
+                paid_amount=?,
+                paid_date=?,
+                pending_payment=?,
+                status=?,
+                remarks=?,
+                country=?
+            WHERE id=?
+            """,
             [
                 couple_name,
                 data.get("wedding_date") or None,
@@ -249,6 +290,7 @@ async def update_inquiry(id: int, data: dict):
                 data.get("discount_type") or "percentage",
                 transport_cost,
                 data.get("service_prices") or None,
+                data.get("service_discounts") or None,
                 agreed_price,
                 advance_paid,
                 data.get("advance_paid_date") or None,
@@ -263,7 +305,6 @@ async def update_inquiry(id: int, data: dict):
         )
 
         client.close()
-
         return {"success": True, "id": id, "pending_payment": pending_payment}
 
     except Exception as e:
