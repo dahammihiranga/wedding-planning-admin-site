@@ -832,11 +832,34 @@ export default function Dashboard() {
   };
 
   const openEditModal = (item) => {
+    let parsedServicePrices = {};
+    let parsedServiceDiscounts = {};
+
+    try {
+      parsedServicePrices =
+        typeof item.service_prices === "string"
+          ? JSON.parse(item.service_prices || "{}")
+          : item.service_prices || {};
+    } catch {
+      parsedServicePrices = {};
+    }
+
+    try {
+      parsedServiceDiscounts =
+        typeof item.service_discounts === "string"
+          ? JSON.parse(item.service_discounts || "{}")
+          : item.service_discounts || {};
+    } catch {
+      parsedServiceDiscounts = {};
+    }
+
     setFormData({
       ...item,
       service_type: item.service_type
         ? item.service_type.split(",").map((s) => s.trim())
         : [],
+      service_prices: parsedServicePrices,
+      service_discounts: parsedServiceDiscounts,
       bridesmaid_option:
         item.bridesmaid_option && item.bridesmaid_option !== "-"
           ? item.bridesmaid_option
@@ -2497,8 +2520,8 @@ export default function Dashboard() {
                                                 className="text-[10px] text-gray-500 font-semibold"
                                               >
                                                 {service}: Rs.{" "}
-                                                {Number(
-                                                  prices[service] || 0,
+                                                {getFinalServicePrice(
+                                                  service,
                                                 ).toLocaleString("en-LK")}
                                                 {discounts[service] &&
                                                   Number(
@@ -2965,8 +2988,8 @@ export default function Dashboard() {
                                               className="text-[10px] text-gray-500 font-bold"
                                             >
                                               {service}: Rs.{" "}
-                                              {Number(
-                                                prices[service] || 0,
+                                              {getFinalServicePrice(
+                                                service,
                                               ).toLocaleString("en-LK")}
                                               {discounts[service] &&
                                                 Number(
