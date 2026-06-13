@@ -2446,12 +2446,48 @@ export default function Dashboard() {
                                               )
                                             : item.service_prices || {};
 
+                                        const discounts =
+                                          typeof item.service_discounts ===
+                                          "string"
+                                            ? JSON.parse(
+                                                item.service_discounts || "{}",
+                                              )
+                                            : item.service_discounts || {};
+
                                         const services = item.service_type
                                           ? String(item.service_type)
                                               .split(",")
                                               .map((s) => s.trim())
                                               .filter(Boolean)
                                           : [];
+
+                                        const getFinalServicePrice = (
+                                          service,
+                                        ) => {
+                                          const price = Number(
+                                            prices[service] || 0,
+                                          );
+                                          const discount = discounts[service];
+
+                                          if (
+                                            !discount ||
+                                            Number(discount.value || 0) <= 0
+                                          ) {
+                                            return price;
+                                          }
+
+                                          const discountAmount =
+                                            discount.type === "fixed"
+                                              ? Number(discount.value || 0)
+                                              : (price *
+                                                  Number(discount.value || 0)) /
+                                                100;
+
+                                          return Math.max(
+                                            price - discountAmount,
+                                            0,
+                                          );
+                                        };
 
                                         return services.length > 1 ? (
                                           <div className="mt-1 space-y-0.5">
@@ -2464,6 +2500,20 @@ export default function Dashboard() {
                                                 {Number(
                                                   prices[service] || 0,
                                                 ).toLocaleString("en-LK")}
+                                                {discounts[service] &&
+                                                  Number(
+                                                    discounts[service].value ||
+                                                      0,
+                                                  ) > 0 && (
+                                                    <span className="text-purple-600 font-bold ml-1">
+                                                      ( Discount -{" "}
+                                                      {discounts[service]
+                                                        .type === "fixed"
+                                                        ? `Rs.${Number(discounts[service].value || 0).toLocaleString("en-LK")}`
+                                                        : `${discounts[service].value}%`}
+                                                      )
+                                                    </span>
+                                                  )}
                                               </div>
                                             ))}
                                           </div>
@@ -2864,6 +2914,42 @@ export default function Dashboard() {
                                             )
                                           : item.service_prices || {};
 
+                                      const discounts =
+                                        typeof item.service_discounts ===
+                                        "string"
+                                          ? JSON.parse(
+                                              item.service_discounts || "{}",
+                                            )
+                                          : item.service_discounts || {};
+
+                                      const getFinalServicePrice = (
+                                        service,
+                                      ) => {
+                                        const price = Number(
+                                          prices[service] || 0,
+                                        );
+                                        const discount = discounts[service];
+
+                                        if (
+                                          !discount ||
+                                          Number(discount.value || 0) <= 0
+                                        ) {
+                                          return price;
+                                        }
+
+                                        const discountAmount =
+                                          discount.type === "fixed"
+                                            ? Number(discount.value || 0)
+                                            : (price *
+                                                Number(discount.value || 0)) /
+                                              100;
+
+                                        return Math.max(
+                                          price - discountAmount,
+                                          0,
+                                        );
+                                      };
+
                                       const services = item.service_type
                                         ? String(item.service_type)
                                             .split(",")
@@ -2882,6 +2968,19 @@ export default function Dashboard() {
                                               {Number(
                                                 prices[service] || 0,
                                               ).toLocaleString("en-LK")}
+                                              {discounts[service] &&
+                                                Number(
+                                                  discounts[service].value || 0,
+                                                ) > 0 && (
+                                                  <span className="text-purple-600 font-bold ml-1">
+                                                    ( Discount -{" "}
+                                                    {discounts[service].type ===
+                                                    "fixed"
+                                                      ? `Rs.${Number(discounts[service].value || 0).toLocaleString("en-LK")}`
+                                                      : `${discounts[service].value}%`}
+                                                    )
+                                                  </span>
+                                                )}
                                             </div>
                                           ))}
                                         </div>
