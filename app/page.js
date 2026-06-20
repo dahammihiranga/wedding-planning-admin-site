@@ -5128,7 +5128,13 @@ export default function Dashboard() {
                       ),
                   ) > 0 ? (
                     <div className="flex justify-between">
-                      <span></span>
+                      <span>
+                        {Number(selectedInvoiceItem.discount_rate || 0) > 0 &&
+                        selectedInvoiceItem.discount_type === "percentage"
+                          ? `${selectedInvoiceItem.discount_rate}%`
+                          : ""}
+                      </span>
+
                       <span>
                         {(() => {
                           const normalDiscountAmount =
@@ -5143,19 +5149,6 @@ export default function Dashboard() {
 
                           const totalDiscountAmount =
                             normalDiscountAmount + serviceDiscountAmount;
-
-                          if (
-                            Number(selectedInvoiceItem.discount_rate || 0) > 0
-                          ) {
-                            return selectedInvoiceItem.discount_type ===
-                              "percentage"
-                              ? `${selectedInvoiceItem.discount_rate}% - (${money(totalDiscountAmount)})`
-                              : `LKR ${Number(
-                                  selectedInvoiceItem.discount_rate || 0,
-                                ).toLocaleString(
-                                  "en-LK",
-                                )} - (${money(totalDiscountAmount)})`;
-                          }
 
                           return `(${money(totalDiscountAmount)})`;
                         })()}
