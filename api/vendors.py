@@ -42,52 +42,30 @@ async def create_vendor(request: Request):
     if not data.get("name"):
         return {"success": False, "error": "Vendor name is required"}
 
-    vendor_package_price = float(data.get("vendor_package_price") or 0)
-
-
-    commission_value = float(data.get("commission_value") or 0)
-    commission_type = data.get("commission_type") or "percentage"
-
-    if commission_type == "fixed":
-        commission_amount = commission_value
-    else:
-        commission_amount = (vendor_package_price * commission_value) / 100
-
     client = create_client_sync(url=url, auth_token=auth_token)
 
     try:
         client.execute(
             """
-    INSERT INTO vendors (
-        name,
-        service,
-        contact_number,
-        location,
-        remarks,
-        customer_name,
-        vendor_package_price,
-        commission_type,
-        commission_value,
-        commission_amount
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """,
+            INSERT INTO vendors (
+                name,
+                service,
+                contact_number,
+                location,
+                remarks
+            )
+            VALUES (?, ?, ?, ?, ?)
+            """,
             [
                 data.get("name"),
                 data.get("service"),
                 data.get("contact_number"),
                 data.get("location"),
                 data.get("remarks"),
-                data.get("customer_name"),
-                vendor_package_price,
-                commission_type,
-                commission_value,
-                commission_amount,
             ],
         )
 
         client.close()
-
         return {"success": True}
 
     except Exception as e:
@@ -105,9 +83,60 @@ async def update_vendor(request: Request):
 
     client = create_client_sync(url=url, auth_token=auth_token)
 
+    try:
+        client.execute(
+            """
+            UPDATE vendors SET
+                name = ?,
+                service = ?,
+                contact_number = ?,
+                location = ?,
+                remarks = ?
+            WHERE id = ?
+            """,
+            [
+                data.get("name"),
+                data.get("service"),
+                data.get("contact_number"),
+                data.get("location"),
+                data.get("remarks"),
+                int(vendor_id),
+            ],
+        )
+
+        client.close()
+        return {"success": True}
+
+    except Exception as e:
+        client.close()
+        return {"success": False, "error": str(e)}
+    
+@app.get("/api/vendor-commissions")
+def get_vendor_commissions():
+    client = create_client_sync(url=url, auth_token=auth_token)
+
+    try:
+        result = client.execute(
+            "SELECT * FROM vendor_commissions ORDER BY id DESC"
+        )
+
+        rows = [dict(zip(result.columns, row)) for row in result.rows]
+        client.close()
+        return rows
+
+    except Exception as e:
+        client.close()
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/api/vendor-commissions")
+async def create_vendor_commission(request: Request):
+    data = await request.json()
+
+    if not data.get("vendor_name"):
+        return {"success": False, "error": "Vendor name is required"}
+
     vendor_package_price = float(data.get("vendor_package_price") or 0)
-
-
     commission_value = float(data.get("commission_value") or 0)
     commission_type = data.get("commission_type") or "percentage"
 
@@ -116,44 +145,43 @@ async def update_vendor(request: Request):
     else:
         commission_amount = (vendor_package_price * commission_value) / 100
 
+    client = create_client_sync(url=url, auth_token=auth_token)
+
     try:
         client.execute(
             """
-    UPDATE vendors SET
-        name = ?,
-        service = ?,
-        contact_number = ?,
-        location = ?,
-        remarks = ?,
-        customer_name = ?,
-        vendor_package_price = ?,
-        commission_type = ?,
-        commission_value = ?,
-        commission_amount = ?
-    WHERE id = ?
-    """,
-            [
-                data.get("name"),
-                data.get("service"),
-                data.get("contact_number"),
-                data.get("location"),
-                data.get("remarks"),
-                data.get("customer_name"),
+            INSERT INTO vendor_commissions (
+                vendor_id,
+                vendor_name,
+                customer_name,
+                service,
                 vendor_package_price,
                 commission_type,
                 commission_value,
                 commission_amount,
-                int(vendor_id),
+                remarks
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            [
+                data.get("vendor_id"),
+                data.get("vendor_name"),
+                data.get("customer_name"),
+                data.get("service"),
+                vendor_package_price,
+                commission_type,
+                commission_value,
+                commission_amount,
+                data.get("remarks"),
             ],
         )
 
         client.close()
-
         return {"success": True}
 
     except Exception as e:
         client.close()
-        return {"success": False, "error": str(e)}
+        return {"success": False, "error": str(e)}    
 
 
 @app.delete("/api/vendors")

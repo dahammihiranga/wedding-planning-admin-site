@@ -312,11 +312,24 @@ export default function Dashboard() {
     contact_number: "",
     location: "",
     remarks: "",
+  });
+
+  const [vendorCommissions, setVendorCommissions] = useState([]);
+  const [isCommissionModalOpen, setIsCommissionModalOpen] = useState(false);
+  const [vendorNameSearch, setVendorNameSearch] = useState("");
+  const [isVendorNameDropdownOpen, setIsVendorNameDropdownOpen] =
+    useState(false);
+
+  const [commissionForm, setCommissionForm] = useState({
+    vendor_id: "",
+    vendor_name: "",
     customer_name: "",
+    service: "",
     vendor_package_price: "",
     commission_type: "percentage",
     commission_value: "",
     commission_amount: "",
+    remarks: "",
   });
   const [vendorLoading, setVendorLoading] = useState(false);
   const [customerSearch, setCustomerSearch] = useState("");
@@ -408,6 +421,7 @@ export default function Dashboard() {
     setMounted(true);
 
     fetchVendors();
+    fetchVendorCommissions();
 
     const savedLogin = localStorage.getItem("chathu_admin_logged_in");
     const loginTime = localStorage.getItem("chathu_admin_login_time");
@@ -1388,7 +1402,14 @@ export default function Dashboard() {
 
   const openVendorModal = (vendor = null) => {
     if (vendor) {
-      setVendorForm(vendor);
+      setVendorForm({
+        id: vendor.id,
+        name: vendor.name || "",
+        service: vendor.service || "",
+        contact_number: vendor.contact_number || "",
+        location: vendor.location || "",
+        remarks: vendor.remarks || "",
+      });
     } else {
       setVendorForm({
         id: null,
@@ -1397,11 +1418,6 @@ export default function Dashboard() {
         contact_number: "",
         location: "",
         remarks: "",
-        customer_name: "",
-        vendor_package_price: "",
-        commission_type: "percentage",
-        commission_value: "",
-        commission_amount: "",
       });
     }
 
@@ -1411,20 +1427,10 @@ export default function Dashboard() {
   const handleVendorChange = (e) => {
     const { name, value } = e.target;
 
-    const updatedForm = {
+    setVendorForm({
       ...vendorForm,
       [name]: value,
-    };
-
-    const packagePrice = Number(updatedForm.vendor_package_price || 0);
-    const commissionValue = Number(updatedForm.commission_value || 0);
-
-    updatedForm.commission_amount =
-      updatedForm.commission_type === "fixed"
-        ? commissionValue
-        : (packagePrice * commissionValue) / 100;
-
-    setVendorForm(updatedForm);
+    });
   };
 
   const handleVendorSubmit = async (e) => {
@@ -1462,15 +1468,63 @@ export default function Dashboard() {
         contact_number: "",
         location: "",
         remarks: "",
-        customer_name: "",
-        vendor_package_price: "",
-        commission_type: "percentage",
-        commission_value: "",
-        commission_amount: "",
       });
     } catch (error) {
       console.error("Vendor save error:", error);
       triggerNotification("Vendor save failed. Please try again.", "delete");
+    }
+  };
+
+  const handleCommissionChange = (e) => {
+    const { name, value } = e.target;
+
+    const updatedForm = {
+      ...commissionForm,
+      [name]: value,
+    };
+
+    const packagePrice = Number(updatedForm.vendor_package_price || 0);
+    const commissionValue = Number(updatedForm.commission_value || 0);
+
+    updatedForm.commission_amount =
+      updatedForm.commission_type === "fixed"
+        ? commissionValue
+        : (packagePrice * commissionValue) / 100;
+
+    setCommissionForm(updatedForm);
+  };
+
+  const handleCommissionSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!commissionForm.vendor_name) {
+      triggerNotification("Please select a vendor.", "delete");
+      return;
+    }
+
+    try {
+      await axios.post("/api/vendor-commissions", commissionForm);
+      await fetchVendorCommissions();
+
+      setIsCommissionModalOpen(false);
+      setVendorNameSearch("");
+
+      setCommissionForm({
+        vendor_id: "",
+        vendor_name: "",
+        customer_name: "",
+        service: "",
+        vendor_package_price: "",
+        commission_type: "percentage",
+        commission_value: "",
+        commission_amount: "",
+        remarks: "",
+      });
+
+      triggerNotification("Vendor commission added successfully!", "success");
+    } catch (error) {
+      console.error(error);
+      triggerNotification("Commission save failed.", "delete");
     }
   };
 
@@ -1494,6 +1548,18 @@ export default function Dashboard() {
       triggerNotification("Failed to load vendors.", "delete");
     } finally {
       setVendorLoading(false);
+    }
+  };
+
+  const fetchVendorCommissions = async () => {
+    try {
+      const response = await axios.get("/api/vendor-commissions");
+
+      if (Array.isArray(response.data)) {
+        setVendorCommissions(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching vendor commissions:", error);
     }
   };
 
@@ -3603,22 +3669,31 @@ export default function Dashboard() {
                     </p>
                   </div>
 
-                  <button
-                    onClick={() => openVendorModal()}
-                    className="bg-white text-fuchsia-500 border border-fuchsia-200 font-semibold px-4 py-2 rounded-xl shadow hover:bg-fuchsia-50 transition text-sm"
-                  >
-                    + Add Vendor
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => openVendorModal()}
+                      className="bg-white text-fuchsia-500 border border-fuchsia-200 font-semibold px-4 py-2 rounded-xl shadow hover:bg-fuchsia-50 transition text-sm"
+                    >
+                      + Add Vendor
+                    </button>
+
+                    <button
+                      onClick={() => setIsCommissionModalOpen(true)}
+                      className="bg-emerald-600 text-white font-semibold px-4 py-2 rounded-xl shadow hover:bg-emerald-700 transition text-sm"
+                    >
+                      + Add Commission
+                    </button>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-5">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-5">
                   <div className="bg-fuchsia-50/80 border border-fuchsia-100 rounded-3xl p-5 shadow">
                     <p className="text-xs font-black uppercase text-fuchsia-700">
                       Total Vendor Business
                     </p>
                     <h2 className="text-2xl font-black text-fuchsia-700 mt-2">
                       LKR{" "}
-                      {vendors
+                      {vendorCommissions
                         .reduce(
                           (sum, v) => sum + Number(v.vendor_package_price || 0),
                           0,
@@ -3633,7 +3708,7 @@ export default function Dashboard() {
                     </p>
                     <h2 className="text-2xl font-black text-emerald-700 mt-2">
                       LKR{" "}
-                      {vendors
+                      {vendorCommissions
                         .reduce(
                           (sum, v) => sum + Number(v.commission_amount || 0),
                           0,
@@ -3701,13 +3776,11 @@ export default function Dashboard() {
                         <thead>
                           <tr className="bg-fuchsia-50 text-fuchsia-900 uppercase text-xs md:text-[15px] font-black border-b border-gray-200">
                             <th className="p-4">Name</th>
-                            <th className="p-4">Customer</th>
                             <th className="p-4">Service</th>
-                            <th className="p-4 text-right">Package</th>
-                            <th className="p-4 text-right">Commission</th>
                             <th className="p-4">Contact Number</th>
                             <th className="p-4">Location</th>
                             <th className="p-4">Remarks</th>
+                            <th className="p-4 text-center">Actions</th>
                           </tr>
                         </thead>
 
@@ -3720,34 +3793,10 @@ export default function Dashboard() {
                               <td className="p-4 font-bold text-gray-900">
                                 🧾 {vendor.name}
                               </td>
-                              <td className="p-4 text-gray-700 font-bold">
-                                {vendor.customer_name || "—"}
-                              </td>
                               <td className="p-4 text-gray-700 font-medium">
                                 {vendor.service || "—"}
                               </td>
-                              <td className="p-4 text-right font-mono font-black text-gray-800">
-                                Rs.{" "}
-                                {Number(
-                                  vendor.vendor_package_price || 0,
-                                ).toLocaleString("en-LK")}
-                              </td>
 
-                              <td className="p-4 text-right">
-                                <div className="inline-flex flex-col bg-emerald-50 px-3 py-2 rounded-xl border border-emerald-100">
-                                  <span className="font-mono font-black text-emerald-700">
-                                    Rs.{" "}
-                                    {Number(
-                                      vendor.commission_amount || 0,
-                                    ).toLocaleString("en-LK")}
-                                  </span>
-                                  <span className="text-[10px] text-gray-500 font-bold mt-1">
-                                    {vendor.commission_type === "fixed"
-                                      ? `LKR ${Number(vendor.commission_value || 0).toLocaleString("en-LK")}`
-                                      : `${vendor.commission_value || 0}%`}
-                                  </span>
-                                </div>
-                              </td>
                               <td className="p-4 font-mono text-gray-700">
                                 {vendor.contact_number || "—"}
                               </td>
@@ -3810,6 +3859,83 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
+
+            <div className="mt-6 bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
+              <div className="p-4 border-b bg-emerald-50/70">
+                <h2 className="text-lg font-black text-emerald-800">
+                  💰 Vendor Commission Records
+                </h2>
+              </div>
+
+              {vendorCommissions.length === 0 ? (
+                <div className="p-8 text-center text-gray-400 font-bold">
+                  No commission records added yet.
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse min-w-max">
+                    <thead>
+                      <tr className="bg-emerald-50 text-emerald-900 uppercase text-xs md:text-[14px] font-black border-b border-gray-200">
+                        <th className="p-4">Vendor</th>
+                        <th className="p-4">Customer</th>
+                        <th className="p-4">Service</th>
+                        <th className="p-4 text-right">Vendor Package</th>
+                        <th className="p-4 text-right">Commission</th>
+                        <th className="p-4">Remarks</th>
+                      </tr>
+                    </thead>
+
+                    <tbody className="divide-y divide-gray-100 bg-white md:text-sm">
+                      {vendorCommissions.map((commission) => (
+                        <tr
+                          key={commission.id}
+                          className="hover:bg-emerald-50/40 transition"
+                        >
+                          <td className="p-4 font-bold text-gray-900">
+                            🤝 {commission.vendor_name}
+                          </td>
+
+                          <td className="p-4 text-gray-700 font-bold">
+                            {commission.customer_name || "—"}
+                          </td>
+
+                          <td className="p-4 text-gray-700">
+                            {commission.service || "—"}
+                          </td>
+
+                          <td className="p-4 text-right font-mono font-black">
+                            Rs.{" "}
+                            {Number(
+                              commission.vendor_package_price || 0,
+                            ).toLocaleString("en-LK")}
+                          </td>
+
+                          <td className="p-4 text-right">
+                            <div className="inline-flex flex-col bg-emerald-50 px-3 py-2 rounded-xl border border-emerald-100">
+                              <span className="font-mono font-black text-emerald-700">
+                                Rs.{" "}
+                                {Number(
+                                  commission.commission_amount || 0,
+                                ).toLocaleString("en-LK")}
+                              </span>
+                              <span className="text-[10px] text-gray-500 font-bold mt-1">
+                                {commission.commission_type === "fixed"
+                                  ? `LKR ${Number(commission.commission_value || 0).toLocaleString("en-LK")}`
+                                  : `${commission.commission_value || 0}%`}
+                              </span>
+                            </div>
+                          </td>
+
+                          <td className="p-4 text-gray-500 max-w-xs truncate">
+                            {commission.remarks || "—"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
 
             {activePage === "payments" && (
               <div className="p-4 md:p-6">
@@ -5350,86 +5476,6 @@ export default function Dashboard() {
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Customer / Couple Name
-                  </label>
-                  <input
-                    type="text"
-                    name="customer_name"
-                    list="customer-name-list"
-                    value={vendorForm.customer_name}
-                    onChange={handleVendorChange}
-                    placeholder="Search or select couple name"
-                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-fuchsia-300"
-                  />
-
-                  <datalist id="customer-name-list">
-                    {data.map((item) => (
-                      <option key={item.id} value={item.couple_name} />
-                    ))}
-                  </datalist>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-emerald-50/60 border border-emerald-100 rounded-2xl p-3">
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">
-                      Vendor Package Price
-                    </label>
-                    <input
-                      type="number"
-                      name="vendor_package_price"
-                      value={vendorForm.vendor_package_price}
-                      onChange={handleVendorChange}
-                      placeholder="Enter vendor's package price"
-                      className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-emerald-300"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">
-                      Commission
-                    </label>
-
-                    <div className="flex">
-                      <input
-                        type="number"
-                        name="commission_value"
-                        value={vendorForm.commission_value}
-                        onChange={handleVendorChange}
-                        placeholder={
-                          vendorForm.commission_type === "fixed"
-                            ? "Enter LKR amount"
-                            : "Enter % amount"
-                        }
-                        className="w-full p-3 border rounded-l-xl outline-none focus:ring-2 focus:ring-emerald-300"
-                      />
-
-                      <select
-                        name="commission_type"
-                        value={vendorForm.commission_type}
-                        onChange={handleVendorChange}
-                        className="w-[72px] p-3 border rounded-r-xl bg-emerald-50 text-emerald-800 font-black outline-none"
-                      >
-                        <option value="percentage">%</option>
-                        <option value="fixed">LKR</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="md:col-span-2 rounded-2xl bg-white p-3 border border-emerald-100">
-                    <p className="text-[10px] uppercase font-black text-gray-400">
-                      Commission Amount
-                    </p>
-                    <p className="text-xl font-black text-emerald-700">
-                      LKR{" "}
-                      {Number(vendorForm.commission_amount || 0).toLocaleString(
-                        "en-LK",
-                      )}
-                    </p>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
                     Contact Number
                   </label>
                   <input
@@ -5482,6 +5528,196 @@ export default function Dashboard() {
                   className="flex-1 py-3.5 rounded-2xl bg-fuchsia-300 hover:bg-fuchsia-400 text-black font-black"
                 >
                   {vendorForm.id ? "Update Vendor" : "Save Vendor"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {isCommissionModalOpen && (
+        <div className="fixed inset-0 bg-black/55 backdrop-blur-md flex items-end md:items-center justify-center z-[999999] md:p-4">
+          <div className="relative z-[1000000] bg-white w-full md:max-w-3xl md:rounded-3xl rounded-t-[2rem] shadow-2xl border border-gray-100 h-[92vh] md:h-auto md:max-h-[92vh] overflow-hidden flex flex-col animate-scale-in">
+            <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-xl border-b px-4 md:px-6 py-4">
+              <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-3 md:hidden" />
+
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-black text-gray-900">
+                  Add Vendor Commission
+                </h2>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsCommissionModalOpen(false);
+                    setVendorNameSearch("");
+                    setIsVendorNameDropdownOpen(false);
+                  }}
+                  className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <form
+              onSubmit={handleCommissionSubmit}
+              className="flex-1 flex flex-col overflow-hidden"
+            >
+              <div className="flex-1 overflow-y-auto px-4 py-5 md:p-6 space-y-5 pb-32">
+                <div className="relative">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Vendor Name
+                  </label>
+
+                  <input
+                    type="text"
+                    value={vendorNameSearch || commissionForm.vendor_name}
+                    onFocus={() => setIsVendorNameDropdownOpen(true)}
+                    onChange={(e) => {
+                      setVendorNameSearch(e.target.value);
+                      setIsVendorNameDropdownOpen(true);
+                    }}
+                    placeholder="Search vendor name"
+                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-emerald-300"
+                  />
+
+                  {isVendorNameDropdownOpen && (
+                    <div className="absolute left-0 right-0 top-full mt-2 z-[999999] bg-white border border-gray-100 rounded-2xl shadow-xl max-h-56 overflow-y-auto p-2">
+                      {vendors
+                        .filter((vendor) =>
+                          vendor.name
+                            ?.toLowerCase()
+                            .startsWith((vendorNameSearch || "").toLowerCase()),
+                        )
+                        .slice(0, 10)
+                        .map((vendor) => (
+                          <button
+                            key={vendor.id}
+                            type="button"
+                            onClick={() => {
+                              setCommissionForm({
+                                ...commissionForm,
+                                vendor_id: vendor.id,
+                                vendor_name: vendor.name,
+                                service: vendor.service || "",
+                              });
+                              setVendorNameSearch(vendor.name);
+                              setIsVendorNameDropdownOpen(false);
+                            }}
+                            className="w-full text-left px-3 py-2 rounded-xl hover:bg-emerald-50 text-sm font-semibold text-gray-700"
+                          >
+                            {vendor.name}
+                            <span className="block text-[10px] text-gray-400">
+                              {vendor.service || "No service"} ·{" "}
+                              {vendor.contact_number || "No contact"}
+                            </span>
+                          </button>
+                        ))}
+
+                      {vendors.filter((vendor) =>
+                        vendor.name
+                          ?.toLowerCase()
+                          .startsWith((vendorNameSearch || "").toLowerCase()),
+                      ).length === 0 && (
+                        <div className="px-3 py-2 text-sm text-gray-400 font-semibold">
+                          No vendor found
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <input
+                  type="text"
+                  name="customer_name"
+                  value={commissionForm.customer_name}
+                  onChange={handleCommissionChange}
+                  placeholder="Customer / Couple Name"
+                  className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-emerald-300"
+                />
+
+                <input
+                  type="text"
+                  name="service"
+                  value={commissionForm.service}
+                  onChange={handleCommissionChange}
+                  placeholder="Service"
+                  className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-emerald-300"
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-emerald-50/60 border border-emerald-100 rounded-2xl p-3">
+                  <input
+                    type="number"
+                    name="vendor_package_price"
+                    value={commissionForm.vendor_package_price}
+                    onChange={handleCommissionChange}
+                    placeholder="Vendor package price"
+                    className="w-full p-3 border rounded-xl outline-none"
+                  />
+
+                  <div className="flex">
+                    <input
+                      type="number"
+                      name="commission_value"
+                      value={commissionForm.commission_value}
+                      onChange={handleCommissionChange}
+                      placeholder="Commission"
+                      className="w-full p-3 border rounded-l-xl outline-none"
+                    />
+
+                    <select
+                      name="commission_type"
+                      value={commissionForm.commission_type}
+                      onChange={handleCommissionChange}
+                      className="w-[72px] p-3 border rounded-r-xl bg-emerald-50 text-emerald-800 font-black outline-none"
+                    >
+                      <option value="percentage">%</option>
+                      <option value="fixed">LKR</option>
+                    </select>
+                  </div>
+
+                  <div className="md:col-span-2 rounded-2xl bg-white p-3 border border-emerald-100">
+                    <p className="text-[10px] uppercase font-black text-gray-400">
+                      Commission Amount
+                    </p>
+                    <p className="text-xl font-black text-emerald-700">
+                      LKR{" "}
+                      {Number(
+                        commissionForm.commission_amount || 0,
+                      ).toLocaleString("en-LK")}
+                    </p>
+                  </div>
+                </div>
+
+                <textarea
+                  name="remarks"
+                  rows="3"
+                  value={commissionForm.remarks}
+                  onChange={handleCommissionChange}
+                  placeholder="Remarks"
+                  className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-emerald-300"
+                />
+              </div>
+
+              <div className="sticky bottom-0 z-20 bg-white/95 backdrop-blur-xl border-t p-4 flex gap-3 shadow-[0_-10px_30px_rgba(0,0,0,0.08)]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsCommissionModalOpen(false);
+                    setVendorNameSearch("");
+                    setIsVendorNameDropdownOpen(false);
+                  }}
+                  className="flex-1 py-3.5 rounded-2xl border text-gray-600 font-bold"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="flex-1 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black"
+                >
+                  Save Commission
                 </button>
               </div>
             </form>
