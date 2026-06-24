@@ -3725,24 +3725,6 @@ export default function Dashboard() {
                       {vendors.length}
                     </h2>
                   </div>
-
-                  <div className="bg-orange-50/80 border border-orange-100 rounded-3xl p-5 shadow">
-                    <p className="text-xs font-black uppercase text-orange-700">
-                      Average Commission
-                    </p>
-                    <h2 className="text-2xl font-black text-orange-700 mt-2">
-                      LKR{" "}
-                      {vendors.length
-                        ? Math.round(
-                            vendors.reduce(
-                              (sum, v) =>
-                                sum + Number(v.commission_amount || 0),
-                              0,
-                            ) / vendors.length,
-                          ).toLocaleString("en-LK")
-                        : "0"}
-                    </h2>
-                  </div>
                 </div>
 
                 <div className="mb-4 bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl p-3 shadow">
