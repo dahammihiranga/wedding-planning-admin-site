@@ -319,6 +319,9 @@ export default function Dashboard() {
   const [vendorNameSearch, setVendorNameSearch] = useState("");
   const [isVendorNameDropdownOpen, setIsVendorNameDropdownOpen] =
     useState(false);
+  const [customerNameSearch, setCustomerNameSearch] = useState("");
+  const [isCustomerNameDropdownOpen, setIsCustomerNameDropdownOpen] =
+    useState(false);
 
   const [commissionForm, setCommissionForm] = useState({
     vendor_id: "",
@@ -1578,6 +1581,7 @@ export default function Dashboard() {
       });
 
       setVendorNameSearch(commission.vendor_name || "");
+      setCustomerNameSearch(commission.customer_name || "");
     } else {
       setCommissionForm({
         id: null,
@@ -1593,9 +1597,11 @@ export default function Dashboard() {
       });
 
       setVendorNameSearch("");
+      setCustomerNameSearch("");
     }
 
     setIsVendorNameDropdownOpen(false);
+    setIsCustomerNameDropdownOpen(false);
     setIsCommissionModalOpen(true);
   };
 
@@ -5718,14 +5724,74 @@ export default function Dashboard() {
                   )}
                 </div>
 
-                <input
-                  type="text"
-                  name="customer_name"
-                  value={commissionForm.customer_name}
-                  onChange={handleCommissionChange}
-                  placeholder="Customer / Couple Name"
-                  className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-emerald-300"
-                />
+                <div className="relative">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                    Confirmed Couple
+                  </label>
+
+                  <input
+                    type="text"
+                    value={customerNameSearch || commissionForm.customer_name}
+                    onFocus={() => setIsCustomerNameDropdownOpen(true)}
+                    onChange={(e) => {
+                      setCustomerNameSearch(e.target.value);
+                      setIsCustomerNameDropdownOpen(true);
+                    }}
+                    placeholder="Search confirmed couple"
+                    className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-emerald-300"
+                  />
+
+                  {isCustomerNameDropdownOpen && (
+                    <div className="absolute left-0 right-0 top-full mt-2 z-[999999] bg-white border border-gray-100 rounded-2xl shadow-xl max-h-56 overflow-y-auto p-2">
+                      {data
+                        .filter(
+                          (item) =>
+                            item.status === "Confirmed" &&
+                            item.couple_name
+                              ?.toLowerCase()
+                              .startsWith(
+                                (customerNameSearch || "").toLowerCase(),
+                              ),
+                        )
+                        .slice(0, 10)
+                        .map((item) => (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => {
+                              setCommissionForm({
+                                ...commissionForm,
+                                customer_name: item.couple_name,
+                              });
+                              setCustomerNameSearch(item.couple_name);
+                              setIsCustomerNameDropdownOpen(false);
+                            }}
+                            className="w-full text-left px-3 py-2 rounded-xl hover:bg-emerald-50 text-sm font-semibold text-gray-700"
+                          >
+                            {item.couple_name}
+                            <span className="block text-[10px] text-gray-400">
+                              {item.wedding_date || "No wedding date"} ·{" "}
+                              {item.hotel || "No venue"}
+                            </span>
+                          </button>
+                        ))}
+
+                      {data.filter(
+                        (item) =>
+                          item.status === "Confirmed" &&
+                          item.couple_name
+                            ?.toLowerCase()
+                            .startsWith(
+                              (customerNameSearch || "").toLowerCase(),
+                            ),
+                      ).length === 0 && (
+                        <div className="px-3 py-2 text-sm text-gray-400 font-semibold">
+                          No confirmed couple found
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
 
                 <input
                   type="text"
