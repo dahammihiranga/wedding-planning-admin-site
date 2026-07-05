@@ -3919,6 +3919,109 @@ export default function Dashboard() {
                     </div>
                   )}
                 </div>
+
+                <div className="mt-6 bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
+                  <div className="p-4 border-b bg-emerald-50/70">
+                    <h2 className="text-lg font-black text-emerald-800">
+                      💰 Vendor Commission Records
+                    </h2>
+                  </div>
+
+                  {vendorCommissions.length === 0 ? (
+                    <div className="p-8 text-center text-gray-400 font-bold">
+                      No commission records added yet.
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse min-w-max">
+                        <thead>
+                          <tr className="bg-emerald-50 text-emerald-900 uppercase text-xs md:text-[14px] font-black border-b border-gray-200">
+                            <th className="p-4">Vendor</th>
+                            <th className="p-4">Customer</th>
+                            <th className="p-4">Service</th>
+                            <th className="p-4 text-right">Vendor Package</th>
+                            <th className="p-4 text-right">Commission</th>
+                            <th className="p-4">Remarks</th>
+                            <th className="p-4 text-center">Actions</th>
+                          </tr>
+                        </thead>
+
+                        <tbody className="divide-y divide-gray-100 bg-white md:text-sm">
+                          {vendorCommissions.map((commission) => (
+                            <tr
+                              key={commission.id}
+                              className="hover:bg-emerald-50/40 transition"
+                            >
+                              <td className="p-4 font-bold text-gray-900">
+                                🤝 {commission.vendor_name}
+                              </td>
+
+                              <td className="p-4 text-gray-700 font-bold">
+                                {commission.customer_name || "—"}
+                              </td>
+
+                              <td className="p-4 text-gray-700">
+                                {commission.service || "—"}
+                              </td>
+
+                              <td className="p-4 text-right font-mono font-black">
+                                Rs.{" "}
+                                {Number(
+                                  commission.vendor_package_price || 0,
+                                ).toLocaleString("en-LK")}
+                              </td>
+
+                              <td className="p-4 text-right">
+                                <div className="inline-flex flex-col bg-emerald-50 px-3 py-2 rounded-xl border border-emerald-100">
+                                  <span className="font-mono font-black text-emerald-700">
+                                    Rs.{" "}
+                                    {Number(
+                                      commission.commission_amount || 0,
+                                    ).toLocaleString("en-LK")}
+                                  </span>
+                                  <span className="text-[10px] text-gray-500 font-bold mt-1">
+                                    {commission.commission_type === "fixed"
+                                      ? `LKR ${Number(
+                                          commission.commission_value || 0,
+                                        ).toLocaleString("en-LK")}`
+                                      : `${commission.commission_value || 0}%`}
+                                  </span>
+                                </div>
+                              </td>
+
+                              <td className="p-4 text-gray-500 max-w-xs truncate">
+                                {commission.remarks || "—"}
+                              </td>
+
+                              <td className="p-4 text-center">
+                                <div className="flex items-center justify-center gap-3">
+                                  <button
+                                    onClick={() =>
+                                      openCommissionModal(commission)
+                                    }
+                                    className="text-emerald-600 font-bold hover:underline"
+                                  >
+                                    Edit
+                                  </button>
+
+                                  <button
+                                    onClick={() =>
+                                      deleteVendorCommission(commission)
+                                    }
+                                    className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
+                                    title="Delete Commission"
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
@@ -5528,7 +5631,9 @@ export default function Dashboard() {
 
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-black text-gray-900">
-                  {commissionForm.id ? "Edit Vendor Commission" : "Add Vendor Commission"}
+                  {commissionForm.id
+                    ? "Edit Vendor Commission"
+                    : "Add Vendor Commission"}
                 </h2>
 
                 <button
