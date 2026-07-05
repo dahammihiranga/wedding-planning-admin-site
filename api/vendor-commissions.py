@@ -87,5 +87,84 @@ async def create_vendor_commission(request: Request):
         client.close()
         return {"success": False, "error": str(e)}
 
+@app.put("/api/vendor-commissions")
+async def update_vendor_commission(request: Request):
+    commission_id = request.query_params.get("id")
+    data = await request.json()
+
+    if not commission_id:
+        return {"success": False, "error": "Commission id is required"}
+
+    vendor_package_price = float(data.get("vendor_package_price") or 0)
+    commission_value = float(data.get("commission_value") or 0)
+    commission_type = data.get("commission_type") or "percentage"
+
+    commission_amount = (
+        commission_value
+        if commission_type == "fixed"
+        else (vendor_package_price * commission_value) / 100
+    )
+
+    client = create_client_sync(url=url, auth_token=auth_token)
+
+    try:
+        client.execute(
+            """
+            UPDATE vendor_commissions SET
+                vendor_id = ?,
+                vendor_name = ?,
+                customer_name = ?,
+                service = ?,
+                vendor_package_price = ?,
+                commission_type = ?,
+                commission_value = ?,
+                commission_amount = ?,
+                remarks = ?
+            WHERE id = ?
+            """,
+            [
+                data.get("vendor_id"),
+                data.get("vendor_name"),
+                data.get("customer_name"),
+                data.get("service"),
+                vendor_package_price,
+                commission_type,
+                commission_value,
+                commission_amount,
+                data.get("remarks"),
+                int(commission_id),
+            ],
+        )
+
+        client.close()
+        return {"success": True}
+
+    except Exception as e:
+        client.close()
+        return {"success": False, "error": str(e)}
+
+
+@app.delete("/api/vendor-commissions")
+def delete_vendor_commission(request: Request):
+    commission_id = request.query_params.get("id")
+
+    if not commission_id:
+        return {"success": False, "error": "Commission id is required"}
+
+    client = create_client_sync(url=url, auth_token=auth_token)
+
+    try:
+        client.execute(
+            "DELETE FROM vendor_commissions WHERE id = ?",
+            [int(commission_id)],
+        )
+
+        client.close()
+        return {"success": True}
+
+    except Exception as e:
+        client.close()
+        return {"success": False, "error": str(e)}
+
 
 handler = app

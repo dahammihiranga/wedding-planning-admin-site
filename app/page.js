@@ -811,6 +811,23 @@ export default function Dashboard() {
           "delete",
         );
       }
+    } else if (type === "vendorCommission") {
+      try {
+        await axios.delete(`/api/vendor-commissions?id=${id}`);
+
+        await fetchVendorCommissions();
+
+        triggerNotification(
+          `${name} commission record deleted successfully.`,
+          "delete",
+        );
+      } catch (error) {
+        console.error(error);
+        triggerNotification(
+          "Commission delete failed. Please try again.",
+          "delete",
+        );
+      }
     }
 
     setDeleteModal({ show: false, id: null, name: "", type: "soft" });
@@ -1502,14 +1519,26 @@ export default function Dashboard() {
       return;
     }
 
+    const isUpdate = Boolean(commissionForm.id);
+
     try {
-      await axios.post("/api/vendor-commissions", commissionForm);
+      if (isUpdate) {
+        await axios.put(
+          `/api/vendor-commissions?id=${commissionForm.id}`,
+          commissionForm,
+        );
+      } else {
+        await axios.post("/api/vendor-commissions", commissionForm);
+      }
+
       await fetchVendorCommissions();
 
       setIsCommissionModalOpen(false);
       setVendorNameSearch("");
+      setIsVendorNameDropdownOpen(false);
 
       setCommissionForm({
+        id: null,
         vendor_id: "",
         vendor_name: "",
         customer_name: "",
@@ -1521,11 +1550,62 @@ export default function Dashboard() {
         remarks: "",
       });
 
-      triggerNotification("Vendor commission added successfully!", "success");
+      triggerNotification(
+        isUpdate
+          ? "Vendor commission updated successfully!"
+          : "Vendor commission added successfully!",
+        "success",
+      );
     } catch (error) {
       console.error(error);
       triggerNotification("Commission save failed.", "delete");
     }
+  };
+
+  const openCommissionModal = (commission = null) => {
+    if (commission) {
+      setCommissionForm({
+        id: commission.id,
+        vendor_id: commission.vendor_id || "",
+        vendor_name: commission.vendor_name || "",
+        customer_name: commission.customer_name || "",
+        service: commission.service || "",
+        vendor_package_price: commission.vendor_package_price || "",
+        commission_type: commission.commission_type || "percentage",
+        commission_value: commission.commission_value || "",
+        commission_amount: commission.commission_amount || "",
+        remarks: commission.remarks || "",
+      });
+
+      setVendorNameSearch(commission.vendor_name || "");
+    } else {
+      setCommissionForm({
+        id: null,
+        vendor_id: "",
+        vendor_name: "",
+        customer_name: "",
+        service: "",
+        vendor_package_price: "",
+        commission_type: "percentage",
+        commission_value: "",
+        commission_amount: "",
+        remarks: "",
+      });
+
+      setVendorNameSearch("");
+    }
+
+    setIsVendorNameDropdownOpen(false);
+    setIsCommissionModalOpen(true);
+  };
+
+  const deleteVendorCommission = (commission) => {
+    setDeleteModal({
+      show: true,
+      id: commission.id,
+      name: commission.vendor_name,
+      type: "vendorCommission",
+    });
   };
 
   const deleteVendor = (vendor) => {
@@ -3678,7 +3758,7 @@ export default function Dashboard() {
                     </button>
 
                     <button
-                      onClick={() => setIsCommissionModalOpen(true)}
+                      onClick={() => openCommissionModal()}
                       className="bg-emerald-600 text-white font-semibold px-4 py-2 rounded-xl shadow hover:bg-emerald-700 transition text-sm"
                     >
                       + Add Commission
@@ -3864,6 +3944,7 @@ export default function Dashboard() {
                         <th className="p-4 text-right">Vendor Package</th>
                         <th className="p-4 text-right">Commission</th>
                         <th className="p-4">Remarks</th>
+                        <th className="p-4 text-center">Actions</th>
                       </tr>
                     </thead>
 
@@ -3910,6 +3991,26 @@ export default function Dashboard() {
 
                           <td className="p-4 text-gray-500 max-w-xs truncate">
                             {commission.remarks || "—"}
+                          </td>
+                          <td className="p-4 text-center">
+                            <div className="flex items-center justify-center gap-3">
+                              <button
+                                onClick={() => openCommissionModal(commission)}
+                                className="text-emerald-600 font-bold hover:underline"
+                              >
+                                Edit
+                              </button>
+
+                              <button
+                                onClick={() =>
+                                  deleteVendorCommission(commission)
+                                }
+                                className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
+                                title="Delete Commission"
+                              >
+                                Delete
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -5525,7 +5626,7 @@ export default function Dashboard() {
 
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-black text-gray-900">
-                  Add Vendor Commission
+                  {commissionForm.id ? "Edit Vendor Commission" : "Add Vendor Commission"}
                 </h2>
 
                 <button
@@ -5699,7 +5800,7 @@ export default function Dashboard() {
                   type="submit"
                   className="flex-1 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black"
                 >
-                  Save Commission
+                  {commissionForm.id ? "Update Commission" : "Save Commission"}
                 </button>
               </div>
             </form>
