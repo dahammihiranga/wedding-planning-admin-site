@@ -288,6 +288,8 @@ export default function Dashboard() {
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [manualCalendarDate, setManualCalendarDate] = useState("");
   const [isServiceDropdownOpen, setIsServiceDropdownOpen] = useState(false);
+  const [isSecondServiceDropdownOpen, setIsSecondServiceDropdownOpen] =
+    useState(false);
   const [isFilterServiceDropdownOpen, setIsFilterServiceDropdownOpen] =
     useState(false);
   const [currentSLTime, setCurrentSLTime] = useState("");
@@ -401,6 +403,11 @@ export default function Dashboard() {
     service_type: [],
     wedding_type: "One day",
     guest_count: "",
+
+    wedding_date_2: "",
+    hotel_2: "",
+    service_type_2: [],
+    guest_count_2: "",
     contact_no: "",
     bridesmaid_option: "",
     package_price: 0,
@@ -567,6 +574,15 @@ export default function Dashboard() {
       ...formData,
       [name]: value,
     };
+
+    if (name === "wedding_type" && value === "One day") {
+      updatedForm.wedding_date_2 = "";
+      updatedForm.hotel_2 = "";
+      updatedForm.service_type_2 = [];
+      updatedForm.guest_count_2 = "";
+
+      setIsSecondServiceDropdownOpen(false);
+    }
 
     if (
       name === "package_price" ||
@@ -896,6 +912,17 @@ export default function Dashboard() {
       service_type: item.service_type
         ? item.service_type.split(",").map((s) => s.trim())
         : [],
+      service_type_2: item.service_type_2
+        ? String(item.service_type_2)
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [],
+
+      wedding_date_2: item.wedding_date_2 || "",
+      hotel_2: item.hotel_2 || "",
+      guest_count_2: item.guest_count_2 || "",
+
       service_prices: parsedServicePrices,
       service_discounts: parsedServiceDiscounts,
       bridesmaid_option:
@@ -924,6 +951,11 @@ export default function Dashboard() {
         service_type: [],
         wedding_type: "One day",
         guest_count: "",
+
+        wedding_date_2: "",
+        hotel_2: "",
+        service_type_2: [],
+        guest_count_2: "",
         contact_no: "",
         bridesmaid_option: "",
         package_price: "",
@@ -974,6 +1006,25 @@ export default function Dashboard() {
         : formData.service_type,
       guest_count:
         formData.guest_count === "" ? null : parseInt(formData.guest_count, 10),
+      service_type_2:
+        formData.wedding_type === "Two days"
+          ? Array.isArray(formData.service_type_2)
+            ? formData.service_type_2.join(", ")
+            : formData.service_type_2
+          : null,
+
+      wedding_date_2:
+        formData.wedding_type === "Two days"
+          ? formData.wedding_date_2 || null
+          : null,
+
+      hotel_2:
+        formData.wedding_type === "Two days" ? formData.hotel_2 || null : null,
+
+      guest_count_2:
+        formData.wedding_type === "Two days" && formData.guest_count_2 !== ""
+          ? parseInt(formData.guest_count_2, 10)
+          : null,
       bridesmaid_option: formData.bridesmaid_option || "-",
       service_prices:
         typeof formData.service_prices === "string"
@@ -2769,12 +2820,52 @@ export default function Dashboard() {
                                       </div>
                                     </td>
                                     <td className="p-3 text-gray-600 font-medium">
-                                      {item.wedding_date || "—"}
+                                      {item.wedding_type === "Two days" ? (
+                                        <div className="space-y-1 min-w-[120px]">
+                                          <div>
+                                            <span className="text-[10px] font-black text-fuchsia-600">
+                                              DAY 1
+                                            </span>
+                                            <div>
+                                              {item.wedding_date || "—"}
+                                            </div>
+                                          </div>
+
+                                          <div>
+                                            <span className="text-[10px] font-black text-purple-600">
+                                              DAY 2
+                                            </span>
+                                            <div>
+                                              {item.wedding_date_2 || "—"}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        item.wedding_date || "—"
+                                      )}
                                     </td>
-                                    <td className="p-3 max-w-[220px]">
-                                      <div className="whitespace-normal break-words leading-snug">
-                                        {item.hotel || "-"}
-                                      </div>
+                                    <td className="p-3 max-w-[240px]">
+                                      {item.wedding_type === "Two days" ? (
+                                        <div className="space-y-2">
+                                          <div className="whitespace-normal break-words">
+                                            <span className="text-[10px] font-black text-fuchsia-600">
+                                              DAY 1
+                                            </span>
+                                            <div>{item.hotel || "—"}</div>
+                                          </div>
+
+                                          <div className="whitespace-normal break-words">
+                                            <span className="text-[10px] font-black text-purple-600">
+                                              DAY 2
+                                            </span>
+                                            <div>{item.hotel_2 || "—"}</div>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div className="whitespace-normal break-words leading-snug">
+                                          {item.hotel || "—"}
+                                        </div>
+                                      )}
                                     </td>
                                     <td className="p-3">
                                       <span className="bg-gray-100 px-3 py-1 rounded-lg whitespace-nowrap">
@@ -2863,6 +2954,17 @@ export default function Dashboard() {
                                           </div>
                                         ) : null;
                                       })()}
+                                      {item.wedding_type === "Two days" && (
+                                        <div className="mt-2 rounded-lg border border-purple-100 bg-purple-50 px-2 py-1">
+                                          <div className="text-[10px] font-black text-purple-700">
+                                            DAY 2
+                                          </div>
+
+                                          <div className="text-xs font-semibold text-purple-900 whitespace-normal">
+                                            {item.service_type_2 || "—"}
+                                          </div>
+                                        </div>
+                                      )}
                                     </td>
                                     <td className="p-3 text-gray-600">
                                       {item.wedding_type}
@@ -2870,7 +2972,25 @@ export default function Dashboard() {
                                     {activeTab !== "completed" && (
                                       <>
                                         <td className="p-3 text-center font-semibold">
-                                          {item.guest_count || "—"}
+                                          {item.wedding_type === "Two days" ? (
+                                            <div className="space-y-1">
+                                              <div>
+                                                <span className="text-[10px] text-fuchsia-600 font-black">
+                                                  D1
+                                                </span>{" "}
+                                                {item.guest_count || "—"}
+                                              </div>
+
+                                              <div>
+                                                <span className="text-[10px] text-purple-600 font-black">
+                                                  D2
+                                                </span>{" "}
+                                                {item.guest_count_2 || "—"}
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            item.guest_count || "—"
+                                          )}
                                         </td>
                                         <td className="p-3 text-gray-600">
                                           {!item.bridesmaid_option ||
@@ -3206,9 +3326,25 @@ export default function Dashboard() {
                                     Wedding Date
                                   </p>
 
-                                  <p className="text-sm font-black text-blue-800">
-                                    {item.wedding_date || "Not added"}
-                                  </p>
+                                  <div className="text-sm font-black text-blue-800 space-y-1">
+                                    <p>
+                                      {item.wedding_type === "Two days" && (
+                                        <span className="text-[10px]">
+                                          D1:{" "}
+                                        </span>
+                                      )}
+                                      {item.wedding_date || "Not added"}
+                                    </p>
+
+                                    {item.wedding_type === "Two days" && (
+                                      <p>
+                                        <span className="text-[10px]">
+                                          D2:{" "}
+                                        </span>
+                                        {item.wedding_date_2 || "Not added"}
+                                      </p>
+                                    )}
+                                  </div>
                                 </div>
 
                                 <div className="rounded-2xl bg-orange-50 p-3">
@@ -3216,9 +3352,25 @@ export default function Dashboard() {
                                     Venue
                                   </p>
 
-                                  <p className="text-sm font-black text-orange-800 break-words">
-                                    {item.hotel || "Not added"}
-                                  </p>
+                                  <div className="text-sm font-black text-orange-800 break-words space-y-1">
+                                    <p>
+                                      {item.wedding_type === "Two days" && (
+                                        <span className="text-[10px]">
+                                          D1:{" "}
+                                        </span>
+                                      )}
+                                      {item.hotel || "Not added"}
+                                    </p>
+
+                                    {item.wedding_type === "Two days" && (
+                                      <p>
+                                        <span className="text-[10px]">
+                                          D2:{" "}
+                                        </span>
+                                        {item.hotel_2 || "Not added"}
+                                      </p>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
 
@@ -3250,6 +3402,21 @@ export default function Dashboard() {
                                     <p className="text-sm font-bold text-gray-800">
                                       {item.service_type || "—"}
                                     </p>
+                                    {item.wedding_type === "Two days" && (
+                                      <div className="mt-2 border-t border-gray-200 pt-2">
+                                        <p className="text-[10px] uppercase font-black text-purple-500">
+                                          Day 2 Service Type
+                                        </p>
+
+                                        <p className="text-sm font-bold text-purple-800">
+                                          {item.service_type_2 || "—"}
+                                        </p>
+
+                                        <p className="text-xs font-semibold text-gray-500 mt-1">
+                                          Guests: {item.guest_count_2 || "—"}
+                                        </p>
+                                      </div>
+                                    )}
                                     {(() => {
                                       const prices =
                                         typeof item.service_prices === "string"
@@ -4974,7 +5141,9 @@ export default function Dashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                      Wedding Date
+                      {formData.wedding_type === "Two days"
+                        ? "Wedding Date — Day 1"
+                        : "Wedding Date"}
                     </label>
                     <input
                       type="date"
@@ -4986,7 +5155,9 @@ export default function Dashboard() {
                   </div>
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                      Guest Count
+                      {formData.wedding_type === "Two days"
+                        ? "Guest Count — Day 1"
+                        : "Guest Count"}
                     </label>
                     <div className="flex gap-1">
                       <select
@@ -5024,7 +5195,9 @@ export default function Dashboard() {
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Hotel / Venue
+                    {formData.wedding_type === "Two days"
+                      ? "Hotel / Venue — Day 1"
+                      : "Hotel / Venue"}
                   </label>
                   <input
                     type="text"
@@ -5038,7 +5211,9 @@ export default function Dashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="relative">
                     <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                      Service Type
+                      {formData.wedding_type === "Two days"
+                        ? "Service Type — Day 1"
+                        : "Service Type"}
                     </label>
 
                     <button
@@ -5281,6 +5456,168 @@ export default function Dashboard() {
                     </select>
                   </div>
                 </div>
+
+                {formData.wedding_type === "Two days" && (
+                  <div className="rounded-2xl border border-fuchsia-200 bg-fuchsia-50/40 p-4 md:p-5 space-y-4">
+                    <div>
+                      <h3 className="text-sm font-black text-fuchsia-800">
+                        Day 2 Wedding Details
+                      </h3>
+
+                      <p className="text-xs text-gray-500 mt-1">
+                        Additional details for the second wedding day
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* DAY 2 DATE */}
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                          Wedding Date — Day 2
+                        </label>
+
+                        <input
+                          type="date"
+                          name="wedding_date_2"
+                          value={formData.wedding_date_2 || ""}
+                          onChange={handleInputChange}
+                          className="w-full p-3.5 md:p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm bg-white"
+                        />
+                      </div>
+
+                      {/* DAY 2 GUEST COUNT */}
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                          Guest Count — Day 2
+                        </label>
+
+                        <div className="flex gap-1">
+                          <select
+                            name="guest_count_2"
+                            value={
+                              [100, 150, 200, 250, 300, 350, 400].includes(
+                                Number(formData.guest_count_2),
+                              )
+                                ? formData.guest_count_2
+                                : ""
+                            }
+                            onChange={handleInputChange}
+                            className="w-1/2 p-3.5 md:p-2.5 bg-white border rounded-lg text-sm outline-none"
+                          >
+                            <option value="">Select count</option>
+                            <option value="100">100</option>
+                            <option value="150">150</option>
+                            <option value="200">200</option>
+                            <option value="250">250</option>
+                            <option value="300">300</option>
+                            <option value="350">350</option>
+                            <option value="400">400</option>
+                          </select>
+
+                          <input
+                            type="number"
+                            name="guest_count_2"
+                            placeholder="Or type..."
+                            value={formData.guest_count_2 || ""}
+                            onChange={handleInputChange}
+                            min="0"
+                            className="w-1/2 p-3.5 md:p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* DAY 2 VENUE */}
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                        Hotel / Venue — Day 2
+                      </label>
+
+                      <input
+                        type="text"
+                        name="hotel_2"
+                        value={formData.hotel_2 || ""}
+                        onChange={handleInputChange}
+                        className="w-full p-3.5 md:p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                      />
+                    </div>
+
+                    {/* DAY 2 SERVICE TYPE */}
+                    <div className="relative">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                        Service Type — Day 2
+                      </label>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setIsSecondServiceDropdownOpen(
+                            !isSecondServiceDropdownOpen,
+                          )
+                        }
+                        className="w-full p-3.5 md:p-2.5 bg-white border rounded-lg text-sm outline-none text-left flex items-center justify-between"
+                      >
+                        <span className="truncate">
+                          {Array.isArray(formData.service_type_2) &&
+                          formData.service_type_2.length > 0
+                            ? formData.service_type_2.join(", ")
+                            : "Please select Day 2 service type"}
+                        </span>
+
+                        <span className="text-gray-400">▾</span>
+                      </button>
+
+                      {isSecondServiceDropdownOpen && (
+                        <div className="absolute z-[10000] mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl p-2 space-y-1">
+                          {SERVICE_TYPE_OPTIONS.map((service) => (
+                            <label
+                              key={service}
+                              className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-emerald-50 cursor-pointer text-sm"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={
+                                  Array.isArray(formData.service_type_2) &&
+                                  formData.service_type_2.includes(service)
+                                }
+                                onChange={(e) => {
+                                  const current = Array.isArray(
+                                    formData.service_type_2,
+                                  )
+                                    ? formData.service_type_2
+                                    : [];
+
+                                  const updatedServices = e.target.checked
+                                    ? [...current, service]
+                                    : current.filter((s) => s !== service);
+
+                                  const updatedForm = {
+                                    ...formData,
+                                    service_type_2: updatedServices,
+                                  };
+
+                                  setFormData(updatedForm);
+
+                                  if (!updatedForm.id) {
+                                    localStorage.setItem(
+                                      DRAFT_KEY,
+                                      JSON.stringify(updatedForm),
+                                    );
+                                  }
+                                }}
+                                className="accent-emerald-600"
+                              />
+
+                              <span className="font-medium text-gray-700">
+                                {service}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
