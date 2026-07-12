@@ -1245,8 +1245,13 @@ export default function Dashboard() {
   };
 
   const canGenerateInvoice = (item) => {
-    return item.status === "Confirmed" && Number(item.advance_paid || 0) > 0;
-  };
+  const allowedStatuses = ["Confirmed", "Completed"];
+
+  return (
+    allowedStatuses.includes(item.status) &&
+    Number(item.advance_paid || 0) > 0
+  );
+};
 
   const getInvoiceNumber = (item) => {
     const eligibleInvoices = data
