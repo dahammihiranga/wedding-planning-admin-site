@@ -1245,17 +1245,15 @@ export default function Dashboard() {
   };
 
   const canGenerateInvoice = (item) => {
-  const allowedStatuses = ["Confirmed", "Completed"];
+    const allowedStatuses = ["Confirmed", "Completed"];
 
-  const agreedPrice = Number(item.agreed_price || 0);
-  const totalPaid = getInvoiceTotalPaid(item);
+    const agreedPrice = Number(item.agreed_price || 0);
+    const totalPaid = getInvoiceTotalPaid(item);
 
-  return (
-    allowedStatuses.includes(item.status) &&
-    agreedPrice > 0 &&
-    totalPaid > 0
-  );
-};
+    return (
+      allowedStatuses.includes(item.status) && agreedPrice > 0 && totalPaid > 0
+    );
+  };
 
   const getInvoiceNumber = (item) => {
     const eligibleInvoices = data
@@ -5745,7 +5743,8 @@ export default function Dashboard() {
                       }}
                     >
                       <span className="font-semibold">
-                        {getInvoiceTransactions(selectedInvoiceItem).length > 0
+                        {isInvoiceFullyPaid(selectedInvoiceItem) ||
+                        getInvoiceTransactions(selectedInvoiceItem).length > 0
                           ? "Total Paid"
                           : "Advance (Paid)"}
                       </span>
