@@ -5703,34 +5703,16 @@ export default function Dashboard() {
                     </span>
                   </div>
                 </div>
-              </div>
-              {/* PAID IN FULL SEAL */}
-              {selectedInvoiceItem &&
-                isInvoiceFullyPaid(selectedInvoiceItem) && (
-                  <div
-                    className="absolute
-                 right-[55px]
-                 top-[470px]
-                 rotate-[-15deg]
-                 border-[4px]
-                 border-red-600
-                 text-red-600
-                 font-extrabold
-                 rounded-md
-                 px-4
-                 py-2
-                 text-[34px]
-                 tracking-wide
-                 uppercase
-                 bg-white/70"
-                    style={{
-                      fontFamily: "Arial Black, sans-serif",
-                      transform: "rotate(-15deg)",
-                    }}
-                  >
-                    PAID IN FULL
-                  </div>
+                {/* PAID IN FULL IMAGE SEAL */}
+                {isInvoiceFullyPaid(selectedInvoiceItem) && (
+                  <img
+                    src="/paid-seal.png"
+                    alt="Paid in full"
+                    draggable={false}
+                    className="absolute left-[105px] top-[630px] w-[155px] h-[155px] object-contain pointer-events-none select-none z-20"
+                  />
                 )}
+              </div>
             </div>
           </div>
         </div>
