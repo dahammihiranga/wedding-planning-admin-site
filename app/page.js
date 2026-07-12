@@ -350,6 +350,10 @@ export default function Dashboard() {
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const invoiceRef = useRef(null);
   const [clearPaymentsOnSave, setClearPaymentsOnSave] = useState(false);
+  const [isAppBusy, setIsAppBusy] = useState(false);
+  const [showAppLoader, setShowAppLoader] = useState(false);
+  const loadingCountRef = useRef(0);
+  const loadingTimerRef = useRef(null);
 
   const [statusPopup, setStatusPopup] = useState({
     show: false,
@@ -385,6 +389,40 @@ export default function Dashboard() {
     name: "",
     type: "soft",
   });
+
+  const startAppLoading = () => {
+    loadingCountRef.current += 1;
+
+    if (loadingCountRef.current === 1) {
+      setIsAppBusy(true);
+
+      loadingTimerRef.current = window.setTimeout(() => {
+        setShowAppLoader(true);
+      }, 1000);
+    }
+  };
+
+  const stopAppLoading = () => {
+    loadingCountRef.current = Math.max(loadingCountRef.current - 1, 0);
+
+    if (loadingCountRef.current === 0) {
+      if (loadingTimerRef.current) {
+        window.clearTimeout(loadingTimerRef.current);
+        loadingTimerRef.current = null;
+      }
+
+      setShowAppLoader(false);
+      setIsAppBusy(false);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (loadingTimerRef.current) {
+        window.clearTimeout(loadingTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleTabChange = (tab) => {
     setTabLoading(true);
@@ -708,19 +746,82 @@ export default function Dashboard() {
     return updatedForm;
   };
 
-  const openCustomerInDashboard = (item) => {
-    setSelectedCustomerRecord(item);
-    setActivePage("dashboard");
-    setActiveTab("allRecords");
-    setSearchTerm("");
-    clearSearchAndFilters();
+  const navigateToPage = async (page) => {
+    if (page === activePage || isAppBusy) {
+      return;
+    }
 
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }, 100);
+    startAppLoading();
+
+    try {
+      if (page === "customers" || page === "payments") {
+        setActiveTab("allRecords");
+      }
+
+      if (page === "dashboard") {
+        await Promise.all([fetchData(), fetchPaymentTransactions()]);
+      }
+
+      if (page === "customers") {
+        await fetchData();
+      }
+
+      if (page === "payments") {
+        await Promise.all([fetchData(), fetchPaymentTransactions()]);
+      }
+
+      if (page === "vendors") {
+        await Promise.all([fetchVendors(), fetchVendorCommissions()]);
+      }
+
+      setActivePage(page);
+      setIsMobileSidebarOpen(false);
+    } catch (error) {
+      console.error("Page navigation loading failed:", error);
+
+      triggerNotification(
+        "The selected page could not be refreshed.",
+        "delete",
+      );
+    } finally {
+      stopAppLoading();
+    }
+  };
+
+  const openCustomerInDashboard = async (item) => {
+    if (isAppBusy) return;
+
+    startAppLoading();
+
+    try {
+      setSelectedCustomerRecord(item);
+      setActiveTab("allRecords");
+      setSearchTerm("");
+      clearSearchAndFilters();
+
+      await Promise.all([fetchData(), fetchPaymentTransactions()]);
+
+      setActivePage("dashboard");
+      setIsMobileSidebarOpen(false);
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    } catch (error) {
+      console.error("Customer record navigation failed:", error);
+
+      triggerNotification("The customer record could not be opened.", "delete");
+    } finally {
+      stopAppLoading();
+    }
   };
 
   const handleStatusChange = async (item, newStatus) => {
+    if (isAppBusy) return;
+
+    startAppLoading();
+
     const updatedRecord = { ...item, status: newStatus };
 
     try {
@@ -750,10 +851,13 @@ export default function Dashboard() {
       }
 
       triggerNotification(moveMessage, "success");
-      fetchData();
+      await fetchData();
     } catch (err) {
       console.error("Error updating status", err);
+
       triggerNotification("Status update failed. Please try again.", "delete");
+    } finally {
+      stopAppLoading();
     }
   };
 
@@ -1007,6 +1111,9 @@ Service Type : ${item.service_type || "-"}`;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    startAppLoading();
+
     const method = formData.id ? "PUT" : "POST";
     const url = formData.id ? `${API_URL}?id=${formData.id}` : API_URL;
 
@@ -1153,6 +1260,13 @@ Service Type : ${item.service_type || "-"}`;
       }
     } catch (err) {
       console.error("Error saving data", err);
+
+      triggerNotification(
+        "The wedding record could not be saved. Please try again.",
+        "delete",
+      );
+    } finally {
+      stopAppLoading();
     }
   };
 
@@ -1688,6 +1802,8 @@ Service Type : ${item.service_type || "-"}`;
       return;
     }
 
+    startAppLoading();
+
     const isUpdate = Boolean(vendorForm.id);
 
     try {
@@ -1718,7 +1834,10 @@ Service Type : ${item.service_type || "-"}`;
       });
     } catch (error) {
       console.error("Vendor save error:", error);
+
       triggerNotification("Vendor save failed. Please try again.", "delete");
+    } finally {
+      stopAppLoading();
     }
   };
 
@@ -1748,6 +1867,8 @@ Service Type : ${item.service_type || "-"}`;
       triggerNotification("Please select a vendor.", "delete");
       return;
     }
+
+    startAppLoading();
 
     const isUpdate = Boolean(commissionForm.id);
 
@@ -1789,6 +1910,8 @@ Service Type : ${item.service_type || "-"}`;
     } catch (error) {
       console.error(error);
       triggerNotification("Commission save failed.", "delete");
+    } finally {
+      stopAppLoading();
     }
   };
 
@@ -2036,6 +2159,37 @@ Service Type : ${item.service_type || "-"}`;
     );
   }
 
+  {
+    /* GLOBAL APP LOADING OVERLAY */
+  }
+  {
+    isAppBusy && (
+      <div
+        className={`fixed inset-0 z-[999999] flex items-center justify-center transition-opacity duration-200 ${
+          showAppLoader
+            ? "bg-white/65 backdrop-blur-[3px] opacity-100"
+            : "bg-transparent opacity-0"
+        }`}
+        aria-busy="true"
+        aria-live="polite"
+      >
+        {showAppLoader && (
+          <div className="flex flex-col items-center justify-center rounded-3xl bg-white/95 border border-fuchsia-100 shadow-2xl px-8 py-7 animate-scale-in">
+            <div className="app-loading-spinner" />
+
+            <p className="mt-4 text-sm font-black text-fuchsia-800">
+              Please wait...
+            </p>
+
+            <p className="mt-1 text-xs font-semibold text-gray-400">
+              Processing your request
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div
       className="min-h-screen flex text-gray-800 font-sans relative"
@@ -2179,15 +2333,7 @@ Service Type : ${item.service_type || "-"}`;
                   <button
                     key={nav.key}
                     type="button"
-                    onClick={() => {
-                      setActivePage(nav.key);
-
-                      if (nav.key === "customers" || nav.key === "payments") {
-                        setActiveTab("allRecords");
-                      }
-
-                      setIsMobileSidebarOpen(false);
-                    }}
+                    onClick={() => navigateToPage(nav.key)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-black transition ${
                       activePage === nav.key
                         ? "bg-emerald-100 text-emerald-800 shadow-sm"
@@ -2209,34 +2355,28 @@ Service Type : ${item.service_type || "-"}`;
 
             <div className="space-y-2">
               <button
-                onClick={() => setActivePage("dashboard")}
+                onClick={() => navigateToPage("dashboard")}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "dashboard" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
               >
                 🏠 Dashboard
               </button>
 
               <button
-                onClick={() => {
-                  setActivePage("customers");
-                  setActiveTab("allRecords");
-                }}
+                onClick={() => navigateToPage("customers")}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "customers" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
               >
                 👰 Customers
               </button>
 
               <button
-                onClick={() => setActivePage("vendors")}
+                onClick={() => navigateToPage("vendors")}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "vendors" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
               >
                 🤝 Vendors
               </button>
 
               <button
-                onClick={() => {
-                  setActivePage("payments");
-                  setActiveTab("allRecords");
-                }}
+                onClick={() => navigateToPage("payments")}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${
                   activePage === "payments"
                     ? "bg-emerald-100 text-emerald-800"
@@ -2247,7 +2387,7 @@ Service Type : ${item.service_type || "-"}`;
               </button>
 
               <button
-                onClick={() => setActivePage("packages")}
+                onClick={() => navigateToPage("packages")}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "packages" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
               >
                 📦 Our Packages
@@ -6124,7 +6264,8 @@ Service Type : ${item.service_type || "-"}`;
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-fuchsia-200 text-black rounded-lg font-bold hover:bg-fuchsia-300 text-sm"
+                  disabled={isAppBusy}
+                  className="px-5 py-2 bg-fuchsia-200 text-black rounded-lg font-bold hover:bg-fuchsia-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Save Record
                 </button>
