@@ -1058,6 +1058,61 @@ export default function Dashboard() {
     return num > 0 ? `Rs.${num.toLocaleString("en-LK")}` : "";
   };
 
+  const invoiceMoney = (value) => {
+    const num = Number(value || 0);
+
+    return `Rs.${num.toLocaleString("en-LK")}`;
+  };
+
+  const getInvoiceTransactions = (item) => {
+    return paymentTransactions
+      .filter((payment) => Number(payment.inquiry_id) === Number(item.id))
+      .sort((a, b) => {
+        const dateA = a.payment_date || "";
+        const dateB = b.payment_date || "";
+
+        if (dateA === dateB) {
+          return Number(a.id || 0) - Number(b.id || 0);
+        }
+
+        return dateA.localeCompare(dateB);
+      });
+  };
+
+  const getInvoiceTotalPaid = (item) => {
+    /*
+     * paid_amount is the canonical total saved by the backend:
+     * advance + all additional payments.
+     */
+    return Number(item.paid_amount || item.advance_paid || 0);
+  };
+
+  const getInvoicePendingAmount = (item) => {
+    const agreedPrice = Number(item.agreed_price || 0);
+    const totalPaid = getInvoiceTotalPaid(item);
+
+    return Math.max(agreedPrice - totalPaid, 0);
+  };
+
+  const isInvoiceFullyPaid = (item) => {
+    const agreedPrice = Number(item.agreed_price || 0);
+    const pendingAmount = getInvoicePendingAmount(item);
+
+    return agreedPrice > 0 && pendingAmount <= 0;
+  };
+
+  const getInvoiceIssueDate = (item) => {
+    /*
+     * Final invoice uses the latest payment date.
+     * Advance invoice uses the advance payment date.
+     */
+    if (isInvoiceFullyPaid(item) && item.paid_date) {
+      return item.paid_date;
+    }
+
+    return item.advance_paid_date || item.created_at || "";
+  };
+
   const getServiceDiscountRows = (item) => {
     let serviceDiscounts = {};
     let servicePrices = {};
@@ -1224,11 +1279,37 @@ export default function Dashboard() {
 
     if (Number(item.advance_paid || 0) > 0) {
       rows.push({
-        description: `Advance - Paid (${item.advance_paid_date || "No date"})`,
+        description: `Advance Payment - Paid${
+          item.advance_paid_date
+            ? ` (${moment(item.advance_paid_date).format("MMM D, YYYY")})`
+            : ""
+        }`,
         rate: Number(item.advance_paid || 0),
         total: Number(item.advance_paid || 0),
+        type: "payment",
       });
     }
+
+    const additionalPayments = getInvoiceTransactions(item).slice(-3);
+
+    additionalPayments.forEach((payment, index) => {
+      const paymentDate = payment.payment_date
+        ? moment(payment.payment_date).format("MMM D, YYYY")
+        : "";
+
+      const isLastPayment = index === additionalPayments.length - 1;
+
+      rows.push({
+        description: `${
+          isLastPayment && isInvoiceFullyPaid(item)
+            ? "Final Payment"
+            : `Partial Payment ${index + 1}`
+        } - Paid${paymentDate ? ` (${paymentDate})` : ""}`,
+        rate: Number(payment.amount || 0),
+        total: Number(payment.amount || 0),
+        type: "payment",
+      });
+    });
 
     return rows;
   };
@@ -5492,8 +5573,8 @@ export default function Dashboard() {
 
                 {/* DATE */}
                 <div className="absolute right-[90px] top-[181px] text-[15px]">
-                  {selectedInvoiceItem.advance_paid_date
-                    ? moment(selectedInvoiceItem.advance_paid_date).format(
+                  {getInvoiceIssueDate(selectedInvoiceItem)
+                    ? moment(getInvoiceIssueDate(selectedInvoiceItem)).format(
                         "MMMM D, YYYY",
                       )
                     : "-"}
@@ -5587,19 +5668,38 @@ export default function Dashboard() {
                     </div>
                   )}
 
-                  <div className="flex justify-between">
+                  <div className="relative flex justify-between">
+                    {/* Covers the static "Advance (Paid)" text in the PNG */}
+                    <div
+                      className="absolute bg-white flex items-center"
+                      style={{
+                        left: "-2px",
+                        top: "0px",
+                        width: "190px",
+                        height: "35px",
+                      }}
+                    >
+                      <span className="font-semibold">
+                        {getInvoiceTransactions(selectedInvoiceItem).length > 0
+                          ? "Total Paid"
+                          : "Advance (Paid)"}
+                      </span>
+                    </div>
+
                     <span></span>
-                    <span>({money(selectedInvoiceItem.advance_paid)})</span>
+
+                    <span>
+                      ({invoiceMoney(getInvoiceTotalPaid(selectedInvoiceItem))})
+                    </span>
                   </div>
 
                   <div className="mt-[30px] flex justify-between font-bold text-[20px]">
                     <span></span>
 
                     <span>
-                      {Number(selectedInvoiceItem.paid_amount || 0) >=
-                      Number(selectedInvoiceItem.agreed_price || 0)
-                        ? money(selectedInvoiceItem.paid_amount)
-                        : money(selectedInvoiceItem.pending_payment)}
+                      {invoiceMoney(
+                        getInvoicePendingAmount(selectedInvoiceItem),
+                      )}
                     </span>
                   </div>
                 </div>
