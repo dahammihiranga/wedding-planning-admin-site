@@ -2084,6 +2084,32 @@ Service Type : ${item.service_type || "-"}`;
           backgroundPosition: "center",
         }}
       >
+        {/* GLOBAL APP LOADING OVERLAY */}
+        {isAppBusy && (
+          <div
+            className={`fixed inset-0 z-[999999] flex items-center justify-center transition-opacity duration-200 ${
+              showAppLoader
+                ? "bg-white/65 backdrop-blur-[3px] opacity-100"
+                : "bg-transparent opacity-0"
+            }`}
+            aria-busy="true"
+            aria-live="polite"
+          >
+            {showAppLoader && (
+              <div className="flex flex-col items-center justify-center rounded-3xl bg-white/95 border border-fuchsia-100 shadow-2xl px-8 py-7 animate-scale-in">
+                <div className="app-loading-spinner" />
+
+                <p className="mt-4 text-sm font-black text-fuchsia-800">
+                  Please wait...
+                </p>
+
+                <p className="mt-1 text-xs font-semibold text-gray-400">
+                  Processing your request
+                </p>
+              </div>
+            )}
+          </div>
+        )}
         <div className="absolute inset-0 bg-white/55 backdrop-blur-[3px]" />
 
         <div className="relative z-10 w-full max-w-sm">
@@ -2155,37 +2181,6 @@ Service Type : ${item.service_type || "-"}`;
             </form>
           </div>
         </div>
-      </div>
-    );
-  }
-
-  {
-    /* GLOBAL APP LOADING OVERLAY */
-  }
-  {
-    isAppBusy && (
-      <div
-        className={`fixed inset-0 z-[999999] flex items-center justify-center transition-opacity duration-200 ${
-          showAppLoader
-            ? "bg-white/65 backdrop-blur-[3px] opacity-100"
-            : "bg-transparent opacity-0"
-        }`}
-        aria-busy="true"
-        aria-live="polite"
-      >
-        {showAppLoader && (
-          <div className="flex flex-col items-center justify-center rounded-3xl bg-white/95 border border-fuchsia-100 shadow-2xl px-8 py-7 animate-scale-in">
-            <div className="app-loading-spinner" />
-
-            <p className="mt-4 text-sm font-black text-fuchsia-800">
-              Please wait...
-            </p>
-
-            <p className="mt-1 text-xs font-semibold text-gray-400">
-              Processing your request
-            </p>
-          </div>
-        )}
       </div>
     );
   }
