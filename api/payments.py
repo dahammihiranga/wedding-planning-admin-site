@@ -124,6 +124,35 @@ async def add_payment(data: dict):
     except Exception as e:
         client.close()
         return {"success": False, "error": str(e)}
+    
+@app.delete("/api/payments")
+async def delete_payments(inquiry_id: int):
+    client = create_client_sync(url=url, auth_token=auth_token)
+
+    try:
+        # Delete every partial/final payment transaction for this inquiry
+        client.execute(
+            """
+            DELETE FROM payment_transactions
+            WHERE inquiry_id = ?
+            """,
+            [inquiry_id],
+        )
+
+        client.close()
+
+        return {
+            "success": True,
+            "message": "All payment transactions deleted",
+        }
+
+    except Exception as e:
+        client.close()
+
+        return {
+            "success": False,
+            "error": str(e),
+        }    
 
 
 handler = app

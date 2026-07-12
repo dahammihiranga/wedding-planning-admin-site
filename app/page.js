@@ -347,6 +347,7 @@ export default function Dashboard() {
   const [selectedInvoiceItem, setSelectedInvoiceItem] = useState(null);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const invoiceRef = useRef(null);
+  const [clearPaymentsOnSave, setClearPaymentsOnSave] = useState(false);
 
   const [statusPopup, setStatusPopup] = useState({
     show: false,
@@ -888,6 +889,8 @@ export default function Dashboard() {
       parsedServiceDiscounts = {};
     }
 
+    setClearPaymentsOnSave(false);
+
     setFormData({
       ...item,
       service_type: item.service_type
@@ -907,6 +910,7 @@ export default function Dashboard() {
   };
 
   const openAddModal = () => {
+    setClearPaymentsOnSave(false);
     const savedDraft = localStorage.getItem(DRAFT_KEY);
 
     if (savedDraft) {
@@ -990,7 +994,44 @@ export default function Dashboard() {
       if (res.ok) {
         const json = await res.json();
 
-        if (formData.id && Number(formData.new_payment || 0) > 0) {
+        /*
+         * When Clear Prices was used, remove every stored partial/final
+         * payment transaction belonging to this inquiry.
+         */
+        if (formData.id && clearPaymentsOnSave) {
+          const deletePaymentsRes = await fetch(
+            `/api/payments?inquiry_id=${formData.id}`,
+            {
+              method: "DELETE",
+            },
+          );
+
+          const deletePaymentsJson = await deletePaymentsRes.json();
+
+          if (!deletePaymentsRes.ok || deletePaymentsJson.success === false) {
+            console.error("Payment history delete failed:", deletePaymentsJson);
+
+            triggerNotification(
+              "Price fields were updated, but payment history could not be cleared.",
+              "delete",
+            );
+
+            return;
+          }
+
+          // Remove them immediately from frontend state too
+          setPaymentTransactions((currentTransactions) =>
+            currentTransactions.filter(
+              (payment) => Number(payment.inquiry_id) !== Number(formData.id),
+            ),
+          );
+        }
+
+        if (
+          formData.id &&
+          !clearPaymentsOnSave &&
+          Number(formData.new_payment || 0) > 0
+        ) {
           const paymentRes = await fetch("/api/payments", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -1016,9 +1057,11 @@ export default function Dashboard() {
           localStorage.removeItem(DRAFT_KEY);
         }
 
+        setClearPaymentsOnSave(false);
         setIsModalOpen(false);
-        fetchData();
-        fetchPaymentTransactions();
+
+        await fetchData();
+        await fetchPaymentTransactions();
         triggerNotification(
           formData.id
             ? `Changes applied to ${formData.couple_name}'s booking file.`
@@ -1048,9 +1091,22 @@ export default function Dashboard() {
 
     setFormData(updatedForm);
 
-    if (!updatedForm.id) {
+    /*
+     * Existing records may have partial payments stored separately.
+     * Mark them for deletion when Save Record is clicked.
+     */
+    if (updatedForm.id) {
+      setClearPaymentsOnSave(true);
+    } else {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(updatedForm));
     }
+
+    triggerNotification(
+      updatedForm.id
+        ? "Price details cleared. Click Save Record to remove the stored payment history."
+        : "Price details cleared.",
+      "success",
+    );
   };
 
   const money = (value) => {
