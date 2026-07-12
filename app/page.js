@@ -5567,12 +5567,12 @@ export default function Dashboard() {
                 </div>
 
                 {/* INVOICE NUMBER */}
-                <div className="absolute right-[90px] top-[161px] text-[15px]">
+                <div className="absolute right-[90px] top-[156px] text-[15px]">
                   {getInvoiceNumber(selectedInvoiceItem)}
                 </div>
 
                 {/* DATE */}
-                <div className="absolute right-[90px] top-[181px] text-[15px]">
+                <div className="absolute right-[90px] top-[176px] text-[15px]">
                   {getInvoiceIssueDate(selectedInvoiceItem)
                     ? moment(getInvoiceIssueDate(selectedInvoiceItem)).format(
                         "MMMM D, YYYY",
@@ -5581,7 +5581,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* DUE DATE */}
-                <div className="absolute right-[90px] top-[202px] text-[15px]">
+                <div className="absolute right-[90px] top-[195px] text-[15px]">
                   {selectedInvoiceItem.wedding_date
                     ? moment(selectedInvoiceItem.wedding_date)
                         .subtract(1, "day")
@@ -5594,7 +5594,7 @@ export default function Dashboard() {
                   {getInvoiceRows(selectedInvoiceItem).map((row, idx) => (
                     <div
                       key={idx}
-                      className="grid grid-cols-[48px_1fr_54px_190px] h-[57px] text-[16px]"
+                      className="grid grid-cols-[48px_1fr_54px_190px] h-[60px] text-[16px]"
                     >
                       <div className="flex items-center justify-center">
                         {idx + 1}
