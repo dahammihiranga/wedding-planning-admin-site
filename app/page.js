@@ -2868,9 +2868,21 @@ export default function Dashboard() {
                                       )}
                                     </td>
                                     <td className="p-3">
-                                      <span className="bg-gray-100 px-3 py-1 rounded-lg whitespace-nowrap">
-                                        {item.service_type}
-                                      </span>
+                                      {item.wedding_type === "Two days" ? (
+                                        <div className="rounded-lg border border-fuchsia-100 bg-fuchsia-50 px-2 py-1">
+                                          <div className="text-[10px] font-black text-fuchsia-600">
+                                            DAY 1
+                                          </div>
+
+                                          <div className="text-xs font-semibold text-gray-800 whitespace-normal">
+                                            {item.service_type || "—"}
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <span className="bg-gray-100 px-3 py-1 rounded-lg whitespace-nowrap">
+                                          {item.service_type || "—"}
+                                        </span>
+                                      )}
 
                                       {(() => {
                                         const prices =
