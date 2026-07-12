@@ -338,6 +338,7 @@ export default function Dashboard() {
   const [customerSearch, setCustomerSearch] = useState("");
   const [selectedCustomerRecord, setSelectedCustomerRecord] = useState(null);
   const [vendorSearch, setVendorSearch] = useState("");
+  const [vendorSection, setVendorSection] = useState("vendors");
   const [paymentSearch, setPaymentSearch] = useState("");
   const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
   const [paymentTransactions, setPaymentTransactions] = useState([]);
@@ -3813,367 +3814,427 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="mb-4 bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl p-3 shadow">
-                  <input
-                    type="text"
-                    placeholder="Search by name, service or contact number..."
-                    value={vendorSearch}
-                    onChange={(e) => setVendorSearch(e.target.value)}
-                    className="w-full p-3 rounded-xl border border-fuchsia-100 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold"
-                  />
-                </div>
-
-                <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
-                  {vendorLoading ? (
-                    <div className="p-12 flex flex-col items-center justify-center gap-4">
-                      <div className="w-14 h-14 border-4 border-fuchsia-100 border-t-fuchsia-400 rounded-full animate-spin" />
-                      <p className="text-sm font-bold text-gray-500">
-                        Loading Vendors...
-                      </p>
-                    </div>
-                  ) : filteredVendors.length === 0 ? (
-                    <div className="p-12 text-center">
-                      <div className="text-4xl mb-3">🤝</div>
-                      <p className="text-gray-400 text-sm font-bold">
-                        No vendors added yet.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="hidden md:block overflow-x-auto">
-                      <table className="w-full text-left border-collapse min-w-max">
-                        <thead>
-                          <tr className="bg-fuchsia-50 text-fuchsia-900 uppercase text-xs md:text-[15px] font-black border-b border-gray-200">
-                            <th className="p-4">Name</th>
-                            <th className="p-4">Service</th>
-                            <th className="p-4">Contact Number</th>
-                            <th className="p-4">Location</th>
-                            <th className="p-4">Remarks</th>
-                            <th className="p-4 text-center">Actions</th>
-                          </tr>
-                        </thead>
-
-                        <tbody className="divide-y divide-gray-100 bg-white md:text-sm">
-                          {filteredVendors.map((vendor) => (
-                            <tr
-                              key={vendor.id}
-                              className="hover:bg-fuchsia-50/40 transition"
-                            >
-                              <td className="p-4 font-bold text-gray-900">
-                                🧾 {vendor.name}
-                              </td>
-                              <td className="p-4 text-gray-700 font-medium">
-                                {vendor.service || "—"}
-                              </td>
-
-                              <td className="p-4 font-mono text-gray-700">
-                                {vendor.contact_number || "—"}
-                              </td>
-                              <td className="p-4 text-gray-700">
-                                {vendor.location || "—"}
-                              </td>
-                              <td className="p-4 text-gray-500 max-w-xs truncate">
-                                {vendor.remarks ? (
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      setSelectedRemark(vendor.remarks)
-                                    }
-                                    className="max-w-[220px] truncate text-left hover:text-fuchsia-600 hover:underline transition"
-                                    title="Click to view full remarks"
-                                  >
-                                    {vendor.remarks}
-                                  </button>
-                                ) : (
-                                  "—"
-                                )}
-                              </td>
-                              <td className="p-4 text-center">
-                                <div className="flex items-center justify-center gap-3">
-                                  <button
-                                    onClick={() => openVendorModal(vendor)}
-                                    className="text-fuchsia-600 font-bold hover:underline"
-                                  >
-                                    Edit
-                                  </button>
-
-                                  <button
-                                    onClick={() => deleteVendor(vendor)}
-                                    className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
-                                    title="Delete Vendor"
-                                  >
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      fill="none"
-                                      viewBox="0 0 24 24"
-                                      strokeWidth={2}
-                                      stroke="currentColor"
-                                      className="w-4 h-4"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                                      />
-                                    </svg>
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                  <div className="md:hidden space-y-4 p-4 bg-gray-50">
-                    {filteredVendors.map((vendor) => (
-                      <div
-                        key={vendor.id}
-                        className="bg-white rounded-3xl shadow-md border border-gray-100 p-4"
+                <div className="mb-5 rounded-2xl bg-white/70 backdrop-blur-xl border border-white/50 shadow-lg p-1.5">
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setVendorSection("vendors")}
+                      className={`min-h-[48px] px-3 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all duration-200 ${
+                        vendorSection === "vendors"
+                          ? "bg-fuchsia-600 text-white shadow-md"
+                          : "text-gray-500 hover:bg-fuchsia-50 hover:text-fuchsia-700"
+                      }`}
+                    >
+                      <span className="block sm:inline">🤝</span> Vendors List
+                      <span
+                        className={`ml-1.5 px-2 py-0.5 rounded-full text-[10px] ${
+                          vendorSection === "vendors"
+                            ? "bg-white/20 text-white"
+                            : "bg-fuchsia-100 text-fuchsia-700"
+                        }`}
                       >
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <h3 className="font-black text-gray-900">
-                              🧾 {vendor.name}
-                            </h3>
-                            <p className="text-xs text-gray-500 font-bold mt-1">
-                              {vendor.service || "No service"}
-                            </p>
-                          </div>
+                        {vendors.length}
+                      </span>
+                    </button>
 
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => openVendorModal(vendor)}
-                              className="px-3 py-1.5 rounded-xl bg-fuchsia-50 text-fuchsia-700 text-xs font-black"
-                            >
-                              Edit
-                            </button>
-
-                            <button
-                              onClick={() => deleteVendor(vendor)}
-                              className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-xs font-black"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-2 mt-4">
-                          <div className="rounded-2xl bg-gray-50 p-3">
-                            <p className="text-[10px] uppercase font-black text-gray-400">
-                              Contact
-                            </p>
-                            <p className="text-sm font-bold text-gray-800">
-                              {vendor.contact_number || "—"}
-                            </p>
-                          </div>
-
-                          <div className="rounded-2xl bg-gray-50 p-3">
-                            <p className="text-[10px] uppercase font-black text-gray-400">
-                              Location
-                            </p>
-                            <p className="text-sm font-bold text-gray-800">
-                              {vendor.location || "—"}
-                            </p>
-                          </div>
-                        </div>
-
-                        {vendor.remarks && (
-                          <button
-                            type="button"
-                            onClick={() => setSelectedRemark(vendor.remarks)}
-                            className="mt-3 w-full text-left rounded-2xl bg-fuchsia-50/70 p-3 text-xs font-semibold text-gray-600"
-                          >
-                            {vendor.remarks}
-                          </button>
-                        )}
-                      </div>
-                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setVendorSection("commissions")}
+                      className={`min-h-[48px] px-3 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all duration-200 ${
+                        vendorSection === "commissions"
+                          ? "bg-emerald-600 text-white shadow-md"
+                          : "text-gray-500 hover:bg-emerald-50 hover:text-emerald-700"
+                      }`}
+                    >
+                      <span className="block sm:inline">💰</span> Commissions
+                      <span
+                        className={`ml-1.5 px-2 py-0.5 rounded-full text-[10px] ${
+                          vendorSection === "commissions"
+                            ? "bg-white/20 text-white"
+                            : "bg-emerald-100 text-emerald-700"
+                        }`}
+                      >
+                        {vendorCommissions.length}
+                      </span>
+                    </button>
                   </div>
                 </div>
 
-                <div className="mt-6 bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
-                  <div className="p-4 border-b bg-emerald-50/70">
-                    <h2 className="text-lg font-black text-emerald-800">
-                      💰 Vendor Commission Records
-                    </h2>
-                  </div>
-
-                  {vendorCommissions.length === 0 ? (
-                    <div className="p-8 text-center text-gray-400 font-bold">
-                      No commission records added yet.
+                {vendorSection === "vendors" && (
+                  <>
+                    <div className="mb-4 bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl p-3 shadow">
+                      <input
+                        type="text"
+                        placeholder="Search by name, service or contact number..."
+                        value={vendorSearch}
+                        onChange={(e) => setVendorSearch(e.target.value)}
+                        className="w-full p-3 rounded-xl border border-fuchsia-100 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold"
+                      />
                     </div>
-                  ) : (
-                    <div className="hidden md:block overflow-x-auto">
-                      <table className="w-full text-left border-collapse min-w-max">
-                        <thead>
-                          <tr className="bg-emerald-50 text-emerald-900 uppercase text-xs md:text-[14px] font-black border-b border-gray-200">
-                            <th className="p-4">Vendor</th>
-                            <th className="p-4">Customer</th>
-                            <th className="p-4">Service</th>
-                            <th className="p-4 text-right">Vendor Package</th>
-                            <th className="p-4 text-right">Commission</th>
-                            <th className="p-4">Remarks</th>
-                            <th className="p-4 text-center">Actions</th>
-                          </tr>
-                        </thead>
 
-                        <tbody className="divide-y divide-gray-100 bg-white md:text-sm">
-                          {vendorCommissions.map((commission) => (
-                            <tr
-                              key={commission.id}
-                              className="hover:bg-emerald-50/40 transition"
-                            >
-                              <td className="p-4 font-bold text-gray-900">
+                    <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
+                      {vendorLoading ? (
+                        <div className="p-12 flex flex-col items-center justify-center gap-4">
+                          <div className="w-14 h-14 border-4 border-fuchsia-100 border-t-fuchsia-400 rounded-full animate-spin" />
+                          <p className="text-sm font-bold text-gray-500">
+                            Loading Vendors...
+                          </p>
+                        </div>
+                      ) : filteredVendors.length === 0 ? (
+                        <div className="p-12 text-center">
+                          <div className="text-4xl mb-3">🤝</div>
+                          <p className="text-gray-400 text-sm font-bold">
+                            No vendors added yet.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="hidden md:block overflow-x-auto">
+                          <table className="w-full text-left border-collapse min-w-max">
+                            <thead>
+                              <tr className="bg-fuchsia-50 text-fuchsia-900 uppercase text-xs md:text-[15px] font-black border-b border-gray-200">
+                                <th className="p-4">Name</th>
+                                <th className="p-4">Service</th>
+                                <th className="p-4">Contact Number</th>
+                                <th className="p-4">Location</th>
+                                <th className="p-4">Remarks</th>
+                                <th className="p-4 text-center">Actions</th>
+                              </tr>
+                            </thead>
+
+                            <tbody className="divide-y divide-gray-100 bg-white md:text-sm">
+                              {filteredVendors.map((vendor) => (
+                                <tr
+                                  key={vendor.id}
+                                  className="hover:bg-fuchsia-50/40 transition"
+                                >
+                                  <td className="p-4 font-bold text-gray-900">
+                                    🧾 {vendor.name}
+                                  </td>
+                                  <td className="p-4 text-gray-700 font-medium">
+                                    {vendor.service || "—"}
+                                  </td>
+
+                                  <td className="p-4 font-mono text-gray-700">
+                                    {vendor.contact_number || "—"}
+                                  </td>
+                                  <td className="p-4 text-gray-700">
+                                    {vendor.location || "—"}
+                                  </td>
+                                  <td className="p-4 text-gray-500 max-w-xs truncate">
+                                    {vendor.remarks ? (
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          setSelectedRemark(vendor.remarks)
+                                        }
+                                        className="max-w-[220px] truncate text-left hover:text-fuchsia-600 hover:underline transition"
+                                        title="Click to view full remarks"
+                                      >
+                                        {vendor.remarks}
+                                      </button>
+                                    ) : (
+                                      "—"
+                                    )}
+                                  </td>
+                                  <td className="p-4 text-center">
+                                    <div className="flex items-center justify-center gap-3">
+                                      <button
+                                        onClick={() => openVendorModal(vendor)}
+                                        className="text-fuchsia-600 font-bold hover:underline"
+                                      >
+                                        Edit
+                                      </button>
+
+                                      <button
+                                        onClick={() => deleteVendor(vendor)}
+                                        className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
+                                        title="Delete Vendor"
+                                      >
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          fill="none"
+                                          viewBox="0 0 24 24"
+                                          strokeWidth={2}
+                                          stroke="currentColor"
+                                          className="w-4 h-4"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                                          />
+                                        </svg>
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                      <div className="md:hidden space-y-4 p-4 bg-gray-50">
+                        {filteredVendors.map((vendor) => (
+                          <div
+                            key={vendor.id}
+                            className="bg-white rounded-3xl shadow-md border border-gray-100 p-4"
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div>
+                                <h3 className="font-black text-gray-900">
+                                  🧾 {vendor.name}
+                                </h3>
+                                <p className="text-xs text-gray-500 font-bold mt-1">
+                                  {vendor.service || "No service"}
+                                </p>
+                              </div>
+
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => openVendorModal(vendor)}
+                                  className="px-3 py-1.5 rounded-xl bg-fuchsia-50 text-fuchsia-700 text-xs font-black"
+                                >
+                                  Edit
+                                </button>
+
+                                <button
+                                  onClick={() => deleteVendor(vendor)}
+                                  className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-xs font-black"
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2 mt-4">
+                              <div className="rounded-2xl bg-gray-50 p-3">
+                                <p className="text-[10px] uppercase font-black text-gray-400">
+                                  Contact
+                                </p>
+                                <p className="text-sm font-bold text-gray-800">
+                                  {vendor.contact_number || "—"}
+                                </p>
+                              </div>
+
+                              <div className="rounded-2xl bg-gray-50 p-3">
+                                <p className="text-[10px] uppercase font-black text-gray-400">
+                                  Location
+                                </p>
+                                <p className="text-sm font-bold text-gray-800">
+                                  {vendor.location || "—"}
+                                </p>
+                              </div>
+                            </div>
+
+                            {vendor.remarks && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setSelectedRemark(vendor.remarks)
+                                }
+                                className="mt-3 w-full text-left rounded-2xl bg-fuchsia-50/70 p-3 text-xs font-semibold text-gray-600"
+                              >
+                                {vendor.remarks}
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {vendorSection === "commissions" && (
+                  <>
+                    <div className="mt-6 bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
+                      <div className="p-4 border-b bg-emerald-50/70">
+                        <h2 className="text-lg font-black text-emerald-800">
+                          💰 Vendor Commission Records
+                        </h2>
+                      </div>
+
+                      {vendorCommissions.length === 0 ? (
+                        <div className="p-8 text-center text-gray-400 font-bold">
+                          No commission records added yet.
+                        </div>
+                      ) : (
+                        <div className="hidden md:block overflow-x-auto">
+                          <table className="w-full text-left border-collapse min-w-max">
+                            <thead>
+                              <tr className="bg-emerald-50 text-emerald-900 uppercase text-xs md:text-[14px] font-black border-b border-gray-200">
+                                <th className="p-4">Vendor</th>
+                                <th className="p-4">Customer</th>
+                                <th className="p-4">Service</th>
+                                <th className="p-4 text-right">
+                                  Vendor Package
+                                </th>
+                                <th className="p-4 text-right">Commission</th>
+                                <th className="p-4">Remarks</th>
+                                <th className="p-4 text-center">Actions</th>
+                              </tr>
+                            </thead>
+
+                            <tbody className="divide-y divide-gray-100 bg-white md:text-sm">
+                              {vendorCommissions.map((commission) => (
+                                <tr
+                                  key={commission.id}
+                                  className="hover:bg-emerald-50/40 transition"
+                                >
+                                  <td className="p-4 font-bold text-gray-900">
+                                    🤝 {commission.vendor_name}
+                                  </td>
+
+                                  <td className="p-4 text-gray-700 font-bold">
+                                    {commission.customer_name || "—"}
+                                  </td>
+
+                                  <td className="p-4 text-gray-700">
+                                    {commission.service || "—"}
+                                  </td>
+
+                                  <td className="p-4 text-right font-mono font-black">
+                                    Rs.{" "}
+                                    {Number(
+                                      commission.vendor_package_price || 0,
+                                    ).toLocaleString("en-LK")}
+                                  </td>
+
+                                  <td className="p-4 text-right">
+                                    <div className="inline-flex flex-col bg-emerald-50 px-3 py-2 rounded-xl border border-emerald-100">
+                                      <span className="font-mono font-black text-emerald-700">
+                                        Rs.{" "}
+                                        {Number(
+                                          commission.commission_amount || 0,
+                                        ).toLocaleString("en-LK")}
+                                      </span>
+                                      <span className="text-[10px] text-gray-500 font-bold mt-1">
+                                        {commission.commission_type === "fixed"
+                                          ? `LKR ${Number(
+                                              commission.commission_value || 0,
+                                            ).toLocaleString("en-LK")}`
+                                          : `${commission.commission_value || 0}%`}
+                                      </span>
+                                    </div>
+                                  </td>
+
+                                  <td className="p-4 text-gray-500 max-w-xs truncate">
+                                    {commission.remarks || "—"}
+                                  </td>
+
+                                  <td className="p-4 text-center">
+                                    <div className="flex items-center justify-center gap-3">
+                                      <button
+                                        onClick={() =>
+                                          openCommissionModal(commission)
+                                        }
+                                        className="text-emerald-600 font-bold hover:underline"
+                                      >
+                                        Edit
+                                      </button>
+
+                                      <button
+                                        onClick={() =>
+                                          deleteVendorCommission(commission)
+                                        }
+                                        className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
+                                        title="Delete Commission"
+                                      >
+                                        Delete
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                    <div className="md:hidden space-y-4 p-4 bg-gray-50">
+                      {vendorCommissions.map((commission) => (
+                        <div
+                          key={commission.id}
+                          className="bg-white rounded-3xl shadow-md border border-gray-100 p-4"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <h3 className="font-black text-gray-900">
                                 🤝 {commission.vendor_name}
-                              </td>
+                              </h3>
+                              <p className="text-xs text-gray-500 font-bold mt-1">
+                                {commission.customer_name || "No customer"}
+                              </p>
+                            </div>
 
-                              <td className="p-4 text-gray-700 font-bold">
-                                {commission.customer_name || "—"}
-                              </td>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => openCommissionModal(commission)}
+                                className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-black"
+                              >
+                                Edit
+                              </button>
 
-                              <td className="p-4 text-gray-700">
-                                {commission.service || "—"}
-                              </td>
+                              <button
+                                onClick={() =>
+                                  deleteVendorCommission(commission)
+                                }
+                                className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-xs font-black"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
 
-                              <td className="p-4 text-right font-mono font-black">
+                          <div className="grid grid-cols-2 gap-2 mt-4">
+                            <div className="rounded-2xl bg-gray-50 p-3">
+                              <p className="text-[10px] uppercase font-black text-gray-400">
+                                Package
+                              </p>
+                              <p className="text-sm font-black text-gray-800">
                                 Rs.{" "}
                                 {Number(
                                   commission.vendor_package_price || 0,
                                 ).toLocaleString("en-LK")}
-                              </td>
+                              </p>
+                            </div>
 
-                              <td className="p-4 text-right">
-                                <div className="inline-flex flex-col bg-emerald-50 px-3 py-2 rounded-xl border border-emerald-100">
-                                  <span className="font-mono font-black text-emerald-700">
-                                    Rs.{" "}
-                                    {Number(
-                                      commission.commission_amount || 0,
-                                    ).toLocaleString("en-LK")}
-                                  </span>
-                                  <span className="text-[10px] text-gray-500 font-bold mt-1">
-                                    {commission.commission_type === "fixed"
-                                      ? `LKR ${Number(
-                                          commission.commission_value || 0,
-                                        ).toLocaleString("en-LK")}`
-                                      : `${commission.commission_value || 0}%`}
-                                  </span>
-                                </div>
-                              </td>
+                            <div className="rounded-2xl bg-emerald-50 p-3">
+                              <p className="text-[10px] uppercase font-black text-emerald-600">
+                                Commission
+                              </p>
+                              <p className="text-sm font-black text-emerald-700">
+                                Rs.{" "}
+                                {Number(
+                                  commission.commission_amount || 0,
+                                ).toLocaleString("en-LK")}
+                              </p>
+                              <p className="text-[10px] text-gray-500 font-bold mt-1">
+                                {commission.commission_type === "fixed"
+                                  ? `LKR ${Number(commission.commission_value || 0).toLocaleString("en-LK")}`
+                                  : `${commission.commission_value || 0}%`}
+                              </p>
+                            </div>
+                          </div>
 
-                              <td className="p-4 text-gray-500 max-w-xs truncate">
-                                {commission.remarks || "—"}
-                              </td>
+                          <div className="mt-3 rounded-2xl bg-gray-50 p-3">
+                            <p className="text-[10px] uppercase font-black text-gray-400">
+                              Service
+                            </p>
+                            <p className="text-sm font-bold text-gray-800">
+                              {commission.service || "—"}
+                            </p>
+                          </div>
 
-                              <td className="p-4 text-center">
-                                <div className="flex items-center justify-center gap-3">
-                                  <button
-                                    onClick={() =>
-                                      openCommissionModal(commission)
-                                    }
-                                    className="text-emerald-600 font-bold hover:underline"
-                                  >
-                                    Edit
-                                  </button>
-
-                                  <button
-                                    onClick={() =>
-                                      deleteVendorCommission(commission)
-                                    }
-                                    className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
-                                    title="Delete Commission"
-                                  >
-                                    Delete
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          {commission.remarks && (
+                            <div className="mt-3 rounded-2xl bg-gray-50 p-3 text-xs font-semibold text-gray-600">
+                              {commission.remarks}
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
-                  )}
-                </div>
-                <div className="md:hidden space-y-4 p-4 bg-gray-50">
-                  {vendorCommissions.map((commission) => (
-                    <div
-                      key={commission.id}
-                      className="bg-white rounded-3xl shadow-md border border-gray-100 p-4"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <h3 className="font-black text-gray-900">
-                            🤝 {commission.vendor_name}
-                          </h3>
-                          <p className="text-xs text-gray-500 font-bold mt-1">
-                            {commission.customer_name || "No customer"}
-                          </p>
-                        </div>
-
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => openCommissionModal(commission)}
-                            className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-black"
-                          >
-                            Edit
-                          </button>
-
-                          <button
-                            onClick={() => deleteVendorCommission(commission)}
-                            className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-xs font-black"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2 mt-4">
-                        <div className="rounded-2xl bg-gray-50 p-3">
-                          <p className="text-[10px] uppercase font-black text-gray-400">
-                            Package
-                          </p>
-                          <p className="text-sm font-black text-gray-800">
-                            Rs.{" "}
-                            {Number(
-                              commission.vendor_package_price || 0,
-                            ).toLocaleString("en-LK")}
-                          </p>
-                        </div>
-
-                        <div className="rounded-2xl bg-emerald-50 p-3">
-                          <p className="text-[10px] uppercase font-black text-emerald-600">
-                            Commission
-                          </p>
-                          <p className="text-sm font-black text-emerald-700">
-                            Rs.{" "}
-                            {Number(
-                              commission.commission_amount || 0,
-                            ).toLocaleString("en-LK")}
-                          </p>
-                          <p className="text-[10px] text-gray-500 font-bold mt-1">
-                            {commission.commission_type === "fixed"
-                              ? `LKR ${Number(commission.commission_value || 0).toLocaleString("en-LK")}`
-                              : `${commission.commission_value || 0}%`}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="mt-3 rounded-2xl bg-gray-50 p-3">
-                        <p className="text-[10px] uppercase font-black text-gray-400">
-                          Service
-                        </p>
-                        <p className="text-sm font-bold text-gray-800">
-                          {commission.service || "—"}
-                        </p>
-                      </div>
-
-                      {commission.remarks && (
-                        <div className="mt-3 rounded-2xl bg-gray-50 p-3 text-xs font-semibold text-gray-600">
-                          {commission.remarks}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                  </>
+                )}
               </div>
             )}
 
