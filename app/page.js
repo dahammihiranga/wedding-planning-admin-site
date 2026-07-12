@@ -473,18 +473,6 @@ export default function Dashboard() {
   useEffect(() => {
     setMounted(true);
 
-    useEffect(() => {
-      if (!mounted || activePage !== "vendors") return;
-
-      if (vendors.length === 0) {
-        fetchVendors();
-      }
-
-      if (vendorCommissions.length === 0) {
-        fetchVendorCommissions();
-      }
-    }, [activePage, mounted]);
-
     const savedLogin = localStorage.getItem("chathu_admin_logged_in");
     const loginTime = localStorage.getItem("chathu_admin_login_time");
     const ONE_HOUR = 60 * 60 * 1000;
@@ -607,6 +595,18 @@ export default function Dashboard() {
 
     fetchPaymentTransactions();
   }, [mounted]);
+
+  useEffect(() => {
+    if (!mounted || activePage !== "vendors") return;
+
+    if (vendors.length === 0) {
+      fetchVendors();
+    }
+
+    if (vendorCommissions.length === 0) {
+      fetchVendorCommissions();
+    }
+  }, [activePage, mounted, vendors.length, vendorCommissions.length]);
 
   const triggerNotification = (msg, type = "success") => {
     setToast({ show: true, message: msg, type });
