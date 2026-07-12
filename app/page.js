@@ -3924,9 +3924,12 @@ export default function Dashboard() {
                       </table>
                     </div>
                   )}
-                  <div className="md:hidden divide-y divide-gray-100 bg-white">
+                  <div className="md:hidden space-y-4 p-4 bg-gray-50">
                     {filteredVendors.map((vendor) => (
-                      <div key={vendor.id} className="p-4">
+                      <div
+                        key={vendor.id}
+                        className="bg-white rounded-3xl shadow-md border border-gray-100 p-4"
+                      >
                         <div className="flex items-start justify-between gap-3">
                           <div>
                             <h3 className="font-black text-gray-900">
@@ -4090,9 +4093,12 @@ export default function Dashboard() {
                     </div>
                   )}
                 </div>
-                <div className="md:hidden divide-y divide-gray-100 bg-white">
+                <div className="md:hidden space-y-4 p-4 bg-gray-50">
                   {vendorCommissions.map((commission) => (
-                    <div key={commission.id} className="p-4">
+                    <div
+                      key={commission.id}
+                      className="bg-white rounded-3xl shadow-md border border-gray-100 p-4"
+                    >
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <h3 className="font-black text-gray-900">
