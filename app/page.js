@@ -398,7 +398,7 @@ export default function Dashboard() {
 
       loadingTimerRef.current = window.setTimeout(() => {
         setShowAppLoader(true);
-      }, 1000);
+      });
     }
   };
 
