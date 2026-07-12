@@ -1247,9 +1247,13 @@ export default function Dashboard() {
   const canGenerateInvoice = (item) => {
   const allowedStatuses = ["Confirmed", "Completed"];
 
+  const agreedPrice = Number(item.agreed_price || 0);
+  const totalPaid = getInvoiceTotalPaid(item);
+
   return (
     allowedStatuses.includes(item.status) &&
-    Number(item.advance_paid || 0) > 0
+    agreedPrice > 0 &&
+    totalPaid > 0
   );
 };
 
