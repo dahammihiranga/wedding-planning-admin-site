@@ -869,9 +869,27 @@ export default function Dashboard() {
     if (item.status === "Completed") {
       message = "This Wedding is completed !!";
     } else if (item.status === "Confirmed") {
-      message = `Congratulations ${item.couple_name} !!\n Your Booking is Confirmed for ${
-        item.wedding_date || "the selected wedding date"
-      }\nService type : ${item.service_type}`;
+      if (item.wedding_type === "Two days") {
+        message = `Congratulations ${item.couple_name} !!
+
+Your Booking is Confirmed.
+
+DAY 1
+Date : ${item.wedding_date || "-"}
+Service : ${item.service_type || "-"}
+
+DAY 2
+Date : ${item.wedding_date_2 || "-"}
+Service : ${item.service_type_2 || "-"}`;
+      } else {
+        message = `Congratulations ${item.couple_name} !!
+
+Your Booking is Confirmed for ${
+          item.wedding_date || "the selected wedding date"
+        }
+
+Service Type : ${item.service_type || "-"}`;
+      }
     } else {
       message = "This booking is still pending.";
     }
@@ -2972,7 +2990,7 @@ export default function Dashboard() {
                                             DAY 2
                                           </div>
 
-                                          <div className="text-xs font-semibold text-purple-900 whitespace-normal">
+                                          <div className="text-xs font-semibold text-gray-800 whitespace-normal">
                                             {item.service_type_2 || "—"}
                                           </div>
                                         </div>
@@ -3944,7 +3962,25 @@ export default function Dashboard() {
                                 </td>
 
                                 <td className="p-4 text-gray-700 font-medium">
-                                  {item.wedding_date || "—"}
+                                  {item.wedding_type === "Two days" ? (
+                                    <div className="space-y-1">
+                                      <div>
+                                        <span className="text-[10px] font-black text-fuchsia-600">
+                                          DAY 1
+                                        </span>
+                                        <div>{item.wedding_date || "—"}</div>
+                                      </div>
+
+                                      <div>
+                                        <span className="text-[10px] font-black text-purple-600">
+                                          DAY 2
+                                        </span>
+                                        <div>{item.wedding_date_2 || "—"}</div>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    item.wedding_date || "—"
+                                  )}
                                 </td>
 
                                 <td className="p-4 font-mono text-gray-700">
@@ -3953,7 +3989,31 @@ export default function Dashboard() {
 
                                 <td className="p-4">
                                   <span className="px-2 py-0.5 bg-gray-100 text-gray-800 rounded font-medium">
-                                    {item.service_type || "—"}
+                                    {item.wedding_type === "Two days" ? (
+                                      <div className="space-y-2">
+                                        <div className="rounded-lg border border-fuchsia-100 bg-fuchsia-50 px-2 py-1">
+                                          <div className="text-[10px] font-black text-fuchsia-600">
+                                            DAY 1
+                                          </div>
+
+                                          <div className="text-xs font-semibold">
+                                            {item.service_type || "—"}
+                                          </div>
+                                        </div>
+
+                                        <div className="rounded-lg border border-purple-100 bg-purple-50 px-2 py-1">
+                                          <div className="text-[10px] font-black text-purple-700">
+                                            DAY 2
+                                          </div>
+
+                                          <div className="text-xs font-semibold">
+                                            {item.service_type_2 || "—"}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      item.service_type || "—"
+                                    )}
                                   </span>
                                 </td>
 
