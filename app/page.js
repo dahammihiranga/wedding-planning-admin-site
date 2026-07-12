@@ -30,6 +30,7 @@ const COUNTRIES = [
   { code: "Kuwait", name: "Kuwait", flag: "🇰🇼" },
   { code: "Lebanon", name: "Lebanon", flag: "🇱🇧" },
   { code: "Yemen", name: "Yemen", flag: "🇾🇪" },
+  { code: "Italy", name: "Italy", flag: "🇮🇹" },
 ];
 
 const WindowsFlagFix = () => (
@@ -472,8 +473,17 @@ export default function Dashboard() {
   useEffect(() => {
     setMounted(true);
 
-    fetchVendors();
-    fetchVendorCommissions();
+    useEffect(() => {
+      if (!mounted || activePage !== "vendors") return;
+
+      if (vendors.length === 0) {
+        fetchVendors();
+      }
+
+      if (vendorCommissions.length === 0) {
+        fetchVendorCommissions();
+      }
+    }, [activePage, mounted]);
 
     const savedLogin = localStorage.getItem("chathu_admin_logged_in");
     const loginTime = localStorage.getItem("chathu_admin_login_time");
@@ -587,11 +597,16 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    if (mounted) {
-      fetchData();
-      fetchPaymentTransactions();
-    }
+    if (!mounted) return;
+
+    fetchData();
   }, [activeTab, mounted, deletedRecords.length]);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    fetchPaymentTransactions();
+  }, [mounted]);
 
   const triggerNotification = (msg, type = "success") => {
     setToast({ show: true, message: msg, type });
@@ -746,75 +761,47 @@ export default function Dashboard() {
     return updatedForm;
   };
 
-  const navigateToPage = async (page) => {
+  const navigateToPage = (page) => {
     if (page === activePage || isAppBusy) {
+      setIsMobileSidebarOpen(false);
       return;
     }
 
-    startAppLoading();
-
-    try {
-      if (page === "customers" || page === "payments") {
-        setActiveTab("allRecords");
-      }
-
-      if (page === "dashboard") {
-        await Promise.all([fetchData(), fetchPaymentTransactions()]);
-      }
-
-      if (page === "customers") {
-        await fetchData();
-      }
-
-      if (page === "payments") {
-        await Promise.all([fetchData(), fetchPaymentTransactions()]);
-      }
-
-      if (page === "vendors") {
-        await Promise.all([fetchVendors(), fetchVendorCommissions()]);
-      }
-
-      setActivePage(page);
-      setIsMobileSidebarOpen(false);
-    } catch (error) {
-      console.error("Page navigation loading failed:", error);
-
-      triggerNotification(
-        "The selected page could not be refreshed.",
-        "delete",
-      );
-    } finally {
-      stopAppLoading();
+    /*
+     * Data is already loaded in memory.
+     * Do not call the APIs again every time the user changes pages.
+     */
+    if (
+      (page === "customers" || page === "payments") &&
+      activeTab !== "allRecords"
+    ) {
+      setActiveTab("allRecords");
     }
+
+    setActivePage(page);
+    setIsMobileSidebarOpen(false);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
-  const openCustomerInDashboard = async (item) => {
+  const openCustomerInDashboard = (item) => {
     if (isAppBusy) return;
 
-    startAppLoading();
+    setSelectedCustomerRecord(item);
+    setActiveTab("allRecords");
+    setSearchTerm("");
+    clearSearchAndFilters();
 
-    try {
-      setSelectedCustomerRecord(item);
-      setActiveTab("allRecords");
-      setSearchTerm("");
-      clearSearchAndFilters();
+    setActivePage("dashboard");
+    setIsMobileSidebarOpen(false);
 
-      await Promise.all([fetchData(), fetchPaymentTransactions()]);
-
-      setActivePage("dashboard");
-      setIsMobileSidebarOpen(false);
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    } catch (error) {
-      console.error("Customer record navigation failed:", error);
-
-      triggerNotification("The customer record could not be opened.", "delete");
-    } finally {
-      stopAppLoading();
-    }
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   const handleStatusChange = async (item, newStatus) => {
