@@ -5673,7 +5673,7 @@ export default function Dashboard() {
                     <div
                       className="absolute bg-white flex items-center"
                       style={{
-                        left: "-2px",
+                        left: "-6px",
                         top: "0px",
                         width: "190px",
                         height: "35px",
@@ -5704,6 +5704,33 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
+              {/* PAID IN FULL SEAL */}
+              {selectedInvoiceItem &&
+                isInvoiceFullyPaid(selectedInvoiceItem) && (
+                  <div
+                    className="absolute
+                 right-[55px]
+                 top-[470px]
+                 rotate-[-15deg]
+                 border-[4px]
+                 border-red-600
+                 text-red-600
+                 font-extrabold
+                 rounded-md
+                 px-4
+                 py-2
+                 text-[34px]
+                 tracking-wide
+                 uppercase
+                 bg-white/70"
+                    style={{
+                      fontFamily: "Arial Black, sans-serif",
+                      transform: "rotate(-15deg)",
+                    }}
+                  >
+                    PAID IN FULL
+                  </div>
+                )}
             </div>
           </div>
         </div>
