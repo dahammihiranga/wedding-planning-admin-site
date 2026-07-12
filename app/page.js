@@ -3755,7 +3755,7 @@ export default function Dashboard() {
                     </p>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:flex gap-2 w-full md:w-auto">
                     <button
                       onClick={() => openVendorModal()}
                       className="bg-white text-fuchsia-500 border border-fuchsia-200 font-semibold px-4 py-2 rounded-xl shadow hover:bg-fuchsia-50 transition text-sm"
@@ -3839,7 +3839,7 @@ export default function Dashboard() {
                       </p>
                     </div>
                   ) : (
-                    <div className="overflow-x-auto">
+                    <div className="hidden md:block overflow-x-auto">
                       <table className="w-full text-left border-collapse min-w-max">
                         <thead>
                           <tr className="bg-fuchsia-50 text-fuchsia-900 uppercase text-xs md:text-[15px] font-black border-b border-gray-200">
@@ -3924,6 +3924,68 @@ export default function Dashboard() {
                       </table>
                     </div>
                   )}
+                  <div className="md:hidden divide-y divide-gray-100 bg-white">
+                    {filteredVendors.map((vendor) => (
+                      <div key={vendor.id} className="p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <h3 className="font-black text-gray-900">
+                              🧾 {vendor.name}
+                            </h3>
+                            <p className="text-xs text-gray-500 font-bold mt-1">
+                              {vendor.service || "No service"}
+                            </p>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => openVendorModal(vendor)}
+                              className="px-3 py-1.5 rounded-xl bg-fuchsia-50 text-fuchsia-700 text-xs font-black"
+                            >
+                              Edit
+                            </button>
+
+                            <button
+                              onClick={() => deleteVendor(vendor)}
+                              className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-xs font-black"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 mt-4">
+                          <div className="rounded-2xl bg-gray-50 p-3">
+                            <p className="text-[10px] uppercase font-black text-gray-400">
+                              Contact
+                            </p>
+                            <p className="text-sm font-bold text-gray-800">
+                              {vendor.contact_number || "—"}
+                            </p>
+                          </div>
+
+                          <div className="rounded-2xl bg-gray-50 p-3">
+                            <p className="text-[10px] uppercase font-black text-gray-400">
+                              Location
+                            </p>
+                            <p className="text-sm font-bold text-gray-800">
+                              {vendor.location || "—"}
+                            </p>
+                          </div>
+                        </div>
+
+                        {vendor.remarks && (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedRemark(vendor.remarks)}
+                            className="mt-3 w-full text-left rounded-2xl bg-fuchsia-50/70 p-3 text-xs font-semibold text-gray-600"
+                          >
+                            {vendor.remarks}
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="mt-6 bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
@@ -3938,7 +4000,7 @@ export default function Dashboard() {
                       No commission records added yet.
                     </div>
                   ) : (
-                    <div className="overflow-x-auto">
+                    <div className="hidden md:block overflow-x-auto">
                       <table className="w-full text-left border-collapse min-w-max">
                         <thead>
                           <tr className="bg-emerald-50 text-emerald-900 uppercase text-xs md:text-[14px] font-black border-b border-gray-200">
@@ -4027,6 +4089,84 @@ export default function Dashboard() {
                       </table>
                     </div>
                   )}
+                </div>
+                <div className="md:hidden divide-y divide-gray-100 bg-white">
+                  {vendorCommissions.map((commission) => (
+                    <div key={commission.id} className="p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <h3 className="font-black text-gray-900">
+                            🤝 {commission.vendor_name}
+                          </h3>
+                          <p className="text-xs text-gray-500 font-bold mt-1">
+                            {commission.customer_name || "No customer"}
+                          </p>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => openCommissionModal(commission)}
+                            className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-black"
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            onClick={() => deleteVendorCommission(commission)}
+                            className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-xs font-black"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 mt-4">
+                        <div className="rounded-2xl bg-gray-50 p-3">
+                          <p className="text-[10px] uppercase font-black text-gray-400">
+                            Package
+                          </p>
+                          <p className="text-sm font-black text-gray-800">
+                            Rs.{" "}
+                            {Number(
+                              commission.vendor_package_price || 0,
+                            ).toLocaleString("en-LK")}
+                          </p>
+                        </div>
+
+                        <div className="rounded-2xl bg-emerald-50 p-3">
+                          <p className="text-[10px] uppercase font-black text-emerald-600">
+                            Commission
+                          </p>
+                          <p className="text-sm font-black text-emerald-700">
+                            Rs.{" "}
+                            {Number(
+                              commission.commission_amount || 0,
+                            ).toLocaleString("en-LK")}
+                          </p>
+                          <p className="text-[10px] text-gray-500 font-bold mt-1">
+                            {commission.commission_type === "fixed"
+                              ? `LKR ${Number(commission.commission_value || 0).toLocaleString("en-LK")}`
+                              : `${commission.commission_value || 0}%`}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-3 rounded-2xl bg-gray-50 p-3">
+                        <p className="text-[10px] uppercase font-black text-gray-400">
+                          Service
+                        </p>
+                        <p className="text-sm font-bold text-gray-800">
+                          {commission.service || "—"}
+                        </p>
+                      </div>
+
+                      {commission.remarks && (
+                        <div className="mt-3 rounded-2xl bg-gray-50 p-3 text-xs font-semibold text-gray-600">
+                          {commission.remarks}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -5753,7 +5893,6 @@ export default function Dashboard() {
                                 (customerNameSearch || "").toLowerCase(),
                               ),
                         )
-                        .slice(0, 10)
                         .map((item) => (
                           <button
                             key={item.id}
