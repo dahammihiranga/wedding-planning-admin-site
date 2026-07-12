@@ -403,11 +403,13 @@ export default function Dashboard() {
     service_type: [],
     wedding_type: "One day",
     guest_count: "",
+    function_time: "",
 
     wedding_date_2: "",
     hotel_2: "",
     service_type_2: [],
     guest_count_2: "",
+    function_time_2: "",
     contact_no: "",
     bridesmaid_option: "",
     package_price: 0,
@@ -580,6 +582,7 @@ export default function Dashboard() {
       updatedForm.hotel_2 = "";
       updatedForm.service_type_2 = [];
       updatedForm.guest_count_2 = "";
+      updatedForm.function_time_2 = "";
 
       setIsSecondServiceDropdownOpen(false);
     }
@@ -941,6 +944,9 @@ Service Type : ${item.service_type || "-"}`;
       hotel_2: item.hotel_2 || "",
       guest_count_2: item.guest_count_2 || "",
 
+      function_time: item.function_time || "",
+      function_time_2: item.function_time_2 || "",
+
       service_prices: parsedServicePrices,
       service_discounts: parsedServiceDiscounts,
       bridesmaid_option:
@@ -969,11 +975,13 @@ Service Type : ${item.service_type || "-"}`;
         service_type: [],
         wedding_type: "One day",
         guest_count: "",
+        function_time: "",
 
         wedding_date_2: "",
         hotel_2: "",
         service_type_2: [],
         guest_count_2: "",
+        function_time_2: "",
         contact_no: "",
         bridesmaid_option: "",
         package_price: "",
@@ -1024,6 +1032,7 @@ Service Type : ${item.service_type || "-"}`;
         : formData.service_type,
       guest_count:
         formData.guest_count === "" ? null : parseInt(formData.guest_count, 10),
+      function_time: formData.function_time || null,
       service_type_2:
         formData.wedding_type === "Two days"
           ? Array.isArray(formData.service_type_2)
@@ -1042,6 +1051,10 @@ Service Type : ${item.service_type || "-"}`;
       guest_count_2:
         formData.wedding_type === "Two days" && formData.guest_count_2 !== ""
           ? parseInt(formData.guest_count_2, 10)
+          : null,
+      function_time_2:
+        formData.wedding_type === "Two days"
+          ? formData.function_time_2 || null
           : null,
       bridesmaid_option: formData.bridesmaid_option || "-",
       service_prices:
@@ -2839,27 +2852,53 @@ Service Type : ${item.service_type || "-"}`;
                                     </td>
                                     <td className="p-3 text-gray-600 font-medium">
                                       {item.wedding_type === "Two days" ? (
-                                        <div className="space-y-1 min-w-[120px]">
+                                        <div className="space-y-1 min-w-[140px]">
                                           <div>
-                                            <span className="text-[10px] font-black text-fuchsia-600">
-                                              DAY 1
-                                            </span>
+                                            <div className="flex items-center gap-2">
+                                              <span className="text-[10px] font-black text-fuchsia-600">
+                                                DAY 1
+                                              </span>
+
+                                              {item.function_time && (
+                                                <span className="text-[9px] font-bold text-gray-400">
+                                                  {item.function_time}
+                                                </span>
+                                              )}
+                                            </div>
+
                                             <div>
                                               {item.wedding_date || "—"}
                                             </div>
                                           </div>
 
                                           <div>
-                                            <span className="text-[10px] font-black text-purple-600">
-                                              DAY 2
-                                            </span>
+                                            <div className="flex items-center gap-2">
+                                              <span className="text-[10px] font-black text-purple-600">
+                                                DAY 2
+                                              </span>
+
+                                              {item.function_time_2 && (
+                                                <span className="text-[9px] font-bold text-gray-400">
+                                                  {item.function_time_2}
+                                                </span>
+                                              )}
+                                            </div>
+
                                             <div>
                                               {item.wedding_date_2 || "—"}
                                             </div>
                                           </div>
                                         </div>
                                       ) : (
-                                        item.wedding_date || "—"
+                                        <div>
+                                          <div>{item.wedding_date || "—"}</div>
+
+                                          {item.function_time && (
+                                            <div className="text-[10px] font-semibold text-gray-400 mt-0.5">
+                                              {item.function_time}
+                                            </div>
+                                          )}
+                                        </div>
                                       )}
                                     </td>
                                     <td className="p-3 max-w-[240px]">
@@ -3360,17 +3399,34 @@ Service Type : ${item.service_type || "-"}`;
                                     <p>
                                       {item.wedding_type === "Two days" && (
                                         <span className="text-[10px]">
-                                          D1:{" "}
+                                          D1
+                                          {item.function_time
+                                            ? ` · ${item.function_time}`
+                                            : ""}
+                                          :{" "}
                                         </span>
                                       )}
+
                                       {item.wedding_date || "Not added"}
                                     </p>
+
+                                    {item.wedding_type === "One day" &&
+                                      item.function_time && (
+                                        <p className="text-[10px] text-blue-500">
+                                          {item.function_time}
+                                        </p>
+                                      )}
 
                                     {item.wedding_type === "Two days" && (
                                       <p>
                                         <span className="text-[10px]">
-                                          D2:{" "}
+                                          D2
+                                          {item.function_time_2
+                                            ? ` · ${item.function_time_2}`
+                                            : ""}
+                                          :{" "}
                                         </span>
+
                                         {item.wedding_date_2 || "Not added"}
                                       </p>
                                     )}
@@ -3965,21 +4021,47 @@ Service Type : ${item.service_type || "-"}`;
                                   {item.wedding_type === "Two days" ? (
                                     <div className="space-y-1">
                                       <div>
-                                        <span className="text-[10px] font-black text-fuchsia-600">
-                                          DAY 1
-                                        </span>
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-[10px] font-black text-fuchsia-600">
+                                            DAY 1
+                                          </span>
+
+                                          {item.function_time && (
+                                            <span className="text-[9px] font-bold text-gray-400">
+                                              {item.function_time}
+                                            </span>
+                                          )}
+                                        </div>
+
                                         <div>{item.wedding_date || "—"}</div>
                                       </div>
 
                                       <div>
-                                        <span className="text-[10px] font-black text-purple-600">
-                                          DAY 2
-                                        </span>
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-[10px] font-black text-purple-600">
+                                            DAY 2
+                                          </span>
+
+                                          {item.function_time_2 && (
+                                            <span className="text-[9px] font-bold text-gray-400">
+                                              {item.function_time_2}
+                                            </span>
+                                          )}
+                                        </div>
+
                                         <div>{item.wedding_date_2 || "—"}</div>
                                       </div>
                                     </div>
                                   ) : (
-                                    item.wedding_date || "—"
+                                    <div>
+                                      <div>{item.wedding_date || "—"}</div>
+
+                                      {item.function_time && (
+                                        <div className="text-[10px] font-semibold text-gray-400 mt-0.5">
+                                          {item.function_time}
+                                        </div>
+                                      )}
+                                    </div>
                                   )}
                                 </td>
 
@@ -5265,19 +5347,54 @@ Service Type : ${item.service_type || "-"}`;
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    {formData.wedding_type === "Two days"
-                      ? "Hotel / Venue — Day 1"
-                      : "Hotel / Venue"}
-                  </label>
-                  <input
-                    type="text"
-                    name="hotel"
-                    value={formData.hotel}
-                    onChange={handleInputChange}
-                    className="w-full p-3.5 md:p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                      {formData.wedding_type === "Two days"
+                        ? "Hotel / Venue — Day 1"
+                        : "Hotel / Venue"}
+                    </label>
+
+                    <input
+                      type="text"
+                      name="hotel"
+                      value={formData.hotel}
+                      onChange={handleInputChange}
+                      className="w-full p-3.5 md:p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                      Function Time
+                    </label>
+
+                    <div className="flex items-center gap-3 min-h-[46px] px-3 border rounded-lg bg-white">
+                      <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-gray-700">
+                        <input
+                          type="radio"
+                          name="function_time"
+                          value="Morning"
+                          checked={formData.function_time === "Morning"}
+                          onChange={handleInputChange}
+                          className="accent-fuchsia-600"
+                        />
+                        Morning
+                      </label>
+
+                      <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-gray-700">
+                        <input
+                          type="radio"
+                          name="function_time"
+                          value="Evening"
+                          checked={formData.function_time === "Evening"}
+                          onChange={handleInputChange}
+                          className="accent-fuchsia-600"
+                        />
+                        Evening
+                      </label>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -5600,18 +5717,52 @@ Service Type : ${item.service_type || "-"}`;
                     </div>
 
                     {/* DAY 2 VENUE */}
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-                        Hotel / Venue — Day 2
-                      </label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                          Hotel / Venue — Day 2
+                        </label>
 
-                      <input
-                        type="text"
-                        name="hotel_2"
-                        value={formData.hotel_2 || ""}
-                        onChange={handleInputChange}
-                        className="w-full p-3.5 md:p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
-                      />
+                        <input
+                          type="text"
+                          name="hotel_2"
+                          value={formData.hotel_2 || ""}
+                          onChange={handleInputChange}
+                          className="w-full p-3.5 md:p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                          Function Time — Day 2
+                        </label>
+
+                        <div className="flex items-center gap-3 min-h-[46px] px-3 border rounded-lg bg-white">
+                          <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-gray-700">
+                            <input
+                              type="radio"
+                              name="function_time_2"
+                              value="Morning"
+                              checked={formData.function_time_2 === "Morning"}
+                              onChange={handleInputChange}
+                              className="accent-purple-600"
+                            />
+                            Morning
+                          </label>
+
+                          <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-gray-700">
+                            <input
+                              type="radio"
+                              name="function_time_2"
+                              value="Evening"
+                              checked={formData.function_time_2 === "Evening"}
+                              onChange={handleInputChange}
+                              className="accent-purple-600"
+                            />
+                            Evening
+                          </label>
+                        </div>
+                      </div>
                     </div>
 
                     {/* DAY 2 SERVICE TYPE */}
