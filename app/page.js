@@ -1117,10 +1117,18 @@ Service Type : ${item.service_type || "-"}`;
         ? advancePaid + existingPartialTotal + newPaymentAmount
         : Number(formData.paid_amount || 0);
 
+    const pendingPayment = Math.max(agreedPrice - finalPaidAmount, 0);
+
     const adjustedData = {
       ...formData,
       paid_amount: finalPaidAmount,
-      pending_payment: Math.max(agreedPrice - finalPaidAmount, 0),
+      pending_payment: pendingPayment,
+      status:
+        pendingPayment <= 0 &&
+        agreedPrice > 0 &&
+        formData.status === "Confirmed"
+          ? "Completed"
+          : formData.status,
       service_type: Array.isArray(formData.service_type)
         ? formData.service_type.join(", ")
         : formData.service_type,
