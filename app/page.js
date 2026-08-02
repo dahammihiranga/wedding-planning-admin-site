@@ -1810,20 +1810,56 @@ Chathu Wedding Planners
     return daysLeft >= 0 && daysLeft <= 7;
   });
 
-  const calendarEvents = activeRecordsDisplay
-    .filter((item) => item.wedding_date)
-    .map((item) => {
-      const startDate = moment(item.wedding_date, "YYYY-MM-DD").toDate();
+  const calendarEvents = activeRecordsDisplay.flatMap((item) => {
+    const events = [];
 
-      return {
-        id: item.id,
-        title: item.couple_name || "Unnamed Inquiry",
-        start: startDate,
-        end: startDate,
+    // DAY 1 / ONE-DAY WEDDING
+    if (item.wedding_date) {
+      const day1Date = moment(item.wedding_date, "YYYY-MM-DD").toDate();
+
+      events.push({
+        id: `${item.id}-day-1`,
+        title:
+          item.wedding_type === "Two days"
+            ? `${item.couple_name || "Unnamed Inquiry"} - Day 1`
+            : item.couple_name || "Unnamed Inquiry",
+        start: day1Date,
+        end: day1Date,
         allDay: true,
-        resource: item,
-      };
-    });
+        resource: {
+          ...item,
+          calendar_day: 1,
+          calendar_date: item.wedding_date,
+          calendar_hotel: item.hotel,
+          calendar_service_type: item.service_type,
+          calendar_function_time: item.function_time,
+        },
+      });
+    }
+
+    // DAY 2
+    if (item.wedding_type === "Two days" && item.wedding_date_2) {
+      const day2Date = moment(item.wedding_date_2, "YYYY-MM-DD").toDate();
+
+      events.push({
+        id: `${item.id}-day-2`,
+        title: `${item.couple_name || "Unnamed Inquiry"} - Day 2`,
+        start: day2Date,
+        end: day2Date,
+        allDay: true,
+        resource: {
+          ...item,
+          calendar_day: 2,
+          calendar_date: item.wedding_date_2,
+          calendar_hotel: item.hotel_2,
+          calendar_service_type: item.service_type_2,
+          calendar_function_time: item.function_time_2,
+        },
+      });
+    }
+
+    return events;
+  });
 
   const clearSearchAndFilters = () => {
     setSearchTerm("");
@@ -7514,6 +7550,18 @@ Chathu Wedding Planners
                     <h2 className="text-xl font-bold">
                       {selectedCalendarEvent.couple_name}
                     </h2>
+                    {selectedCalendarEvent.wedding_type === "Two days" && (
+                      <span className="inline-flex mt-2 rounded-full bg-purple-100 px-3 py-1 text-[10px] font-black text-purple-700">
+                        DAY {selectedCalendarEvent.calendar_day || 1}
+                      </span>
+                    )}
+                    {(selectedCalendarEvent.calendar_function_time ||
+                      selectedCalendarEvent.function_time) && (
+                      <p className="text-xs font-bold text-gray-500">
+                        {selectedCalendarEvent.calendar_function_time ||
+                          selectedCalendarEvent.function_time}
+                      </p>
+                    )}
 
                     <p className="text-emerald-100 text-sm mt-1">
                       Wedding Details
@@ -7528,7 +7576,9 @@ Chathu Wedding Planners
                         </p>
 
                         <p className="font-semibold text-gray-800">
-                          {selectedCalendarEvent.wedding_date || "-"}
+                          {selectedCalendarEvent.calendar_date ||
+                            selectedCalendarEvent.wedding_date ||
+                            "-"}
                         </p>
                       </div>
 
@@ -7549,7 +7599,9 @@ Chathu Wedding Planners
                       </p>
 
                       <p className="font-semibold text-gray-800">
-                        {selectedCalendarEvent.hotel || "-"}
+                        {selectedCalendarEvent.calendar_hotel ||
+                          selectedCalendarEvent.hotel ||
+                          "-"}
                       </p>
                     </div>
 
@@ -7560,7 +7612,9 @@ Chathu Wedding Planners
                         </p>
 
                         <p className="font-semibold text-gray-800">
-                          {selectedCalendarEvent.service_type || "-"}
+                          {selectedCalendarEvent.calendar_service_type ||
+                            selectedCalendarEvent.service_type ||
+                            "-"}
                         </p>
                       </div>
 
