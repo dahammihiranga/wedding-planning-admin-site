@@ -351,6 +351,11 @@ export default function Dashboard() {
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const invoiceRef = useRef(null);
   const [clearPaymentsOnSave, setClearPaymentsOnSave] = useState(false);
+  const [whatsAppReminderModal, setWhatsAppReminderModal] = useState({
+    show: false,
+    customer: null,
+    message: "",
+  });
   const [isAppBusy, setIsAppBusy] = useState(false);
   const [showAppLoader, setShowAppLoader] = useState(false);
   const loadingCountRef = useRef(0);
@@ -1566,6 +1571,123 @@ Service Type : ${item.service_type || "-"}`;
     });
 
     return rows;
+  };
+
+  const normalizeWhatsAppNumber = (phoneNumber) => {
+    let digits = String(phoneNumber || "").replace(/\D/g, "");
+
+    // Sri Lankan local number: 0771234567 -> 94771234567
+    if (digits.startsWith("0")) {
+      digits = `94${digits.slice(1)}`;
+    }
+
+    // Number without country code: 771234567 -> 94771234567
+    if (!digits.startsWith("94")) {
+      digits = `94${digits}`;
+    }
+
+    return digits;
+  };
+
+  const canSendPaymentReminder = (item) => {
+    return (
+      item.status === "Confirmed" &&
+      Number(item.pending_payment || 0) > 0 &&
+      Boolean(String(item.contact_no || "").trim())
+    );
+  };
+
+  const buildPaymentReminderMessage = (item) => {
+    const pendingAmount = Number(item.pending_payment || 0).toLocaleString(
+      "en-LK",
+    );
+
+    const weddingDate = item.wedding_date
+      ? moment(item.wedding_date).format("MMMM D, YYYY")
+      : "Not added";
+
+    return `Dear ${item.couple_name || "Customer"},
+
+This is a friendly payment reminder from Chathu Wedding Planners.
+
+Pending Balance: LKR ${pendingAmount}
+Wedding Date: ${weddingDate}
+
+Please complete the remaining payment at least one day before the wedding.
+
+Please ignore this message if the payment has already been completed.
+
+Thank you,
+Chathu Wedding Planners
+076 2606777`;
+  };
+
+  const openWhatsAppReminderModal = (item) => {
+    if (!String(item.contact_no || "").trim()) {
+      triggerNotification(
+        "A contact number has not been added for this customer.",
+        "delete",
+      );
+      return;
+    }
+
+    if (Number(item.pending_payment || 0) <= 0) {
+      triggerNotification(
+        "This customer does not have a pending balance.",
+        "delete",
+      );
+      return;
+    }
+
+    setWhatsAppReminderModal({
+      show: true,
+      customer: item,
+      message: buildPaymentReminderMessage(item),
+    });
+  };
+
+  const closeWhatsAppReminderModal = () => {
+    setWhatsAppReminderModal({
+      show: false,
+      customer: null,
+      message: "",
+    });
+  };
+
+  const sendWhatsAppPaymentReminder = () => {
+    const customer = whatsAppReminderModal.customer;
+
+    if (!customer) return;
+
+    const phoneNumber = normalizeWhatsAppNumber(customer.contact_no);
+
+    if (!phoneNumber) {
+      triggerNotification("The customer's phone number is invalid.", "delete");
+      return;
+    }
+
+    const whatsappUrl =
+      `https://wa.me/${phoneNumber}` +
+      `?text=${encodeURIComponent(whatsAppReminderModal.message)}`;
+
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+
+    closeWhatsAppReminderModal();
+  };
+
+  const copyWhatsAppReminderMessage = async () => {
+    try {
+      await navigator.clipboard.writeText(whatsAppReminderModal.message);
+
+      triggerNotification("Payment reminder copied successfully.", "success");
+    } catch (error) {
+      console.error("Clipboard error:", error);
+
+      triggerNotification(
+        "The reminder message could not be copied.",
+        "delete",
+      );
+    }
   };
 
   const openInvoiceModal = (item) => {
@@ -3390,6 +3512,27 @@ Service Type : ${item.service_type || "-"}`;
                                         </div>
                                       ) : (
                                         <div className="flex items-center justify-center gap-2">
+                                          {canSendPaymentReminder(item) && (
+                                            <button
+                                              type="button"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                openWhatsAppReminderModal(item);
+                                              }}
+                                              className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition"
+                                              title="Send WhatsApp payment reminder"
+                                              aria-label={`Send WhatsApp reminder to ${item.couple_name}`}
+                                            >
+                                              <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24"
+                                                fill="currentColor"
+                                                className="w-4 h-4"
+                                              >
+                                                <path d="M12.04 2C6.52 2 2.04 6.48 2.04 12c0 1.76.46 3.48 1.34 5L2 22l5.14-1.35A9.94 9.94 0 0012.04 22C17.56 22 22 17.52 22 12S17.56 2 12.04 2zm0 18.18c-1.52 0-3-.41-4.29-1.18l-.31-.18-3.05.8.81-2.97-.2-.31A8.14 8.14 0 013.86 12c0-4.51 3.67-8.18 8.18-8.18 4.5 0 8.14 3.67 8.14 8.18s-3.64 8.18-8.14 8.18zm4.49-6.12c-.25-.12-1.46-.72-1.68-.8-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.96-.14.17-.29.19-.54.07-.24-.12-1.03-.38-1.96-1.21-.72-.65-1.21-1.45-1.35-1.69-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.47c-.16 0-.43.06-.66.31-.22.25-.86.84-.86 2.05 0 1.21.88 2.38 1 2.54.12.16 1.73 2.65 4.2 3.71.59.25 1.04.4 1.4.52.59.19 1.13.16 1.55.1.48-.07 1.46-.6 1.67-1.17.2-.58.2-1.08.14-1.18-.06-.1-.22-.16-.47-.28z" />
+                                              </svg>
+                                            </button>
+                                          )}
                                           <button
                                             type="button"
                                             onClick={(e) => {
@@ -3818,7 +3961,7 @@ Service Type : ${item.service_type || "-"}`;
                                     </button>
                                   )}
 
-                                  <div className="grid grid-cols-3 gap-3">
+                                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                     {activeTab === "trash" ? (
                                       <>
                                         <button
@@ -3845,6 +3988,26 @@ Service Type : ${item.service_type || "-"}`;
                                       </>
                                     ) : (
                                       <>
+                                        {canSendPaymentReminder(item) && (
+                                          <button
+                                            type="button"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              openWhatsAppReminderModal(item);
+                                            }}
+                                            className="rounded-2xl bg-emerald-50 text-emerald-700 p-3 text-xs font-black border border-emerald-100 inline-flex items-center justify-center gap-2"
+                                          >
+                                            <svg
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              viewBox="0 0 24 24"
+                                              fill="currentColor"
+                                              className="w-4 h-4"
+                                            >
+                                              <path d="M12.04 2C6.52 2 2.04 6.48 2.04 12c0 1.76.46 3.48 1.34 5L2 22l5.14-1.35A9.94 9.94 0 0012.04 22C17.56 22 22 17.52 22 12S17.56 2 12.04 2zm0 18.18c-1.52 0-3-.41-4.29-1.18l-.31-.18-3.05.8.81-2.97-.2-.31A8.14 8.14 0 013.86 12c0-4.51 3.67-8.18 8.18-8.18 4.5 0 8.14 3.67 8.14 8.18s-3.64 8.18-8.14 8.18zm4.49-6.12c-.25-.12-1.46-.72-1.68-.8-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.96-.14.17-.29.19-.54.07-.24-.12-1.03-.38-1.96-1.21-.72-.65-1.21-1.45-1.35-1.69-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.47c-.16 0-.43.06-.66.31-.22.25-.86.84-.86 2.05 0 1.21.88 2.38 1 2.54.12.16 1.73 2.65 4.2 3.71.59.25 1.04.4 1.4.52.59.19 1.13.16 1.55.1.48-.07 1.46-.6 1.67-1.17.2-.58.2-1.08.14-1.18-.06-.1-.22-.16-.47-.28z" />
+                                            </svg>
+                                            WhatsApp
+                                          </button>
+                                        )}
                                         {canGenerateInvoice(item) && (
                                           <button
                                             type="button"
@@ -6468,6 +6631,115 @@ Service Type : ${item.service_type || "-"}`;
                   />
                 )}
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* WHATSAPP PAYMENT REMINDER CONFIRMATION MODAL */}
+      {whatsAppReminderModal.show && whatsAppReminderModal.customer && (
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={closeWhatsAppReminderModal}
+          />
+
+          <div className="relative w-full max-w-xl max-h-[92vh] overflow-y-auto rounded-[2rem] bg-white shadow-2xl border border-emerald-100 animate-scale-in">
+            <div className="px-5 py-4 bg-gradient-to-r from-emerald-50 to-green-50 border-b border-emerald-100">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="text-lg font-black text-emerald-950">
+                    Send Payment Reminder
+                  </h2>
+
+                  <p className="mt-1 text-xs font-semibold text-emerald-700">
+                    {whatsAppReminderModal.customer.couple_name}
+                  </p>
+
+                  <p className="mt-1 text-xs font-bold text-gray-500">
+                    WhatsApp: +
+                    {normalizeWhatsAppNumber(
+                      whatsAppReminderModal.customer.contact_no,
+                    )}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={closeWhatsAppReminderModal}
+                  className="w-9 h-9 rounded-full bg-white text-gray-500 border border-gray-200 hover:bg-gray-50"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <div className="p-5">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <p className="text-xs font-black uppercase tracking-wider text-gray-500">
+                  Message Preview
+                </p>
+
+                <p className="text-xs font-black text-rose-600 text-right">
+                  Pending: LKR{" "}
+                  {Number(
+                    whatsAppReminderModal.customer.pending_payment || 0,
+                  ).toLocaleString("en-LK")}
+                </p>
+              </div>
+
+              <textarea
+                value={whatsAppReminderModal.message}
+                onChange={(e) =>
+                  setWhatsAppReminderModal((current) => ({
+                    ...current,
+                    message: e.target.value,
+                  }))
+                }
+                rows={12}
+                className="w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 p-4 text-sm leading-6 text-gray-800 outline-none focus:ring-2 focus:ring-emerald-300"
+              />
+
+              <div className="mt-4 rounded-2xl bg-amber-50 border border-amber-200 p-3">
+                <p className="text-xs font-bold text-amber-800">
+                  Please confirm the contact number, pending balance and message
+                  before opening WhatsApp.
+                </p>
+              </div>
+
+              <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={sendWhatsAppPaymentReminder}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 text-xs font-black"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path d="M12.04 2C6.52 2 2.04 6.48 2.04 12c0 1.76.46 3.48 1.34 5L2 22l5.14-1.35A9.94 9.94 0 0012.04 22C17.56 22 22 17.52 22 12S17.56 2 12.04 2zm0 18.18c-1.52 0-3-.41-4.29-1.18l-.31-.18-3.05.8.81-2.97-.2-.31A8.14 8.14 0 013.86 12c0-4.51 3.67-8.18 8.18-8.18 4.5 0 8.14 3.67 8.14 8.18s-3.64 8.18-8.14 8.18zm4.49-6.12c-.25-.12-1.46-.72-1.68-.8-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.96-.14.17-.29.19-.54.07-.24-.12-1.03-.38-1.96-1.21-.72-.65-1.21-1.45-1.35-1.69-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.47c-.16 0-.43.06-.66.31-.22.25-.86.84-.86 2.05 0 1.21.88 2.38 1 2.54.12.16 1.73 2.65 4.2 3.71.59.25 1.04.4 1.4.52.59.19 1.13.16 1.55.1.48-.07 1.46-.6 1.67-1.17.2-.58.2-1.08.14-1.18-.06-.1-.22-.16-.47-.28z" />
+                  </svg>
+                  Open WhatsApp
+                </button>
+
+                <button
+                  type="button"
+                  onClick={copyWhatsAppReminderMessage}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-3 text-xs font-black"
+                >
+                  📋 Copy Message
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={closeWhatsAppReminderModal}
+                className="mt-3 w-full rounded-xl border border-gray-200 bg-white hover:bg-gray-50 px-4 py-3 text-xs font-black text-gray-600"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
