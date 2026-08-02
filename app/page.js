@@ -1833,6 +1833,7 @@ Chathu Wedding Planners
           calendar_hotel: item.hotel,
           calendar_service_type: item.service_type,
           calendar_function_time: item.function_time,
+          calendar_guest_count: item.guest_count,
         },
       });
     }
@@ -1854,6 +1855,7 @@ Chathu Wedding Planners
           calendar_hotel: item.hotel_2,
           calendar_service_type: item.service_type_2,
           calendar_function_time: item.function_time_2,
+          calendar_guest_count: item.guest_count_2,
         },
       });
     }
@@ -7557,7 +7559,7 @@ Chathu Wedding Planners
                     )}
                     {(selectedCalendarEvent.calendar_function_time ||
                       selectedCalendarEvent.function_time) && (
-                      <p className="text-xs font-bold text-gray-500">
+                      <p className="text-xs font-bold text-gray-800">
                         {selectedCalendarEvent.calendar_function_time ||
                           selectedCalendarEvent.function_time}
                       </p>
@@ -7588,7 +7590,9 @@ Chathu Wedding Planners
                         </p>
 
                         <p className="font-semibold text-gray-800">
-                          {selectedCalendarEvent.guest_count || "-"}
+                          {selectedCalendarEvent.calendar_guest_count ??
+                            selectedCalendarEvent.guest_count ??
+                            "-"}
                         </p>
                       </div>
                     </div>
