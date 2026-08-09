@@ -351,6 +351,7 @@ export default function Dashboard() {
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const invoiceRef = useRef(null);
   const [clearPaymentsOnSave, setClearPaymentsOnSave] = useState(false);
+  const [statusManuallyChanged, setStatusManuallyChanged] = useState(false);
   const [whatsAppReminderModal, setWhatsAppReminderModal] = useState({
     show: false,
     customer: null,
@@ -629,6 +630,10 @@ export default function Dashboard() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "status") {
+      setStatusManuallyChanged(true);
+    }
 
     const updatedForm = {
       ...formData,
@@ -1023,6 +1028,7 @@ Service Type : ${item.service_type || "-"}`;
     }
 
     setClearPaymentsOnSave(false);
+    setStatusManuallyChanged(false);
 
     setFormData({
       ...item,
@@ -1058,6 +1064,7 @@ Service Type : ${item.service_type || "-"}`;
 
   const openAddModal = () => {
     setClearPaymentsOnSave(false);
+    setStatusManuallyChanged(false);
     const savedDraft = localStorage.getItem(DRAFT_KEY);
 
     if (savedDraft) {
@@ -1129,6 +1136,8 @@ Service Type : ${item.service_type || "-"}`;
       paid_amount: finalPaidAmount,
       pending_payment: pendingPayment,
       status:
+        !statusManuallyChanged &&
+        newPaymentAmount > 0 &&
         pendingPayment <= 0 &&
         agreedPrice > 0 &&
         formData.status === "Confirmed"
@@ -1452,16 +1461,14 @@ Service Type : ${item.service_type || "-"}`;
   };
 
   const getInvoiceNumber = (item) => {
-  if (!item?.id) {
-    return "0000";
-  }
+    if (!item?.id) {
+      return "0000";
+    }
 
-  const BASE_INVOICE_NUMBER = 10;
+    const BASE_INVOICE_NUMBER = 10;
 
-  return String(
-    BASE_INVOICE_NUMBER + Number(item.id),
-  ).padStart(4, "0");
-};
+    return String(BASE_INVOICE_NUMBER + Number(item.id)).padStart(4, "0");
+  };
 
   const getInvoiceRows = (item) => {
     const services = item.service_type
