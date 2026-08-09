@@ -352,6 +352,11 @@ export default function Dashboard() {
   const invoiceRef = useRef(null);
   const [clearPaymentsOnSave, setClearPaymentsOnSave] = useState(false);
   const [statusManuallyChanged, setStatusManuallyChanged] = useState(false);
+  const [hotels, setHotels] = useState([]);
+
+  const [isHotelDropdownOpen, setIsHotelDropdownOpen] = useState(false);
+
+  const [isHotel2DropdownOpen, setIsHotel2DropdownOpen] = useState(false);
   const [whatsAppReminderModal, setWhatsAppReminderModal] = useState({
     show: false,
     customer: null,
@@ -590,6 +595,19 @@ export default function Dashboard() {
     }
   };
 
+  const fetchHotels = async () => {
+    try {
+      const res = await fetch("/api/hotels");
+      const json = await res.json();
+
+      if (Array.isArray(json)) {
+        setHotels(json);
+      }
+    } catch (error) {
+      console.error("Error fetching hotels:", error);
+    }
+  };
+
   useEffect(() => {
     if (!mounted) return;
 
@@ -601,6 +619,38 @@ export default function Dashboard() {
 
     fetchPaymentTransactions();
   }, [mounted]);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    fetchHotels();
+  }, [mounted]);
+
+  const saveHotelSuggestion = async (hotelName) => {
+    const cleanedName = String(hotelName || "").trim();
+
+    if (!cleanedName) return;
+
+    try {
+      const res = await fetch("/api/hotels", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: cleanedName,
+        }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok || json.success === false) {
+        console.error("Hotel save failed:", json);
+      }
+    } catch (error) {
+      console.error("Error saving hotel suggestion:", error);
+    }
+  };
 
   useEffect(() => {
     if (!mounted || activePage !== "vendors") return;
@@ -1254,6 +1304,25 @@ Service Type : ${item.service_type || "-"}`;
         if (!formData.id) {
           localStorage.removeItem(DRAFT_KEY);
         }
+
+        /*
+         * Store hotel names for future autocomplete suggestions.
+         * This runs only after the inquiry itself saved successfully.
+         */
+        await saveHotelSuggestion(formData.hotel);
+
+        if (
+          formData.wedding_type === "Two days" &&
+          String(formData.hotel_2 || "").trim()
+        ) {
+          await saveHotelSuggestion(formData.hotel_2);
+        }
+
+        /*
+         * Refresh autocomplete list so a newly entered hotel
+         * becomes available immediately.
+         */
+        await fetchHotels();
 
         setClearPaymentsOnSave(false);
         setIsModalOpen(false);
@@ -2224,6 +2293,45 @@ Chathu Wedding Planners
 
     return matchesSearch && matchesStatus;
   });
+
+  const getHotelSuggestions = (searchValue) => {
+    const search = String(searchValue || "")
+      .trim()
+      .toLowerCase();
+
+    if (!search) {
+      return hotels.slice(0, 8);
+    }
+
+    return hotels
+      .filter((hotel) =>
+        String(hotel.name || "")
+          .toLowerCase()
+          .includes(search),
+      )
+      .slice(0, 8);
+  };
+
+  const selectHotelSuggestion = (fieldName, hotelName) => {
+    const updatedForm = {
+      ...formData,
+      [fieldName]: hotelName,
+    };
+
+    setFormData(updatedForm);
+
+    if (!updatedForm.id) {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(updatedForm));
+    }
+
+    if (fieldName === "hotel") {
+      setIsHotelDropdownOpen(false);
+    }
+
+    if (fieldName === "hotel_2") {
+      setIsHotel2DropdownOpen(false);
+    }
+  };
 
   if (!mounted) return <div className="min-h-screen bg-gray-50" />;
 
@@ -5677,7 +5785,7 @@ Chathu Wedding Planners
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                  <div className="relative">
                     <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
                       {formData.wedding_type === "Two days"
                         ? "Hotel / Venue — Day 1"
@@ -5687,10 +5795,41 @@ Chathu Wedding Planners
                     <input
                       type="text"
                       name="hotel"
-                      value={formData.hotel}
-                      onChange={handleInputChange}
+                      value={formData.hotel || ""}
+                      autoComplete="off"
+                      onFocus={() => setIsHotelDropdownOpen(true)}
+                      onChange={(e) => {
+                        handleInputChange(e);
+                        setIsHotelDropdownOpen(true);
+                      }}
+                      onBlur={() => {
+                        setTimeout(() => {
+                          setIsHotelDropdownOpen(false);
+                        }, 150);
+                      }}
+                      placeholder="Type hotel or venue name..."
                       className="w-full p-3.5 md:p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                     />
+
+                    {isHotelDropdownOpen &&
+                      getHotelSuggestions(formData.hotel).length > 0 && (
+                        <div className="absolute z-[20000] left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl max-h-56 overflow-y-auto">
+                          {getHotelSuggestions(formData.hotel).map((hotel) => (
+                            <button
+                              key={hotel.id}
+                              type="button"
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+
+                                selectHotelSuggestion("hotel", hotel.name);
+                              }}
+                              className="w-full text-left px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-fuchsia-50 border-b border-gray-100 last:border-b-0"
+                            >
+                              {hotel.name}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                   </div>
 
                   <div>
@@ -6047,7 +6186,7 @@ Chathu Wedding Planners
 
                     {/* DAY 2 VENUE */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
+                      <div className="relative">
                         <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
                           Hotel / Venue — Day 2
                         </label>
@@ -6056,9 +6195,45 @@ Chathu Wedding Planners
                           type="text"
                           name="hotel_2"
                           value={formData.hotel_2 || ""}
-                          onChange={handleInputChange}
+                          autoComplete="off"
+                          onFocus={() => setIsHotel2DropdownOpen(true)}
+                          onChange={(e) => {
+                            handleInputChange(e);
+                            setIsHotel2DropdownOpen(true);
+                          }}
+                          onBlur={() => {
+                            setTimeout(() => {
+                              setIsHotel2DropdownOpen(false);
+                            }, 150);
+                          }}
+                          placeholder="Type hotel or venue name..."
                           className="w-full p-3.5 md:p-2.5 border rounded-lg focus:ring-2 focus:ring-fuchsia-300 outline-none text-sm"
                         />
+
+                        {isHotel2DropdownOpen &&
+                          getHotelSuggestions(formData.hotel_2).length > 0 && (
+                            <div className="absolute z-[20000] left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl max-h-56 overflow-y-auto">
+                              {getHotelSuggestions(formData.hotel_2).map(
+                                (hotel) => (
+                                  <button
+                                    key={hotel.id}
+                                    type="button"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+
+                                      selectHotelSuggestion(
+                                        "hotel_2",
+                                        hotel.name,
+                                      );
+                                    }}
+                                    className="w-full text-left px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-purple-50 border-b border-gray-100 last:border-b-0"
+                                  >
+                                    {hotel.name}
+                                  </button>
+                                ),
+                              )}
+                            </div>
+                          )}
                       </div>
 
                       <div>
