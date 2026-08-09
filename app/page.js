@@ -1452,25 +1452,16 @@ Service Type : ${item.service_type || "-"}`;
   };
 
   const getInvoiceNumber = (item) => {
-    const eligibleInvoices = data
-      .filter((record) => canGenerateInvoice(record))
-      .sort((a, b) => {
-        const dateA = a.advance_paid_date || a.created_at || "";
-        const dateB = b.advance_paid_date || b.created_at || "";
+  if (!item?.id) {
+    return "0000";
+  }
 
-        if (dateA === dateB) {
-          return Number(a.id) - Number(b.id);
-        }
+  const BASE_INVOICE_NUMBER = 10;
 
-        return dateA.localeCompare(dateB);
-      });
-
-    const index = eligibleInvoices.findIndex(
-      (record) => Number(record.id) === Number(item.id),
-    );
-
-    return String(11 + Math.max(index, 0)).padStart(4, "0");
-  };
+  return String(
+    BASE_INVOICE_NUMBER + Number(item.id),
+  ).padStart(4, "0");
+};
 
   const getInvoiceRows = (item) => {
     const services = item.service_type
