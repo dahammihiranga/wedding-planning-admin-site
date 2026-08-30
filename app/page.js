@@ -289,6 +289,7 @@ export default function Dashboard() {
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
   const [data, setData] = useState([]);
+  const [calendarRecords, setCalendarRecords] = useState([]);
   const [deletedRecords, setDeletedRecords] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tappedCountry, setTappedCountry] = useState(null);
@@ -575,6 +576,12 @@ export default function Dashboard() {
 
       const trashIds = deletedRecords.map((item) => item.id);
       const nonDeletedData = json.filter((item) => !trashIds.includes(item.id));
+
+      /*
+       * Keep all non-deleted records separately for the calendar.
+       * Calendar should not depend on the currently selected dashboard tab.
+       */
+      setCalendarRecords(nonDeletedData);
 
       if (activeTab === "allRecords") {
         setData(nonDeletedData);
@@ -1885,7 +1892,7 @@ Chathu Wedding Planners
     return daysLeft >= 0 && daysLeft <= 7;
   });
 
-  const calendarEvents = activeRecordsDisplay.flatMap((item) => {
+  const calendarEvents = calendarRecords.flatMap((item) => {
     const events = [];
 
     // DAY 1 / ONE-DAY WEDDING
@@ -6882,10 +6889,10 @@ Chathu Wedding Planners
                   className="absolute z-30 bg-white text-center text-gray-600"
                   style={{
                     left: "245px",
-                    top: "1007px",
+                    top: "1040px",
                     width: "310px",
                     height: "22px",
-                    fontSize: "13px",
+                    fontSize: "12px",
                     lineHeight: "22px",
                   }}
                 >
@@ -6897,10 +6904,10 @@ Chathu Wedding Planners
                   className="absolute z-30 bg-white text-center text-gray-600"
                   style={{
                     left: "245px",
-                    top: "1078px",
+                    top: "1101px",
                     width: "310px",
                     height: "22px",
-                    fontSize: "13px",
+                    fontSize: "12px",
                     lineHeight: "22px",
                   }}
                 >
