@@ -6886,7 +6886,7 @@ Chathu Wedding Planners
                 )}
                 {/* REPLACE TEMPLATE EMAIL */}
                 <div
-                  className="absolute z-30 bg-white text-center text-gray-600"
+                  className="absolute z-30 text-center"
                   style={{
                     left: "245px",
                     top: "1040px",
@@ -6894,6 +6894,8 @@ Chathu Wedding Planners
                     height: "22px",
                     fontSize: "12px",
                     lineHeight: "22px",
+                    backgroundColor: "#ffffff",
+                    color: "#4b5563",
                   }}
                 >
                   chathuweddingplanners@gmail.com
@@ -6901,7 +6903,7 @@ Chathu Wedding Planners
 
                 {/* REPLACE TEMPLATE WEBSITE */}
                 <div
-                  className="absolute z-30 bg-white text-center text-gray-600"
+                  className="absolute z-30 text-center"
                   style={{
                     left: "245px",
                     top: "1101px",
@@ -6909,6 +6911,8 @@ Chathu Wedding Planners
                     height: "22px",
                     fontSize: "12px",
                     lineHeight: "22px",
+                    backgroundColor: "#ffffff",
+                    color: "#4b5563",
                   }}
                 >
                   www.chathuweddingplanners.com
