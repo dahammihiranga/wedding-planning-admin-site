@@ -6906,7 +6906,7 @@ Chathu Wedding Planners
                   className="absolute z-30 text-center"
                   style={{
                     left: "245px",
-                    top: "1099px",
+                    top: "1092px",
                     width: "310px",
                     height: "22px",
                     fontSize: "12px",
