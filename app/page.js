@@ -2448,6 +2448,34 @@ Chathu Wedding Planners
                 )}
               </button>
             </form>
+
+            {/* WEBSITE DEVELOPER CREDIT */}
+            <div className="mt-6 pt-5 border-t border-fuchsia-100 text-center">
+              <p className="text-[11px] text-gray-500 font-medium">
+                Designed & Developed by{" "}
+                <a
+                  href="https://vizualztech.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-black text-fuchsia-700 hover:text-fuchsia-900 transition-colors"
+                >
+                  VizualZ TECH
+                </a>
+              </p>
+
+              <p className="mt-2 text-[9px] md:text-[10px] font-bold tracking-[0.14em] text-gray-400 uppercase">
+                IDEAS MADE VISUAL. TECHNOLOGY MADE POWERFUL.
+              </p>
+
+              <a
+                href="https://vizualztech.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-2 text-[11px] font-bold text-fuchsia-600 hover:text-fuchsia-800 hover:underline transition-colors"
+              >
+                vizualztech.com
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -6849,6 +6877,35 @@ Chathu Wedding Planners
                     className="absolute left-[105px] top-[630px] w-[155px] h-[155px] object-contain pointer-events-none select-none z-20"
                   />
                 )}
+                {/* REPLACE TEMPLATE EMAIL */}
+                <div
+                  className="absolute z-30 bg-white text-center text-gray-600"
+                  style={{
+                    left: "245px",
+                    top: "1007px",
+                    width: "310px",
+                    height: "22px",
+                    fontSize: "13px",
+                    lineHeight: "22px",
+                  }}
+                >
+                  chathuweddingplanners@gmail.com
+                </div>
+
+                {/* REPLACE TEMPLATE WEBSITE */}
+                <div
+                  className="absolute z-30 bg-white text-center text-gray-600"
+                  style={{
+                    left: "245px",
+                    top: "1078px",
+                    width: "310px",
+                    height: "22px",
+                    fontSize: "13px",
+                    lineHeight: "22px",
+                  }}
+                >
+                  www.chathuweddingplanners.com
+                </div>
               </div>
             </div>
           </div>
