@@ -273,6 +273,14 @@ const SERVICE_TYPE_OPTIONS = [
   "Partial wedding planning",
   "Wedding day coordination",
   "Wedding agenda making",
+  "Home coming planning",
+  "Engagement planning",
+  "Pre-shoot planning",
+  "Bride to be planning",
+  "Proposal planning",
+  "Corporate events planning",
+  "Birthday events planning",
+  "Other events planning",
 ];
 
 const DRAFT_KEY = "chathu_inquiry_draft";
