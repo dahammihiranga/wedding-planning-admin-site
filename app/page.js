@@ -437,6 +437,12 @@ export default function Dashboard() {
     message: "",
   });
 
+  const [bookingMessagePopup, setBookingMessagePopup] = useState({
+    show: false,
+    customerName: "",
+    message: "",
+  });
+
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 10;
 
@@ -1106,6 +1112,110 @@ export default function Dashboard() {
       `Successfully restored ${item.couple_name} back to the active tracking dashboard! 🔄✨`,
       "success",
     );
+  };
+
+  const formatBookingMessageDate = (dateString) => {
+    if (!dateString) return "the scheduled date";
+
+    const date = moment(dateString, "YYYY-MM-DD", true);
+
+    if (!date.isValid()) return dateString;
+
+    const day = date.date();
+
+    const suffix =
+      day >= 11 && day <= 13
+        ? "th"
+        : day % 10 === 1
+          ? "st"
+          : day % 10 === 2
+            ? "nd"
+            : day % 10 === 3
+              ? "rd"
+              : "th";
+
+    return `${day}${suffix} of ${date.format("MMMM YYYY")}`;
+  };
+
+  const generateCustomerBookingMessage = (item) => {
+    const coupleName = item.couple_name || "Our lovely couple";
+
+    const isTwoDays = item.wedding_type === "Two days";
+
+    // Collect selected services without duplicates.
+    const getServices = (value) =>
+      Array.isArray(value)
+        ? value.filter(Boolean)
+        : String(value || "")
+            .split(",")
+            .map((service) => service.trim())
+            .filter(Boolean);
+
+    const services = [
+      ...new Set([
+        ...getServices(item.service_type),
+        ...(isTwoDays ? getServices(item.service_type_2) : []),
+      ]),
+    ];
+
+    const serviceText =
+      services.length > 0 ? services.join(", ") : "wedding planning services";
+
+    // Build the main wedding date and venue details.
+    let bookingDetails = "";
+
+    if (isTwoDays) {
+      const day1Date = formatBookingMessageDate(item.wedding_date);
+      const day2Date = formatBookingMessageDate(item.wedding_date_2);
+
+      const day1Hotel = item.hotel || "the selected venue";
+      const day2Hotel = item.hotel_2 || "the selected venue";
+
+      bookingDetails =
+        `on ${day1Date} at ${day1Hotel} (Day 1) ` +
+        `and ${day2Date} at ${day2Hotel} (Day 2)`;
+    } else {
+      const weddingDate = formatBookingMessageDate(item.wedding_date);
+      const hotel = item.hotel || "the selected venue";
+
+      bookingDetails = `on ${weddingDate} at ${hotel}`;
+    }
+
+    // Collect additional function dates, if available.
+    let serviceDates = {};
+
+    try {
+      serviceDates =
+        typeof item.service_dates === "string"
+          ? JSON.parse(item.service_dates || "{}")
+          : item.service_dates || {};
+    } catch {
+      serviceDates = {};
+    }
+
+    const additionalDates = services
+      .filter(
+        (service) => requiresSeparateDate(service) && serviceDates[service],
+      )
+      .map(
+        (service) =>
+          `${service}: ${formatBookingMessageDate(serviceDates[service])}`,
+      );
+
+    const additionalDateText =
+      additionalDates.length > 0
+        ? `\n\nAdditional Function Dates:\n${additionalDates.join("\n")}`
+        : "";
+
+    return `✨ Another Beautiful Love Story, Officially Booked! 💍🤍
+
+We’re so excited to announce that ${coupleName} have officially secured their ${serviceText} with us for ${bookingDetails}..!🥂✨${additionalDateText}
+
+From the first planning conversation to the final moment of their big day, our goal is to make every detail feel effortless, organized, and truly magical. 💐
+
+Thank you for trusting us to be part of such a precious chapter in your journey. Here’s to creating unforgettable memories together! 🤍
+
+Your dream day. Our careful planning. One unforgettable celebration. ✨♥️`;
   };
 
   const openCustomerStatusPopup = (item) => {
@@ -4688,21 +4798,65 @@ Chathu Wedding Planners
                                 </td>
 
                                 <td className="p-4 text-center">
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      openCustomerStatusPopup(item)
-                                    }
-                                    className={`px-3 py-1.5 rounded-xl text-xs font-black border shadow-sm hover:scale-105 active:scale-95 transition ${
-                                      item.status === "Completed"
-                                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                                        : item.status === "Confirmed"
-                                          ? "bg-amber-50 text-amber-700 border-amber-200"
-                                          : "bg-blue-50 text-blue-700 border-blue-200"
-                                    }`}
-                                  >
-                                    {item.status}
-                                  </button>
+                                  <div className="flex items-center justify-center gap-2">
+                                    {/* Existing status button */}
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        openCustomerStatusPopup(item)
+                                      }
+                                      className={`px-3 py-1.5 rounded-xl text-xs font-black border shadow-sm hover:scale-105 active:scale-95 transition ${
+                                        item.status === "Completed"
+                                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                          : item.status === "Confirmed"
+                                            ? "bg-amber-50 text-amber-700 border-amber-200"
+                                            : "bg-blue-50 text-blue-700 border-blue-200"
+                                      }`}
+                                    >
+                                      {item.status}
+                                    </button>
+
+                                    {item.status === "Confirmed" && (
+                                      <button
+                                        type="button"
+                                        title="Generate Booking Message"
+                                        onClick={() =>
+                                          setBookingMessagePopup({
+                                            show: true,
+                                            customerName: item.couple_name,
+                                            message:
+                                              generateCustomerBookingMessage(
+                                                item,
+                                              ),
+                                          })
+                                        }
+                                        className="px-3 py-1.5 rounded-xl text-[10px] font-black bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200 shadow-sm active:scale-95 transition"
+                                      >
+                                        💌 Message
+                                      </button>
+                                    )}
+
+                                    {/* Generate booking message */}
+                                    {item.status === "Confirmed" && (
+                                      <button
+                                        type="button"
+                                        title="Generate Booking Message"
+                                        onClick={() =>
+                                          setBookingMessagePopup({
+                                            show: true,
+                                            customerName: item.couple_name,
+                                            message:
+                                              generateCustomerBookingMessage(
+                                                item,
+                                              ),
+                                          })
+                                        }
+                                        className="px-3 py-1.5 rounded-xl text-xs font-black bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200 shadow-sm hover:bg-fuchsia-100 hover:scale-105 active:scale-95 transition whitespace-nowrap"
+                                      >
+                                        💌 Generate Message
+                                      </button>
+                                    )}
+                                  </div>
                                 </td>
                               </tr>
                             );
@@ -4728,7 +4882,7 @@ Chathu Wedding Planners
                           key={item.id}
                           className="bg-white/90 backdrop-blur-xl rounded-3xl border border-white/50 shadow-lg p-4 space-y-4"
                         >
-                          <div className="flex items-start justify-between gap-3">
+                          <div className="flex flex-wrap items-start justify-between gap-3">
                             <div>
                               <button
                                 type="button"
@@ -7287,6 +7441,81 @@ Chathu Wedding Planners
                 className="mt-6 px-6 py-3 rounded-2xl bg-fuchsia-300 hover:bg-fuchsia-400 text-black font-black shadow-lg hover:scale-105 active:scale-95 transition"
               >
                 Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CUSTOMER BOOKING MESSAGE POPUP */}
+      {bookingMessagePopup.show && (
+        <div className="fixed inset-0 z-[999999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-lg max-h-[90vh] bg-white rounded-3xl shadow-2xl border border-fuchsia-100 flex flex-col overflow-hidden">
+            {/* Header */}
+            <div className="p-5 border-b border-fuchsia-100 bg-fuchsia-50">
+              <h3 className="text-lg font-black text-fuchsia-800">
+                💌 Booking Confirmation Message
+              </h3>
+
+              <p className="text-xs font-semibold text-gray-500 mt-1">
+                {bookingMessagePopup.customerName}
+              </p>
+            </div>
+
+            {/* Generated message */}
+            <div className="flex-1 min-h-0 overflow-y-auto p-5">
+              <textarea
+                value={bookingMessagePopup.message}
+                onChange={(e) =>
+                  setBookingMessagePopup((current) => ({
+                    ...current,
+                    message: e.target.value,
+                  }))
+                }
+                className="w-full min-h-[350px] p-4 rounded-2xl border border-fuchsia-100 bg-gray-50 text-sm text-gray-800 leading-relaxed outline-none focus:ring-2 focus:ring-fuchsia-200 resize-y"
+              />
+            </div>
+
+            {/* Action buttons */}
+            <div className="p-5 border-t border-gray-100 flex flex-col sm:flex-row gap-3">
+              <button
+                type="button"
+                onClick={() =>
+                  setBookingMessagePopup({
+                    show: false,
+                    customerName: "",
+                    message: "",
+                  })
+                }
+                className="flex-1 px-5 py-3 rounded-2xl bg-gray-100 text-gray-700 text-sm font-black hover:bg-gray-200 transition"
+              >
+                Close
+              </button>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(
+                      bookingMessagePopup.message,
+                    );
+
+                    triggerNotification(
+                      "Booking message copied successfully!",
+                      "success",
+                    );
+                  } catch (error) {
+                    console.error("Failed to copy message:", error);
+
+                    triggerNotification(
+                      "Unable to copy message. Please try again.",
+                      "delete",
+                    );
+                  }
+                }}
+                className="flex-1 px-5 py-3 rounded-2xl bg-fuchsia-600 text-white text-sm font-black shadow-lg hover:bg-fuchsia-700 active:scale-95 transition"
+              >
+                📋 Copy Message
               </button>
             </div>
           </div>
