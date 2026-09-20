@@ -283,6 +283,61 @@ const SERVICE_TYPE_OPTIONS = [
   "Other events planning",
 ];
 
+const MAIN_WEDDING_SERVICES = [
+  "Full wedding planning",
+  "Partial wedding planning",
+  "Wedding day coordination",
+  "Wedding agenda making",
+];
+
+const requiresSeparateDate = (service) =>
+  !MAIN_WEDDING_SERVICES.includes(service);
+
+// Get the separate function date for additional services
+const getServiceDateLabel = (item, service) => {
+  if (!requiresSeparateDate(service)) {
+    return "";
+  }
+
+  let dates = {};
+
+  try {
+    dates =
+      typeof item.service_dates === "string"
+        ? JSON.parse(item.service_dates || "{}")
+        : item.service_dates || {};
+  } catch {
+    dates = {};
+  }
+
+  const date = dates[service];
+
+  if (!date) {
+    return "";
+  }
+
+  return ` (${date})`;
+};
+
+const ServiceDatePicker = ({ service, value, onChange }) => {
+  if (!requiresSeparateDate(service)) {
+    return null;
+  }
+
+  return (
+    <div className="w-full">
+      <input
+        type="date"
+        value={value || ""}
+        onChange={(e) => onChange(e.target.value)}
+        title={`${service} function date`}
+        aria-label={`${service} function date`}
+        className="w-full min-w-0 p-2.5 border border-gray-300 rounded-xl text-xs bg-white outline-none focus:ring-2 focus:ring-fuchsia-300"
+      />
+    </div>
+  );
+};
+
 const DRAFT_KEY = "chathu_inquiry_draft";
 
 export default function Dashboard() {
@@ -486,6 +541,7 @@ export default function Dashboard() {
     transport_cost: "",
     service_prices: {},
     service_discounts: {},
+    service_dates: {},
   });
 
   const API_URL = "/api/inquiries";
@@ -691,6 +747,26 @@ export default function Dashboard() {
     setHighlightedRecordId((currentId) =>
       Number(currentId) === Number(id) ? null : id,
     );
+  };
+
+  const handleServiceDateChange = (service, date) => {
+    if (!requiresSeparateDate(service)) return;
+
+    setFormData((current) => {
+      const updatedForm = {
+        ...current,
+        service_dates: {
+          ...(current.service_dates || {}),
+          [service]: date,
+        },
+      };
+
+      if (!updatedForm.id) {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(updatedForm));
+      }
+
+      return updatedForm;
+    });
   };
 
   const handleInputChange = (e) => {
@@ -1074,6 +1150,17 @@ Service Type : ${item.service_type || "-"}`;
     let parsedServicePrices = {};
     let parsedServiceDiscounts = {};
 
+    let parsedServiceDates = {};
+
+    try {
+      parsedServiceDates =
+        typeof item.service_dates === "string"
+          ? JSON.parse(item.service_dates || "{}")
+          : item.service_dates || {};
+    } catch {
+      parsedServiceDates = {};
+    }
+
     try {
       parsedServicePrices =
         typeof item.service_prices === "string"
@@ -1116,6 +1203,7 @@ Service Type : ${item.service_type || "-"}`;
 
       service_prices: parsedServicePrices,
       service_discounts: parsedServiceDiscounts,
+      service_dates: parsedServiceDates,
       bridesmaid_option:
         item.bridesmaid_option && item.bridesmaid_option !== "-"
           ? item.bridesmaid_option
@@ -1133,7 +1221,12 @@ Service Type : ${item.service_type || "-"}`;
     const savedDraft = localStorage.getItem(DRAFT_KEY);
 
     if (savedDraft) {
-      setFormData(JSON.parse(savedDraft));
+      const draft = JSON.parse(savedDraft);
+
+      setFormData({
+        ...draft,
+        service_dates: draft.service_dates || {},
+      });
     } else {
       setFormData({
         id: null,
@@ -1167,6 +1260,7 @@ Service Type : ${item.service_type || "-"}`;
         transport_cost: "",
         service_prices: {},
         service_discounts: {},
+        service_dates: {},
       });
     }
 
@@ -1246,6 +1340,10 @@ Service Type : ${item.service_type || "-"}`;
         typeof formData.service_discounts === "string"
           ? formData.service_discounts
           : JSON.stringify(formData.service_discounts || {}),
+      service_dates:
+        typeof formData.service_dates === "string"
+          ? formData.service_dates
+          : JSON.stringify(formData.service_dates || {}),
     };
 
     try {
@@ -3439,7 +3537,12 @@ Chathu Wedding Planners
                                                 key={service}
                                                 className="text-[10px] text-gray-500 font-semibold"
                                               >
-                                                {service}: Rs.{" "}
+                                                {service}
+                                                {getServiceDateLabel(
+                                                  item,
+                                                  service,
+                                                )}
+                                                : Rs.{" "}
                                                 {getFinalServicePrice(
                                                   service,
                                                 ).toLocaleString("en-LK")}
@@ -4021,7 +4124,12 @@ Chathu Wedding Planners
                                               key={service}
                                               className="text-[10px] text-gray-500 font-bold"
                                             >
-                                              {service}: Rs.{" "}
+                                              {service}
+                                              {getServiceDateLabel(
+                                                item,
+                                                service,
+                                              )}
+                                              : Rs.{" "}
                                               {getFinalServicePrice(
                                                 service,
                                               ).toLocaleString("en-LK")}
@@ -5965,16 +6073,21 @@ Chathu Wedding Planners
                                   ...(formData.service_discounts || {}),
                                 };
 
+                                const updatedServiceDates = {
+                                  ...(formData.service_dates || {}),
+                                };
+
                                 if (!e.target.checked) {
                                   delete updatedServicePrices[service];
                                   delete updatedServiceDiscounts[service];
+                                  delete updatedServiceDates[service];
                                 }
-
                                 let updatedForm = {
                                   ...formData,
                                   service_type: updatedServices,
                                   service_prices: updatedServicePrices,
                                   service_discounts: updatedServiceDiscounts,
+                                  service_dates: updatedServiceDates,
                                 };
 
                                 if (updatedServices.length > 1) {
@@ -6017,6 +6130,30 @@ Chathu Wedding Planners
                     )}
                   </div>
                   {Array.isArray(formData.service_type) &&
+                    formData.service_type.length === 1 &&
+                    requiresSeparateDate(formData.service_type[0]) && (
+                      <div className="md:col-span-2 rounded-2xl bg-fuchsia-50/70 border border-fuchsia-100 p-3">
+                        <label className="block text-xs font-black text-fuchsia-700 uppercase mb-2">
+                          Function Date - {formData.service_type[0]}
+                        </label>
+
+                        <ServiceDatePicker
+                          service={formData.service_type[0]}
+                          value={
+                            formData.service_dates?.[
+                              formData.service_type[0]
+                            ] || ""
+                          }
+                          onChange={(date) =>
+                            handleServiceDateChange(
+                              formData.service_type[0],
+                              date,
+                            )
+                          }
+                        />
+                      </div>
+                    )}
+                  {Array.isArray(formData.service_type) &&
                     formData.service_type.length > 1 && (
                       <div className="md:col-span-2 rounded-2xl bg-fuchsia-50/70 border border-fuchsia-100 p-3 space-y-3">
                         <div>
@@ -6034,9 +6171,19 @@ Chathu Wedding Planners
                             key={service}
                             className="grid grid-cols-1 md:grid-cols-[1fr_140px_120px_85px] gap-3 items-end"
                           >
-                            <label className="text-xs font-bold text-gray-700">
-                              {service}
-                            </label>
+                            <div className="grid grid-cols-1 md:grid-cols-[1fr_160px] gap-2 items-center min-w-0">
+                              <label className="text-xs font-bold text-gray-700">
+                                {service}
+                              </label>
+
+                              <ServiceDatePicker
+                                service={service}
+                                value={formData.service_dates?.[service] || ""}
+                                onChange={(date) =>
+                                  handleServiceDateChange(service, date)
+                                }
+                              />
+                            </div>
 
                             <input
                               type="number"

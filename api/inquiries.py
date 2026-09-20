@@ -174,12 +174,13 @@ async def create_inquiry(data: dict):
             discount_type,
             transport_cost,
             service_prices,
-            service_discounts
+            service_discounts,
+            service_dates
         )
         VALUES (
             ?, ?, ?, ?, ?, ?,
             ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
         )
         """
 
@@ -193,13 +194,11 @@ async def create_inquiry(data: dict):
                 data.get("wedding_type") or "One day",
                 guest_count,
                 data.get("function_time") or None,
-
                 data.get("wedding_date_2") or None if is_two_day else None,
                 data.get("hotel_2") or None if is_two_day else None,
                 data.get("service_type_2") or None if is_two_day else None,
                 guest_count_2 if is_two_day else None,
                 data.get("function_time_2") or None if is_two_day else None,
-
                 data.get("contact_no") or None,
                 data.get("bridesmaid_option") or "-",
                 package_price,
@@ -217,6 +216,7 @@ async def create_inquiry(data: dict):
                 transport_cost,
                 data.get("service_prices") or None,
                 data.get("service_discounts") or None,
+                data.get("service_dates") or "{}",
             ],
         )
 
@@ -285,30 +285,16 @@ async def update_inquiry(id: int, data: dict):
         )
         guest_count_2_raw = data.get("guest_count_2")
         guest_count_2 = (
-            int(guest_count_2_raw)
-            if guest_count_2_raw not in [None, ""]
-            else None
+            int(guest_count_2_raw) if guest_count_2_raw not in [None, ""] else None
         )
 
         is_two_day = data.get("wedding_type") == "Two days"
 
-        second_wedding_date = (
-            data.get("wedding_date_2") or None
-            if is_two_day
-            else None
-        )
+        second_wedding_date = data.get("wedding_date_2") or None if is_two_day else None
 
-        second_hotel = (
-            data.get("hotel_2") or None
-            if is_two_day
-            else None
-        )
+        second_hotel = data.get("hotel_2") or None if is_two_day else None
 
-        second_service_type = (
-            data.get("service_type_2") or None
-            if is_two_day
-            else None
-        )
+        second_service_type = data.get("service_type_2") or None if is_two_day else None
 
         second_guest_count = guest_count_2 if is_two_day else None
 
@@ -337,6 +323,7 @@ async def update_inquiry(id: int, data: dict):
                 transport_cost=?,
                 service_prices=?,
                 service_discounts=?,
+                service_dates=?,
                 agreed_price=?,
                 advance_paid=?,
                 advance_paid_date=?,
@@ -356,13 +343,11 @@ async def update_inquiry(id: int, data: dict):
                 data.get("wedding_type") or "One day",
                 guest_count,
                 data.get("function_time") or None,
-
                 second_wedding_date,
                 second_hotel,
                 second_service_type,
                 second_guest_count,
                 data.get("function_time_2") or None if is_two_day else None,
-
                 data.get("contact_no") or None,
                 data.get("bridesmaid_option") or "-",
                 package_price,
@@ -371,6 +356,7 @@ async def update_inquiry(id: int, data: dict):
                 transport_cost,
                 data.get("service_prices") or None,
                 data.get("service_discounts") or None,
+                data.get("service_dates") or "{}",
                 agreed_price,
                 advance_paid,
                 data.get("advance_paid_date") or None,
