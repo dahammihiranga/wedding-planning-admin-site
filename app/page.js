@@ -4816,26 +4816,6 @@ Chathu Wedding Planners
                                       {item.status}
                                     </button>
 
-                                    {item.status === "Confirmed" && (
-                                      <button
-                                        type="button"
-                                        title="Generate Booking Message"
-                                        onClick={() =>
-                                          setBookingMessagePopup({
-                                            show: true,
-                                            customerName: item.couple_name,
-                                            message:
-                                              generateCustomerBookingMessage(
-                                                item,
-                                              ),
-                                          })
-                                        }
-                                        className="px-3 py-1.5 rounded-xl text-[10px] font-black bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200 shadow-sm active:scale-95 transition"
-                                      >
-                                        💌 Message
-                                      </button>
-                                    )}
-
                                     {/* Generate booking message */}
                                     {item.status === "Confirmed" && (
                                       <button
