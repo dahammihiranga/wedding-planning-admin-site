@@ -77,12 +77,13 @@ class ChecklistCreate(BaseModel):
     vendor_company: str = ""
     vendor_contact: str = ""
 
+    full_amount: str = ""
+
     advance_payment_done: bool = False
     advance_payment_amount: str = ""
     advance_payment_date: str = ""
 
     full_payment_done: bool = False
-    full_payment_amount: str = ""
     full_payment_date: str = ""
 
 
@@ -95,12 +96,13 @@ class ChecklistUpdate(BaseModel):
     vendor_company: str = ""
     vendor_contact: str = ""
 
+    full_amount: str = ""
+
     advance_payment_done: bool = False
     advance_payment_amount: str = ""
     advance_payment_date: str = ""
 
     full_payment_done: bool = False
-    full_payment_amount: str = ""
     full_payment_date: str = ""
 
 
@@ -179,13 +181,14 @@ async def get_checklist(
             
                 vendor_company,
                 vendor_contact,
-            
+
+                full_amount,
+
                 advance_payment_done,
                 advance_payment_amount,
                 advance_payment_date,
-            
+
                 full_payment_done,
-                full_payment_amount,
                 full_payment_date,
             
                 sort_order,
@@ -240,66 +243,67 @@ async def add_checklist_item(data: ChecklistCreate):
         insert_result = client.execute(
                 """
             INSERT INTO wedding_checklist_items (
-                inquiry_id,
+                    inquiry_id,
+                    item_name,
+                    status,
+                    responsible,
+                    deadline,
+
+                    vendor_company,
+                    vendor_contact,
+
+                    full_amount,
+
+                    advance_payment_done,
+                    advance_payment_amount,
+                    advance_payment_date,
+
+                    full_payment_done,
+                    full_payment_date,
+
+                    sort_order
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            [
+                data.inquiry_id,
                 item_name,
                 status,
-                responsible,
-                deadline,
+                data.responsible.strip() or None,
+                data.deadline or None,
 
-                vendor_company,
-                vendor_contact,
+                data.vendor_company.strip() or None,
+                data.vendor_contact.strip() or None,
 
-                advance_payment_done,
-                advance_payment_amount,
-                advance_payment_date,
-
-                full_payment_done,
-                full_payment_amount,
-                full_payment_date,
-
-                sort_order
-            )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-        [
-            data.inquiry_id,
-            item_name,
-            status,
-            data.responsible.strip() or None,
-            data.deadline or None,
-
-            data.vendor_company.strip() or None,
-            data.vendor_contact.strip() or None,
+                (
+                    float(data.full_amount)
+                    if data.full_amount.strip()
+                    else None
+                ),
 
                 1 if data.advance_payment_done else 0,
-            (
-                float(data.advance_payment_amount)
-                if data.advance_payment_done
-                and data.advance_payment_amount.strip()
-                else None
-            ),
-            (
-                data.advance_payment_date
-                if data.advance_payment_done
-                else None
-            ),
+                (
+                    float(data.advance_payment_amount)
+                    if data.advance_payment_done
+                    and data.advance_payment_amount.strip()
+                    else None
+                ),
+                (
+                    data.advance_payment_date
+                    if data.advance_payment_done
+                    else None
+                ),
 
                 1 if data.full_payment_done else 0,
-            (
-                float(data.full_payment_amount)
-                if data.full_payment_done
-                and data.full_payment_amount.strip()
-                else None
-            ),
-            (
-                data.full_payment_date
-                if data.full_payment_done
-                else None
-            ),
+                (
+                    data.full_payment_date
+                    if data.full_payment_done
+                    else None
+                ),
 
-            current_max + 1,
-        ],
-    )
+                current_max + 1,
+            ],
+        )
 
         return {
             "success": True,
@@ -350,12 +354,13 @@ async def update_checklist_item(
         vendor_company = ?,
         vendor_contact = ?,
 
+        full_amount = ?,
+
         advance_payment_done = ?,
         advance_payment_amount = ?,
         advance_payment_date = ?,
 
         full_payment_done = ?,
-        full_payment_amount = ?,
         full_payment_date = ?
 
     WHERE id = ?
@@ -369,7 +374,13 @@ async def update_checklist_item(
         data.vendor_company.strip() or None,
         data.vendor_contact.strip() or None,
 
-        1 if data.advance_payment_done else 0,
+    (
+        float(data.full_amount)
+        if data.full_amount.strip()
+        else None
+    ),
+
+    1 if data.advance_payment_done else 0,
         (
             float(data.advance_payment_amount)
             if data.advance_payment_done
@@ -383,12 +394,6 @@ async def update_checklist_item(
         ),
 
         1 if data.full_payment_done else 0,
-        (
-            float(data.full_payment_amount)
-            if data.full_payment_done
-            and data.full_payment_amount.strip()
-            else None
-        ),
         (
             data.full_payment_date
             if data.full_payment_done

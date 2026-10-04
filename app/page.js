@@ -457,12 +457,13 @@ export default function Dashboard() {
     vendor_company: "",
     vendor_contact: "",
 
+    full_amount: "",
+
     advance_payment_done: false,
     advance_payment_amount: "",
     advance_payment_date: "",
 
     full_payment_done: false,
-    full_payment_amount: "",
     full_payment_date: "",
   });
 
@@ -855,6 +856,8 @@ export default function Dashboard() {
           vendor_company: item.vendor_company || "",
           vendor_contact: item.vendor_contact || "",
 
+          full_amount: item.full_amount || "",
+
           advance_payment_done: Boolean(item.advance_payment_done),
           advance_payment_amount: item.advance_payment_done
             ? item.advance_payment_amount || ""
@@ -864,9 +867,6 @@ export default function Dashboard() {
             : "",
 
           full_payment_done: Boolean(item.full_payment_done),
-          full_payment_amount: item.full_payment_done
-            ? item.full_payment_amount || ""
-            : "",
           full_payment_date: item.full_payment_done
             ? item.full_payment_date || ""
             : "",
@@ -921,6 +921,8 @@ export default function Dashboard() {
               vendor_company: item.vendor_company || "",
               vendor_contact: item.vendor_contact || "",
 
+              full_amount: item.full_amount || "",
+
               advance_payment_done: Boolean(item.advance_payment_done),
               advance_payment_amount: item.advance_payment_done
                 ? item.advance_payment_amount || ""
@@ -930,9 +932,6 @@ export default function Dashboard() {
                 : "",
 
               full_payment_done: Boolean(item.full_payment_done),
-              full_payment_amount: item.full_payment_done
-                ? item.full_payment_amount || ""
-                : "",
               full_payment_date: item.full_payment_done
                 ? item.full_payment_date || ""
                 : "",
@@ -994,12 +993,13 @@ export default function Dashboard() {
           vendor_company: newChecklistItem.vendor_company,
           vendor_contact: newChecklistItem.vendor_contact,
 
+          full_amount: newChecklistItem.full_amount,
+
           advance_payment_done: newChecklistItem.advance_payment_done,
           advance_payment_amount: newChecklistItem.advance_payment_amount,
           advance_payment_date: newChecklistItem.advance_payment_date,
 
           full_payment_done: newChecklistItem.full_payment_done,
-          full_payment_amount: newChecklistItem.full_payment_amount,
           full_payment_date: newChecklistItem.full_payment_date,
         }),
       });
@@ -1023,12 +1023,13 @@ export default function Dashboard() {
         vendor_company: "",
         vendor_contact: "",
 
+        full_amount: "",
+
         advance_payment_done: false,
         advance_payment_amount: "",
         advance_payment_date: "",
 
         full_payment_done: false,
-        full_payment_amount: "",
         full_payment_date: "",
       });
 
@@ -6523,15 +6524,21 @@ Chathu Wedding Planners
 
                                 <th className="p-3 min-w-[130px]">Deadline</th>
 
-                                <th className="p-3 min-w-[160px]">Vendor</th>
+                                <th className="p-3 min-w-[140px]">Vendor</th>
 
-                                <th className="p-3 min-w-[135px]">Contact</th>
+                                <th className="p-3 min-w-[125px]">Contact</th>
 
-                                <th className="p-3 min-w-[300px]">
+                                <th className="p-3 min-w-[110px]">
+                                  Full Amount
+                                </th>
+
+                                <th className="p-3 min-w-[360px]">
                                   Advance Payment
                                 </th>
 
-                                <th className="p-3 min-w-[300px]">
+                                <th className="p-3 min-w-[120px]">Balance</th>
+
+                                <th className="p-3 min-w-[260px]">
                                   Full Payment
                                 </th>
 
@@ -6701,6 +6708,30 @@ Chathu Wedding Planners
                                     />
                                   </td>
 
+                                  {/* FULL AMOUNT */}
+                                  <td className="p-2 align-middle">
+                                    <input
+                                      type="number"
+                                      min="0"
+                                      step="0.01"
+                                      placeholder="Full amount"
+                                      value={item.full_amount ?? ""}
+                                      onChange={(e) =>
+                                        setMasterChecklistItems((current) =>
+                                          current.map((row) =>
+                                            row.id === item.id
+                                              ? {
+                                                  ...row,
+                                                  full_amount: e.target.value,
+                                                }
+                                              : row,
+                                          ),
+                                        )
+                                      }
+                                      className="w-[100px] p-2 rounded-lg border border-fuchsia-200 bg-white text-[11px] outline-none focus:ring-2 focus:ring-fuchsia-300"
+                                    />
+                                  </td>
+
                                   {/* ADVANCE PAYMENT */}
                                   <td className="p-2 align-middle">
                                     <div className="flex items-center gap-2 whitespace-nowrap">
@@ -6806,6 +6837,24 @@ Chathu Wedding Planners
                                     </div>
                                   </td>
 
+                                  {/* REMAINING BALANCE */}
+                                  <td className="p-2 align-middle">
+                                    <input
+                                      type="text"
+                                      readOnly
+                                      value={Math.max(
+                                        (parseFloat(item.full_amount) || 0) -
+                                          (Boolean(item.advance_payment_done)
+                                            ? parseFloat(
+                                                item.advance_payment_amount,
+                                              ) || 0
+                                            : 0),
+                                        0,
+                                      ).toLocaleString()}
+                                      className="w-[110px] p-2 rounded-lg border border-gray-200 bg-gray-100 text-[11px] font-black text-gray-700 cursor-not-allowed"
+                                    />
+                                  </td>
+
                                   {/* FULL PAYMENT */}
                                   <td className="p-2 align-middle">
                                     <div className="flex items-center gap-2 whitespace-nowrap">
@@ -6823,7 +6872,6 @@ Chathu Wedding Planners
                                                   ? {
                                                       ...row,
                                                       full_payment_done: false,
-                                                      full_payment_amount: "",
                                                       full_payment_date: "",
                                                     }
                                                   : row,
@@ -6858,52 +6906,24 @@ Chathu Wedding Planners
                                       </label>
 
                                       {Boolean(item.full_payment_done) && (
-                                        <>
-                                          <input
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            placeholder="Amount"
-                                            value={
-                                              item.full_payment_amount ?? ""
-                                            }
-                                            onChange={(e) =>
-                                              setMasterChecklistItems(
-                                                (current) =>
-                                                  current.map((row) =>
-                                                    row.id === item.id
-                                                      ? {
-                                                          ...row,
-                                                          full_payment_amount:
-                                                            e.target.value,
-                                                        }
-                                                      : row,
-                                                  ),
-                                              )
-                                            }
-                                            className="w-[90px] p-2 rounded-lg border border-emerald-200 bg-emerald-50/40 text-[11px]"
-                                          />
-
-                                          <input
-                                            type="date"
-                                            value={item.full_payment_date || ""}
-                                            onChange={(e) =>
-                                              setMasterChecklistItems(
-                                                (current) =>
-                                                  current.map((row) =>
-                                                    row.id === item.id
-                                                      ? {
-                                                          ...row,
-                                                          full_payment_date:
-                                                            e.target.value,
-                                                        }
-                                                      : row,
-                                                  ),
-                                              )
-                                            }
-                                            className="w-[125px] p-2 rounded-lg border border-emerald-200 bg-emerald-50/40 text-[11px]"
-                                          />
-                                        </>
+                                        <input
+                                          type="date"
+                                          value={item.full_payment_date || ""}
+                                          onChange={(e) =>
+                                            setMasterChecklistItems((current) =>
+                                              current.map((row) =>
+                                                row.id === item.id
+                                                  ? {
+                                                      ...row,
+                                                      full_payment_date:
+                                                        e.target.value,
+                                                    }
+                                                  : row,
+                                              ),
+                                            )
+                                          }
+                                          className="w-[125px] p-2 rounded-lg border border-emerald-200 bg-emerald-50/40 text-[11px]"
+                                        />
                                       )}
                                     </div>
                                   </td>
@@ -7140,6 +7160,33 @@ Chathu Wedding Planners
                                 </div>
                               </div>
 
+                              <div>
+                                <label className="block text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">
+                                  Full Amount
+                                </label>
+
+                                <input
+                                  type="number"
+                                  min="0"
+                                  step="0.01"
+                                  placeholder="Full amount"
+                                  value={item.full_amount ?? ""}
+                                  onChange={(e) =>
+                                    setMasterChecklistItems((current) =>
+                                      current.map((row) =>
+                                        row.id === item.id
+                                          ? {
+                                              ...row,
+                                              full_amount: e.target.value,
+                                            }
+                                          : row,
+                                      ),
+                                    )
+                                  }
+                                  className="w-full p-3 rounded-xl border border-gray-200 text-sm"
+                                />
+                              </div>
+
                               {/* ADVANCE PAYMENT */}
                               <div className="rounded-2xl border border-amber-100 bg-amber-50/60 p-3">
                                 <p className="text-xs font-black text-amber-800 mb-3">
@@ -7242,6 +7289,27 @@ Chathu Wedding Planners
                                 )}
                               </div>
 
+                              <div>
+                                <label className="block text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">
+                                  Remaining Balance
+                                </label>
+
+                                <input
+                                  type="text"
+                                  readOnly
+                                  value={Math.max(
+                                    (parseFloat(item.full_amount) || 0) -
+                                      (Boolean(item.advance_payment_done)
+                                        ? parseFloat(
+                                            item.advance_payment_amount,
+                                          ) || 0
+                                        : 0),
+                                    0,
+                                  ).toLocaleString()}
+                                  className="w-full p-3 rounded-xl border border-gray-200 bg-gray-100 text-sm font-black text-gray-700"
+                                />
+                              </div>
+
                               {/* FULL PAYMENT */}
                               <div className="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-3">
                                 <p className="text-xs font-black text-emerald-800 mb-3">
@@ -7295,29 +7363,7 @@ Chathu Wedding Planners
                                 </div>
 
                                 {Boolean(item.full_payment_done) && (
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
-                                    <input
-                                      type="number"
-                                      min="0"
-                                      step="0.01"
-                                      placeholder="Full payment amount"
-                                      value={item.full_payment_amount ?? ""}
-                                      onChange={(e) =>
-                                        setMasterChecklistItems((current) =>
-                                          current.map((row) =>
-                                            row.id === item.id
-                                              ? {
-                                                  ...row,
-                                                  full_payment_amount:
-                                                    e.target.value,
-                                                }
-                                              : row,
-                                          ),
-                                        )
-                                      }
-                                      className="w-full p-3 rounded-xl border border-emerald-200 bg-white text-sm"
-                                    />
-
+                                  <div className="mt-3">
                                     <input
                                       type="date"
                                       value={item.full_payment_date || ""}
