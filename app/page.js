@@ -4922,6 +4922,23 @@ Chathu Wedding Planners
                             >
                               View Status
                             </button>
+
+                            {item.status === "Confirmed" && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setBookingMessagePopup({
+                                    show: true,
+                                    customerName: item.couple_name,
+                                    message:
+                                      generateCustomerBookingMessage(item),
+                                  })
+                                }
+                                className="col-span-2 rounded-2xl bg-fuchsia-600 text-white p-3 text-xs font-black border border-fuchsia-600 shadow-sm active:scale-95 transition"
+                              >
+                                💌 Generate Message
+                              </button>
+                            )}
                           </div>
                         </div>
                       );
