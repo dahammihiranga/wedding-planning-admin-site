@@ -443,6 +443,17 @@ export default function Dashboard() {
     message: "",
   });
 
+  const [masterChecklistWeddingId, setMasterChecklistWeddingId] = useState("");
+  const [masterChecklistItems, setMasterChecklistItems] = useState([]);
+  const [masterChecklistLoading, setMasterChecklistLoading] = useState(false);
+
+  const [newChecklistItem, setNewChecklistItem] = useState({
+    item_name: "",
+    status: "Not Started",
+    responsible: "",
+    deadline: "",
+  });
+
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 10;
 
@@ -775,6 +786,163 @@ export default function Dashboard() {
     });
   };
 
+  const fetchMasterChecklist = async (inquiryId) => {
+    if (!inquiryId) {
+      setMasterChecklistItems([]);
+      return;
+    }
+
+    setMasterChecklistLoading(true);
+
+    try {
+      const res = await fetch(`/api/wedding-checklist?inquiry_id=${inquiryId}`);
+
+      const json = await res.json();
+
+      if (!res.ok || !Array.isArray(json)) {
+        console.error("Checklist fetch failed:", json);
+
+        triggerNotification(
+          "Unable to load the Master Control Sheet.",
+          "delete",
+        );
+
+        setMasterChecklistItems([]);
+        return;
+      }
+
+      setMasterChecklistItems(json);
+    } catch (error) {
+      console.error("Checklist fetch error:", error);
+
+      triggerNotification("Unable to load the Master Control Sheet.", "delete");
+
+      setMasterChecklistItems([]);
+    } finally {
+      setMasterChecklistLoading(false);
+    }
+  };
+
+  const updateMasterChecklistItem = async (item) => {
+    try {
+      const res = await fetch(`/api/wedding-checklist?id=${item.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          item_name: item.item_name,
+          status: item.status,
+          responsible: item.responsible || "",
+          deadline: item.deadline || "",
+        }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok || json.success === false) {
+        console.error("Checklist update failed:", json);
+
+        triggerNotification("Checklist item could not be saved.", "delete");
+
+        return;
+      }
+
+      triggerNotification("Checklist item updated successfully!", "success");
+    } catch (error) {
+      console.error("Checklist update error:", error);
+
+      triggerNotification("Checklist item could not be saved.", "delete");
+    }
+  };
+
+  const addMasterChecklistItem = async () => {
+    if (!masterChecklistWeddingId) {
+      triggerNotification("Please select a wedding first.", "delete");
+      return;
+    }
+
+    if (!newChecklistItem.item_name.trim()) {
+      triggerNotification("Please enter the checklist item name.", "delete");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/wedding-checklist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          inquiry_id: Number(masterChecklistWeddingId),
+          item_name: newChecklistItem.item_name,
+          status: newChecklistItem.status,
+          responsible: newChecklistItem.responsible,
+          deadline: newChecklistItem.deadline,
+        }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok || json.success === false) {
+        console.error("Checklist add failed:", json);
+
+        triggerNotification("Unable to add checklist item.", "delete");
+
+        return;
+      }
+
+      setNewChecklistItem({
+        item_name: "",
+        status: "Not Started",
+        responsible: "",
+        deadline: "",
+      });
+
+      await fetchMasterChecklist(masterChecklistWeddingId);
+
+      triggerNotification("New checklist item added!", "success");
+    } catch (error) {
+      console.error("Checklist add error:", error);
+
+      triggerNotification("Unable to add checklist item.", "delete");
+    }
+  };
+
+  const deleteMasterChecklistItem = async (itemId) => {
+    const shouldDelete = window.confirm(
+      "Remove this item from this wedding's checklist?",
+    );
+
+    if (!shouldDelete) return;
+
+    try {
+      const res = await fetch(`/api/wedding-checklist?id=${itemId}`, {
+        method: "DELETE",
+      });
+
+      const json = await res.json();
+
+      if (!res.ok || json.success === false) {
+        console.error("Checklist delete failed:", json);
+
+        triggerNotification("Unable to remove checklist item.", "delete");
+
+        return;
+      }
+
+      setMasterChecklistItems((current) =>
+        current.filter((item) => item.id !== itemId),
+      );
+
+      triggerNotification("Checklist item removed.", "success");
+    } catch (error) {
+      console.error("Checklist delete error:", error);
+
+      triggerNotification("Unable to remove checklist item.", "delete");
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -929,7 +1097,9 @@ export default function Dashboard() {
      * Do not call the APIs again every time the user changes pages.
      */
     if (
-      (page === "customers" || page === "payments") &&
+      (page === "customers" ||
+        page === "payments" ||
+        page === "masterControl") &&
       activeTab !== "allRecords"
     ) {
       setActiveTab("allRecords");
@@ -2450,6 +2620,29 @@ Chathu Wedding Planners
       .includes(customerSearch.toLowerCase().trim()),
   );
 
+  const masterControlWeddings = data
+    .filter(
+      (item) => item.status === "Confirmed" || item.status === "Completed",
+    )
+    .sort((a, b) =>
+      String(a.wedding_date || "").localeCompare(String(b.wedding_date || "")),
+    );
+
+  const selectedMasterWedding = masterControlWeddings.find(
+    (item) => Number(item.id) === Number(masterChecklistWeddingId),
+  );
+
+  const completedChecklistCount = masterChecklistItems.filter(
+    (item) => item.status === "Confirmed",
+  ).length;
+
+  const checklistProgress =
+    masterChecklistItems.length > 0
+      ? Math.round(
+          (completedChecklistCount / masterChecklistItems.length) * 100,
+        )
+      : 0;
+
   const filteredVendors = vendors.filter((vendor) => {
     const search = vendorSearch.toLowerCase().trim();
 
@@ -2833,6 +3026,11 @@ Chathu Wedding Planners
                 {[
                   { key: "dashboard", label: "Dashboard", icon: "🏠" },
                   { key: "customers", label: "Customers", icon: "👰" },
+                  {
+                    key: "masterControl",
+                    label: "Master Control Sheet",
+                    icon: "📋",
+                  },
                   { key: "vendors", label: "Vendors", icon: "🤝" },
                   { key: "payments", label: "Payments", icon: "💳" },
                   { key: "packages", label: "Our Packages", icon: "📦" },
@@ -2873,6 +3071,17 @@ Chathu Wedding Planners
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${activePage === "customers" ? "bg-emerald-100 text-emerald-800" : "hover:bg-white/60 text-gray-700"}`}
               >
                 👰 Customers
+              </button>
+
+              <button
+                onClick={() => navigateToPage("masterControl")}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${
+                  activePage === "masterControl"
+                    ? "bg-emerald-100 text-emerald-800"
+                    : "hover:bg-white/60 text-gray-700"
+                }`}
+              >
+                📋 Wedding Management
               </button>
 
               <button
@@ -5963,6 +6172,571 @@ Chathu Wedding Planners
                     Package PDF storage section will be added here.
                   </p>
                 </div>
+              </div>
+            )}
+
+            {/* WEDDING MASTER CONTROL SHEET */}
+            {activePage === "masterControl" && (
+              <div className="p-4 md:p-6">
+                {/* HEADER */}
+                <div className="mb-6">
+                  <h1 className="text-2xl md:text-3xl font-black text-fuchsia-950">
+                    📋 Wedding Master Control Sheet
+                  </h1>
+
+                  <p className="text-sm text-fuchsia-900/70 mt-1 font-semibold">
+                    Track every important task for each wedding in one place.
+                  </p>
+                </div>
+
+                {/* WEDDING SELECTOR */}
+                <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/50 shadow-xl p-4 md:p-5 mb-5">
+                  <label className="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">
+                    Select Wedding
+                  </label>
+
+                  <select
+                    value={masterChecklistWeddingId}
+                    onChange={async (e) => {
+                      const weddingId = e.target.value;
+
+                      setMasterChecklistWeddingId(weddingId);
+
+                      if (!weddingId) {
+                        setMasterChecklistItems([]);
+                        return;
+                      }
+
+                      await fetchMasterChecklist(weddingId);
+                    }}
+                    className="w-full p-3.5 rounded-2xl border border-fuchsia-100 bg-white text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-fuchsia-300"
+                  >
+                    <option value="">
+                      Select a confirmed or completed wedding...
+                    </option>
+
+                    {masterControlWeddings.map((wedding) => (
+                      <option key={wedding.id} value={wedding.id}>
+                        {wedding.couple_name}
+                        {" — "}
+                        {wedding.wedding_date || "No wedding date"}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* EMPTY STATE */}
+                {!masterChecklistWeddingId && (
+                  <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/50 shadow-xl p-10 text-center">
+                    <div className="text-5xl mb-4">💍</div>
+
+                    <h2 className="text-lg font-black text-fuchsia-950">
+                      Select a Wedding
+                    </h2>
+
+                    <p className="text-sm text-gray-500 mt-2">
+                      Choose a wedding above to open its Master Control Sheet.
+                    </p>
+                  </div>
+                )}
+
+                {/* LOADING */}
+                {masterChecklistWeddingId && masterChecklistLoading && (
+                  <div className="bg-white rounded-3xl p-10 text-center shadow-xl">
+                    <div className="text-3xl mb-3 animate-pulse">📋</div>
+
+                    <p className="text-sm font-black text-gray-500">
+                      Loading Master Control Sheet...
+                    </p>
+                  </div>
+                )}
+
+                {/* SELECTED WEDDING */}
+                {masterChecklistWeddingId &&
+                  !masterChecklistLoading &&
+                  selectedMasterWedding && (
+                    <>
+                      {/* WEDDING SUMMARY */}
+                      <div className="bg-gradient-to-br from-fuchsia-950 to-fuchsia-800 text-white rounded-3xl p-5 md:p-6 shadow-xl mb-5">
+                        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-5">
+                          <div>
+                            <p className="text-[10px] uppercase tracking-[0.2em] font-black text-fuchsia-200">
+                              Wedding
+                            </p>
+
+                            <h2 className="text-2xl font-black mt-1">
+                              {selectedMasterWedding.couple_name}
+                            </h2>
+
+                            <div className="mt-3 space-y-1 text-sm text-fuchsia-100 font-semibold">
+                              <p>
+                                📅{" "}
+                                {selectedMasterWedding.wedding_date ||
+                                  "Wedding date not added"}
+                              </p>
+
+                              <p>
+                                🏨{" "}
+                                {selectedMasterWedding.hotel ||
+                                  "Hotel not added"}
+                              </p>
+
+                              <p>
+                                💍{" "}
+                                {selectedMasterWedding.service_type ||
+                                  "Service not added"}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* PROGRESS */}
+                          <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 min-w-[220px]">
+                            <div className="flex items-end justify-between gap-3 mb-2">
+                              <div>
+                                <p className="text-[10px] uppercase tracking-wider font-black text-fuchsia-200">
+                                  Progress
+                                </p>
+
+                                <p className="text-2xl font-black">
+                                  {checklistProgress}%
+                                </p>
+                              </div>
+
+                              <p className="text-xs font-bold text-fuchsia-100">
+                                {completedChecklistCount} /{" "}
+                                {masterChecklistItems.length} Confirmed
+                              </p>
+                            </div>
+
+                            <div className="w-full h-2.5 rounded-full bg-white/20 overflow-hidden">
+                              <div
+                                className="h-full rounded-full bg-emerald-400 transition-all duration-500"
+                                style={{
+                                  width: `${checklistProgress}%`,
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* STATUS LEGEND */}
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <span className="px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-black">
+                          🟢 Confirmed
+                        </span>
+
+                        <span className="px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-black">
+                          🟡 In Progress
+                        </span>
+
+                        <span className="px-3 py-1.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-xs font-black">
+                          🔴 Action Required
+                        </span>
+
+                        <span className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200 text-xs font-black">
+                          ⚪ Not Started
+                        </span>
+                      </div>
+
+                      {/* DESKTOP TABLE */}
+                      <div className="hidden md:block bg-white/90 backdrop-blur-xl rounded-3xl border border-white/50 shadow-xl overflow-hidden">
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left border-collapse">
+                            <thead>
+                              <tr className="bg-fuchsia-50 text-fuchsia-900 uppercase text-xs font-black border-b border-fuchsia-100">
+                                <th className="p-4 w-12 text-center">#</th>
+
+                                <th className="p-4">Item</th>
+
+                                <th className="p-4 w-[190px]">Status</th>
+
+                                <th className="p-4 w-[190px]">Responsible</th>
+
+                                <th className="p-4 w-[170px]">Deadline</th>
+
+                                <th className="p-4 w-[150px] text-center">
+                                  Actions
+                                </th>
+                              </tr>
+                            </thead>
+
+                            <tbody className="divide-y divide-gray-100">
+                              {masterChecklistItems.map((item, index) => (
+                                <tr
+                                  key={item.id}
+                                  className="hover:bg-fuchsia-50/30 transition"
+                                >
+                                  <td className="p-4 text-center text-gray-400 font-bold">
+                                    {index + 1}
+                                  </td>
+
+                                  <td className="p-3">
+                                    <input
+                                      type="text"
+                                      value={item.item_name || ""}
+                                      onChange={(e) =>
+                                        setMasterChecklistItems((current) =>
+                                          current.map((row) =>
+                                            row.id === item.id
+                                              ? {
+                                                  ...row,
+                                                  item_name: e.target.value,
+                                                }
+                                              : row,
+                                          ),
+                                        )
+                                      }
+                                      className="w-full p-2.5 rounded-xl border border-gray-200 bg-white text-sm font-bold outline-none focus:ring-2 focus:ring-fuchsia-300"
+                                    />
+                                  </td>
+
+                                  <td className="p-3">
+                                    <select
+                                      value={item.status}
+                                      onChange={(e) =>
+                                        setMasterChecklistItems((current) =>
+                                          current.map((row) =>
+                                            row.id === item.id
+                                              ? {
+                                                  ...row,
+                                                  status: e.target.value,
+                                                }
+                                              : row,
+                                          ),
+                                        )
+                                      }
+                                      className={`w-full p-2.5 rounded-xl border text-xs font-black outline-none ${
+                                        item.status === "Confirmed"
+                                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                          : item.status === "In Progress"
+                                            ? "bg-amber-50 text-amber-700 border-amber-200"
+                                            : item.status === "Action Required"
+                                              ? "bg-rose-50 text-rose-700 border-rose-200"
+                                              : "bg-gray-50 text-gray-600 border-gray-200"
+                                      }`}
+                                    >
+                                      <option value="Confirmed">
+                                        🟢 Confirmed
+                                      </option>
+
+                                      <option value="In Progress">
+                                        🟡 In Progress
+                                      </option>
+
+                                      <option value="Action Required">
+                                        🔴 Action Required
+                                      </option>
+
+                                      <option value="Not Started">
+                                        ⚪ Not Started
+                                      </option>
+                                    </select>
+                                  </td>
+
+                                  <td className="p-3">
+                                    <input
+                                      type="text"
+                                      placeholder="Responsible person"
+                                      value={item.responsible || ""}
+                                      onChange={(e) =>
+                                        setMasterChecklistItems((current) =>
+                                          current.map((row) =>
+                                            row.id === item.id
+                                              ? {
+                                                  ...row,
+                                                  responsible: e.target.value,
+                                                }
+                                              : row,
+                                          ),
+                                        )
+                                      }
+                                      className="w-full p-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                                    />
+                                  </td>
+
+                                  <td className="p-3">
+                                    <input
+                                      type="date"
+                                      value={item.deadline || ""}
+                                      onChange={(e) =>
+                                        setMasterChecklistItems((current) =>
+                                          current.map((row) =>
+                                            row.id === item.id
+                                              ? {
+                                                  ...row,
+                                                  deadline: e.target.value,
+                                                }
+                                              : row,
+                                          ),
+                                        )
+                                      }
+                                      className="w-full p-2.5 rounded-xl border border-gray-200 text-xs outline-none focus:ring-2 focus:ring-fuchsia-300"
+                                    />
+                                  </td>
+
+                                  <td className="p-3">
+                                    <div className="flex items-center justify-center gap-2">
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          updateMasterChecklistItem(item)
+                                        }
+                                        className="px-3 py-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-black hover:bg-emerald-100 transition"
+                                      >
+                                        Save
+                                      </button>
+
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          deleteMasterChecklistItem(item.id)
+                                        }
+                                        className="px-3 py-2 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 text-xs font-black hover:bg-rose-100 transition"
+                                      >
+                                        ✕
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+
+                      {/* MOBILE CARDS */}
+                      <div className="md:hidden space-y-3">
+                        {masterChecklistItems.map((item, index) => (
+                          <div
+                            key={item.id}
+                            className="bg-white/90 rounded-3xl border border-white/50 shadow-lg p-4"
+                          >
+                            <div className="flex items-center justify-between gap-3 mb-3">
+                              <span className="w-7 h-7 shrink-0 rounded-full bg-fuchsia-100 text-fuchsia-700 flex items-center justify-center text-xs font-black">
+                                {index + 1}
+                              </span>
+
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  deleteMasterChecklistItem(item.id)
+                                }
+                                className="w-8 h-8 rounded-full bg-rose-50 text-rose-600 border border-rose-100 font-black"
+                              >
+                                ✕
+                              </button>
+                            </div>
+
+                            <div className="space-y-3">
+                              <div>
+                                <label className="block text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">
+                                  Item
+                                </label>
+
+                                <input
+                                  type="text"
+                                  value={item.item_name || ""}
+                                  onChange={(e) =>
+                                    setMasterChecklistItems((current) =>
+                                      current.map((row) =>
+                                        row.id === item.id
+                                          ? {
+                                              ...row,
+                                              item_name: e.target.value,
+                                            }
+                                          : row,
+                                      ),
+                                    )
+                                  }
+                                  className="w-full p-3 rounded-xl border border-gray-200 font-bold text-sm"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">
+                                  Status
+                                </label>
+
+                                <select
+                                  value={item.status}
+                                  onChange={(e) =>
+                                    setMasterChecklistItems((current) =>
+                                      current.map((row) =>
+                                        row.id === item.id
+                                          ? {
+                                              ...row,
+                                              status: e.target.value,
+                                            }
+                                          : row,
+                                      ),
+                                    )
+                                  }
+                                  className="w-full p-3 rounded-xl border border-gray-200 text-sm font-black"
+                                >
+                                  <option value="Confirmed">
+                                    🟢 Confirmed
+                                  </option>
+
+                                  <option value="In Progress">
+                                    🟡 In Progress
+                                  </option>
+
+                                  <option value="Action Required">
+                                    🔴 Action Required
+                                  </option>
+
+                                  <option value="Not Started">
+                                    ⚪ Not Started
+                                  </option>
+                                </select>
+                              </div>
+
+                              <div>
+                                <label className="block text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">
+                                  Responsible
+                                </label>
+
+                                <input
+                                  type="text"
+                                  placeholder="Responsible person"
+                                  value={item.responsible || ""}
+                                  onChange={(e) =>
+                                    setMasterChecklistItems((current) =>
+                                      current.map((row) =>
+                                        row.id === item.id
+                                          ? {
+                                              ...row,
+                                              responsible: e.target.value,
+                                            }
+                                          : row,
+                                      ),
+                                    )
+                                  }
+                                  className="w-full p-3 rounded-xl border border-gray-200 text-sm"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">
+                                  Deadline
+                                </label>
+
+                                <input
+                                  type="date"
+                                  value={item.deadline || ""}
+                                  onChange={(e) =>
+                                    setMasterChecklistItems((current) =>
+                                      current.map((row) =>
+                                        row.id === item.id
+                                          ? {
+                                              ...row,
+                                              deadline: e.target.value,
+                                            }
+                                          : row,
+                                      ),
+                                    )
+                                  }
+                                  className="w-full p-3 rounded-xl border border-gray-200 text-sm"
+                                />
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => updateMasterChecklistItem(item)}
+                                className="w-full p-3 rounded-xl bg-emerald-600 text-white text-sm font-black shadow active:scale-95 transition"
+                              >
+                                Save Changes
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* ADD NEW ITEM */}
+                      <div className="mt-5 bg-fuchsia-50/80 border border-fuchsia-100 rounded-3xl p-4 md:p-5 shadow">
+                        <div className="mb-4">
+                          <h3 className="text-base font-black text-fuchsia-900">
+                            ＋ Add New Checklist Item
+                          </h3>
+
+                          <p className="text-xs text-fuchsia-800/60 font-semibold mt-1">
+                            This item will be added only to{" "}
+                            {selectedMasterWedding.couple_name}'s checklist.
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_1fr_auto] gap-3">
+                          <input
+                            type="text"
+                            placeholder="Checklist item name"
+                            value={newChecklistItem.item_name}
+                            onChange={(e) =>
+                              setNewChecklistItem({
+                                ...newChecklistItem,
+                                item_name: e.target.value,
+                              })
+                            }
+                            className="p-3 rounded-xl border border-fuchsia-100 bg-white text-sm outline-none focus:ring-2 focus:ring-fuchsia-300"
+                          />
+
+                          <select
+                            value={newChecklistItem.status}
+                            onChange={(e) =>
+                              setNewChecklistItem({
+                                ...newChecklistItem,
+                                status: e.target.value,
+                              })
+                            }
+                            className="p-3 rounded-xl border border-fuchsia-100 bg-white text-xs font-bold"
+                          >
+                            <option value="Not Started">⚪ Not Started</option>
+
+                            <option value="In Progress">🟡 In Progress</option>
+
+                            <option value="Action Required">
+                              🔴 Action Required
+                            </option>
+
+                            <option value="Confirmed">🟢 Confirmed</option>
+                          </select>
+
+                          <input
+                            type="text"
+                            placeholder="Responsible"
+                            value={newChecklistItem.responsible}
+                            onChange={(e) =>
+                              setNewChecklistItem({
+                                ...newChecklistItem,
+                                responsible: e.target.value,
+                              })
+                            }
+                            className="p-3 rounded-xl border border-fuchsia-100 bg-white text-sm"
+                          />
+
+                          <input
+                            type="date"
+                            value={newChecklistItem.deadline}
+                            onChange={(e) =>
+                              setNewChecklistItem({
+                                ...newChecklistItem,
+                                deadline: e.target.value,
+                              })
+                            }
+                            className="p-3 rounded-xl border border-fuchsia-100 bg-white text-sm"
+                          />
+
+                          <button
+                            type="button"
+                            onClick={addMasterChecklistItem}
+                            className="px-5 py-3 rounded-xl bg-fuchsia-700 text-white text-sm font-black shadow hover:bg-fuchsia-800 active:scale-95 transition whitespace-nowrap"
+                          >
+                            ＋ Add Item
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
               </div>
             )}
 
