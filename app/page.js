@@ -446,6 +446,7 @@ export default function Dashboard() {
   const [masterChecklistWeddingId, setMasterChecklistWeddingId] = useState("");
   const [masterChecklistItems, setMasterChecklistItems] = useState([]);
   const [masterChecklistLoading, setMasterChecklistLoading] = useState(false);
+  const [masterChecklistSaving, setMasterChecklistSaving] = useState(false);
 
   const [newChecklistItem, setNewChecklistItem] = useState({
     item_name: "",
@@ -824,6 +825,10 @@ export default function Dashboard() {
   };
 
   const updateMasterChecklistItem = async (item) => {
+    if (masterChecklistSaving) return;
+
+    setMasterChecklistSaving(true);
+
     try {
       const res = await fetch(`/api/wedding-checklist?id=${item.id}`, {
         method: "PUT",
@@ -853,6 +858,63 @@ export default function Dashboard() {
       console.error("Checklist update error:", error);
 
       triggerNotification("Checklist item could not be saved.", "delete");
+    } finally {
+      setMasterChecklistSaving(false);
+    }
+  };
+
+  const saveAllMasterChecklistItems = async () => {
+    if (
+      masterChecklistSaving ||
+      !masterChecklistWeddingId ||
+      masterChecklistItems.length === 0
+    ) {
+      return;
+    }
+
+    setMasterChecklistSaving(true);
+
+    try {
+      const results = await Promise.all(
+        masterChecklistItems.map(async (item) => {
+          const res = await fetch(`/api/wedding-checklist?id=${item.id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              item_name: item.item_name,
+              status: item.status,
+              responsible: item.responsible || "",
+              deadline: item.deadline || "",
+            }),
+          });
+
+          const json = await res.json();
+
+          if (!res.ok || json.success === false) {
+            throw new Error(json.error || `Failed to save item ${item.id}`);
+          }
+
+          return json;
+        }),
+      );
+
+      if (results.length === masterChecklistItems.length) {
+        triggerNotification(
+          "All checklist changes saved successfully!",
+          "success",
+        );
+      }
+    } catch (error) {
+      console.error("Save all checklist error:", error);
+
+      triggerNotification(
+        "Some checklist changes could not be saved.",
+        "delete",
+      );
+    } finally {
+      setMasterChecklistSaving(false);
     }
   };
 
@@ -6177,7 +6239,23 @@ Chathu Wedding Planners
 
             {/* WEDDING MASTER CONTROL SHEET */}
             {activePage === "masterControl" && (
-              <div className="p-4 md:p-6">
+              <div className="relative p-4 md:p-6">
+                {/* CHECKLIST SAVING OVERLAY */}
+                {masterChecklistSaving && (
+                  <div className="fixed inset-0 z-[999999] bg-black/20 backdrop-blur-[2px] flex items-center justify-center">
+                    <div className="bg-white rounded-3xl shadow-2xl border border-white/60 px-8 py-7 flex flex-col items-center min-w-[220px]">
+                      <div className="w-10 h-10 border-4 border-fuchsia-100 border-t-fuchsia-700 rounded-full animate-spin" />
+
+                      <p className="mt-4 text-sm font-black text-fuchsia-950">
+                        Saving Changes...
+                      </p>
+
+                      <p className="mt-1 text-xs font-semibold text-gray-400">
+                        Please wait
+                      </p>
+                    </div>
+                  </div>
+                )}
                 {/* HEADER */}
                 <div className="mb-6">
                   <h1 className="text-2xl md:text-3xl font-black text-fuchsia-950">
@@ -6320,23 +6398,40 @@ Chathu Wedding Planners
                         </div>
                       </div>
 
-                      {/* STATUS LEGEND */}
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        <span className="px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-black">
-                          🟢 Confirmed
-                        </span>
+                      {/* STATUS LEGEND + SAVE ALL */}
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+                        <div className="flex flex-wrap gap-2">
+                          <span className="px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-black">
+                            🟢 Confirmed
+                          </span>
 
-                        <span className="px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-black">
-                          🟡 In Progress
-                        </span>
+                          <span className="px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-black">
+                            🟡 In Progress
+                          </span>
 
-                        <span className="px-3 py-1.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-xs font-black">
-                          🔴 Action Required
-                        </span>
+                          <span className="px-3 py-1.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-xs font-black">
+                            🔴 Action Required
+                          </span>
 
-                        <span className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200 text-xs font-black">
-                          ⚪ Not Started
-                        </span>
+                          <span className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200 text-xs font-black">
+                            ⚪ Not Started
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={saveAllMasterChecklistItems}
+                          disabled={
+                            masterChecklistSaving ||
+                            masterChecklistLoading ||
+                            masterChecklistItems.length === 0
+                          }
+                          className="w-full md:w-auto px-5 py-2.5 rounded-xl bg-fuchsia-700 text-white text-xs font-black shadow-md hover:bg-fuchsia-800 active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+                        >
+                          {masterChecklistSaving
+                            ? "⏳ Saving..."
+                            : "💾 Save All"}
+                        </button>
                       </div>
 
                       {/* DESKTOP TABLE */}
@@ -6482,9 +6577,12 @@ Chathu Wedding Planners
                                         onClick={() =>
                                           updateMasterChecklistItem(item)
                                         }
-                                        className="px-3 py-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-black hover:bg-emerald-100 transition"
+                                        disabled={masterChecklistSaving}
+                                        className="px-3 py-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-black hover:bg-emerald-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
                                       >
-                                        Save
+                                        {masterChecklistSaving
+                                          ? "Saving..."
+                                          : "Save"}
                                       </button>
 
                                       <button
@@ -6492,7 +6590,8 @@ Chathu Wedding Planners
                                         onClick={() =>
                                           deleteMasterChecklistItem(item.id)
                                         }
-                                        className="px-3 py-2 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 text-xs font-black hover:bg-rose-100 transition"
+                                        disabled={masterChecklistSaving}
+                                        className="px-3 py-2 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 text-xs font-black hover:bg-rose-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
                                       >
                                         ✕
                                       </button>
@@ -6522,6 +6621,7 @@ Chathu Wedding Planners
                                 onClick={() =>
                                   deleteMasterChecklistItem(item.id)
                                 }
+                                disabled={masterChecklistSaving}
                                 className="w-8 h-8 rounded-full bg-rose-50 text-rose-600 border border-rose-100 font-black"
                               >
                                 ✕
@@ -6644,9 +6744,12 @@ Chathu Wedding Planners
                               <button
                                 type="button"
                                 onClick={() => updateMasterChecklistItem(item)}
-                                className="w-full p-3 rounded-xl bg-emerald-600 text-white text-sm font-black shadow active:scale-95 transition"
+                                disabled={masterChecklistSaving}
+                                className="w-full p-3 rounded-xl bg-emerald-600 text-white text-sm font-black shadow active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
                               >
-                                Save Changes
+                                {masterChecklistSaving
+                                  ? "⏳ Saving..."
+                                  : "Save Changes"}
                               </button>
                             </div>
                           </div>
