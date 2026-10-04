@@ -6666,7 +6666,7 @@ Chathu Wedding Planners
                                   <td className="p-2 align-middle">
                                     <input
                                       type="text"
-                                      placeholder="ABC Photography"
+                                      placeholder="Vendor name/company"
                                       value={item.vendor_company || ""}
                                       onChange={(e) =>
                                         setMasterChecklistItems((current) =>
@@ -6842,16 +6842,27 @@ Chathu Wedding Planners
                                     <input
                                       type="text"
                                       readOnly
-                                      value={Math.max(
-                                        (parseFloat(item.full_amount) || 0) -
-                                          (Boolean(item.advance_payment_done)
-                                            ? parseFloat(
-                                                item.advance_payment_amount,
-                                              ) || 0
-                                            : 0),
-                                        0,
-                                      ).toLocaleString()}
-                                      className="w-[110px] p-2 rounded-lg border border-gray-200 bg-gray-100 text-[11px] font-black text-gray-700 cursor-not-allowed"
+                                      value={
+                                        Boolean(item.full_payment_done)
+                                          ? "Fully Paid"
+                                          : Math.max(
+                                              (parseFloat(item.full_amount) ||
+                                                0) -
+                                                (Boolean(
+                                                  item.advance_payment_done,
+                                                )
+                                                  ? parseFloat(
+                                                      item.advance_payment_amount,
+                                                    ) || 0
+                                                  : 0),
+                                              0,
+                                            ).toLocaleString()
+                                      }
+                                      className={`w-[110px] p-2 rounded-lg border text-[11px] font-black cursor-not-allowed ${
+                                        Boolean(item.full_payment_done)
+                                          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                                          : "border-gray-200 bg-gray-100 text-gray-700"
+                                      }`}
                                     />
                                   </td>
 
@@ -7113,7 +7124,7 @@ Chathu Wedding Planners
 
                                     <input
                                       type="text"
-                                      placeholder="ABC Photography"
+                                      placeholder="Vendor name/company"
                                       value={item.vendor_company || ""}
                                       onChange={(e) =>
                                         setMasterChecklistItems((current) =>
@@ -7297,16 +7308,24 @@ Chathu Wedding Planners
                                 <input
                                   type="text"
                                   readOnly
-                                  value={Math.max(
-                                    (parseFloat(item.full_amount) || 0) -
-                                      (Boolean(item.advance_payment_done)
-                                        ? parseFloat(
-                                            item.advance_payment_amount,
-                                          ) || 0
-                                        : 0),
-                                    0,
-                                  ).toLocaleString()}
-                                  className="w-full p-3 rounded-xl border border-gray-200 bg-gray-100 text-sm font-black text-gray-700"
+                                  value={
+                                    Boolean(item.full_payment_done)
+                                      ? "Fully Paid"
+                                      : Math.max(
+                                          (parseFloat(item.full_amount) || 0) -
+                                            (Boolean(item.advance_payment_done)
+                                              ? parseFloat(
+                                                  item.advance_payment_amount,
+                                                ) || 0
+                                              : 0),
+                                          0,
+                                        ).toLocaleString()
+                                  }
+                                  className={`w-full p-3 rounded-xl border text-sm font-black ${
+                                    Boolean(item.full_payment_done)
+                                      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                                      : "border-gray-200 bg-gray-100 text-gray-700"
+                                  }`}
                                 />
                               </div>
 
