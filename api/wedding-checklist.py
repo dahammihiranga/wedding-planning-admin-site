@@ -5,7 +5,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from libsql_client import create_client_sync
 from pydantic import BaseModel
 
-
 app = FastAPI()
 
 app.add_middleware(
@@ -75,12 +74,34 @@ class ChecklistCreate(BaseModel):
     responsible: str = ""
     deadline: str = ""
 
+    vendor_company: str = ""
+    vendor_contact: str = ""
+
+    advance_payment_done: bool = False
+    advance_payment_amount: str = ""
+    advance_payment_date: str = ""
+
+    full_payment_done: bool = False
+    full_payment_amount: str = ""
+    full_payment_date: str = ""
+
 
 class ChecklistUpdate(BaseModel):
     item_name: str
     status: str
     responsible: str = ""
     deadline: str = ""
+
+    vendor_company: str = ""
+    vendor_contact: str = ""
+
+    advance_payment_done: bool = False
+    advance_payment_amount: str = ""
+    advance_payment_date: str = ""
+
+    full_payment_done: bool = False
+    full_payment_amount: str = ""
+    full_payment_date: str = ""
 
 
 def get_client():
@@ -155,6 +176,18 @@ async def get_checklist(
                 status,
                 responsible,
                 deadline,
+            
+                vendor_company,
+                vendor_contact,
+            
+                advance_payment_done,
+                advance_payment_amount,
+                advance_payment_date,
+            
+                full_payment_done,
+                full_payment_amount,
+                full_payment_date,
+            
                 sort_order,
                 created_at
             FROM wedding_checklist_items
@@ -166,10 +199,7 @@ async def get_checklist(
 
         columns = result.columns
 
-        return [
-            dict(zip(columns, row))
-            for row in result.rows
-        ]
+        return [dict(zip(columns, row)) for row in result.rows]
 
     except Exception as e:
         return {
@@ -194,11 +224,7 @@ async def add_checklist_item(data: ChecklistCreate):
                 "error": "Item name is required",
             }
 
-        status = (
-            data.status
-            if data.status in ALLOWED_STATUSES
-            else "Not Started"
-        )
+        status = data.status if data.status in ALLOWED_STATUSES else "Not Started"
 
         result = client.execute(
             """
@@ -209,33 +235,71 @@ async def add_checklist_item(data: ChecklistCreate):
             [data.inquiry_id],
         )
 
-        current_max = (
-            int(result.rows[0][0])
-            if result.rows
-            else 0
-        )
+        current_max = int(result.rows[0][0]) if result.rows else 0
 
         insert_result = client.execute(
-            """
+                """
             INSERT INTO wedding_checklist_items (
                 inquiry_id,
                 item_name,
                 status,
                 responsible,
                 deadline,
+
+                vendor_company,
+                vendor_contact,
+
+                advance_payment_done,
+                advance_payment_amount,
+                advance_payment_date,
+
+                full_payment_done,
+                full_payment_amount,
+                full_payment_date,
+
                 sort_order
             )
-            VALUES (?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            [
-                data.inquiry_id,
-                item_name,
-                status,
-                data.responsible.strip() or None,
-                data.deadline or None,
-                current_max + 1,
-            ],
-        )
+        [
+            data.inquiry_id,
+            item_name,
+            status,
+            data.responsible.strip() or None,
+            data.deadline or None,
+
+            data.vendor_company.strip() or None,
+            data.vendor_contact.strip() or None,
+
+                1 if data.advance_payment_done else 0,
+            (
+                float(data.advance_payment_amount)
+                if data.advance_payment_done
+                and data.advance_payment_amount.strip()
+                else None
+            ),
+            (
+                data.advance_payment_date
+                if data.advance_payment_done
+                else None
+            ),
+
+                1 if data.full_payment_done else 0,
+            (
+                float(data.full_payment_amount)
+                if data.full_payment_done
+                and data.full_payment_amount.strip()
+                else None
+            ),
+            (
+                data.full_payment_date
+                if data.full_payment_done
+                else None
+            ),
+
+            current_max + 1,
+        ],
+    )
 
         return {
             "success": True,
@@ -275,23 +339,65 @@ async def update_checklist_item(
             }
 
         client.execute(
-            """
-            UPDATE wedding_checklist_items
-            SET
-                item_name = ?,
-                status = ?,
-                responsible = ?,
-                deadline = ?
-            WHERE id = ?
-            """,
-            [
-                item_name,
-                data.status,
-                data.responsible.strip() or None,
-                data.deadline or None,
-                id,
-            ],
-        )
+    """
+    UPDATE wedding_checklist_items
+    SET
+        item_name = ?,
+        status = ?,
+        responsible = ?,
+        deadline = ?,
+
+        vendor_company = ?,
+        vendor_contact = ?,
+
+        advance_payment_done = ?,
+        advance_payment_amount = ?,
+        advance_payment_date = ?,
+
+        full_payment_done = ?,
+        full_payment_amount = ?,
+        full_payment_date = ?
+
+    WHERE id = ?
+    """,
+    [
+        item_name,
+        data.status,
+        data.responsible.strip() or None,
+        data.deadline or None,
+
+        data.vendor_company.strip() or None,
+        data.vendor_contact.strip() or None,
+
+        1 if data.advance_payment_done else 0,
+        (
+            float(data.advance_payment_amount)
+            if data.advance_payment_done
+            and data.advance_payment_amount.strip()
+            else None
+        ),
+        (
+            data.advance_payment_date
+            if data.advance_payment_done
+            else None
+        ),
+
+        1 if data.full_payment_done else 0,
+        (
+            float(data.full_payment_amount)
+            if data.full_payment_done
+            and data.full_payment_amount.strip()
+            else None
+        ),
+        (
+            data.full_payment_date
+            if data.full_payment_done
+            else None
+        ),
+
+        id,
+    ],
+)
 
         return {
             "success": True,

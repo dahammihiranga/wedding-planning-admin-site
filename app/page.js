@@ -453,6 +453,17 @@ export default function Dashboard() {
     status: "Not Started",
     responsible: "",
     deadline: "",
+
+    vendor_company: "",
+    vendor_contact: "",
+
+    advance_payment_done: false,
+    advance_payment_amount: "",
+    advance_payment_date: "",
+
+    full_payment_done: false,
+    full_payment_amount: "",
+    full_payment_date: "",
   });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -840,6 +851,25 @@ export default function Dashboard() {
           status: item.status,
           responsible: item.responsible || "",
           deadline: item.deadline || "",
+
+          vendor_company: item.vendor_company || "",
+          vendor_contact: item.vendor_contact || "",
+
+          advance_payment_done: Boolean(item.advance_payment_done),
+          advance_payment_amount: item.advance_payment_done
+            ? item.advance_payment_amount || ""
+            : "",
+          advance_payment_date: item.advance_payment_done
+            ? item.advance_payment_date || ""
+            : "",
+
+          full_payment_done: Boolean(item.full_payment_done),
+          full_payment_amount: item.full_payment_done
+            ? item.full_payment_amount || ""
+            : "",
+          full_payment_date: item.full_payment_done
+            ? item.full_payment_date || ""
+            : "",
         }),
       });
 
@@ -887,6 +917,25 @@ export default function Dashboard() {
               status: item.status,
               responsible: item.responsible || "",
               deadline: item.deadline || "",
+
+              vendor_company: item.vendor_company || "",
+              vendor_contact: item.vendor_contact || "",
+
+              advance_payment_done: Boolean(item.advance_payment_done),
+              advance_payment_amount: item.advance_payment_done
+                ? item.advance_payment_amount || ""
+                : "",
+              advance_payment_date: item.advance_payment_done
+                ? item.advance_payment_date || ""
+                : "",
+
+              full_payment_done: Boolean(item.full_payment_done),
+              full_payment_amount: item.full_payment_done
+                ? item.full_payment_amount || ""
+                : "",
+              full_payment_date: item.full_payment_done
+                ? item.full_payment_date || ""
+                : "",
             }),
           });
 
@@ -941,6 +990,17 @@ export default function Dashboard() {
           status: newChecklistItem.status,
           responsible: newChecklistItem.responsible,
           deadline: newChecklistItem.deadline,
+
+          vendor_company: newChecklistItem.vendor_company,
+          vendor_contact: newChecklistItem.vendor_contact,
+
+          advance_payment_done: newChecklistItem.advance_payment_done,
+          advance_payment_amount: newChecklistItem.advance_payment_amount,
+          advance_payment_date: newChecklistItem.advance_payment_date,
+
+          full_payment_done: newChecklistItem.full_payment_done,
+          full_payment_amount: newChecklistItem.full_payment_amount,
+          full_payment_date: newChecklistItem.full_payment_date,
         }),
       });
 
@@ -959,6 +1019,17 @@ export default function Dashboard() {
         status: "Not Started",
         responsible: "",
         deadline: "",
+
+        vendor_company: "",
+        vendor_contact: "",
+
+        advance_payment_done: false,
+        advance_payment_amount: "",
+        advance_payment_date: "",
+
+        full_payment_done: false,
+        full_payment_amount: "",
+        full_payment_date: "",
       });
 
       await fetchMasterChecklist(masterChecklistWeddingId);
@@ -6450,6 +6521,10 @@ Chathu Wedding Planners
 
                                 <th className="p-4 w-[170px]">Deadline</th>
 
+                                <th className="p-4 min-w-[380px]">
+                                  Vendor & Payments
+                                </th>
+
                                 <th className="p-4 w-[150px] text-center">
                                   Actions
                                 </th>
@@ -6568,6 +6643,300 @@ Chathu Wedding Planners
                                       }
                                       className="w-full p-2.5 rounded-xl border border-gray-200 text-xs outline-none focus:ring-2 focus:ring-fuchsia-300"
                                     />
+                                  </td>
+
+                                  <td className="p-3 align-top">
+                                    <div className="space-y-3 min-w-[380px]">
+                                      {/* VENDOR DETAILS */}
+                                      <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                          <label className="block text-[9px] font-black uppercase tracking-wider text-gray-400 mb-1">
+                                            Vendor / Company
+                                          </label>
+
+                                          <input
+                                            type="text"
+                                            placeholder="ABC Photography"
+                                            value={item.vendor_company || ""}
+                                            onChange={(e) =>
+                                              setMasterChecklistItems(
+                                                (current) =>
+                                                  current.map((row) =>
+                                                    row.id === item.id
+                                                      ? {
+                                                          ...row,
+                                                          vendor_company:
+                                                            e.target.value,
+                                                        }
+                                                      : row,
+                                                  ),
+                                              )
+                                            }
+                                            className="w-full p-2.5 rounded-xl border border-gray-200 bg-white text-xs outline-none focus:ring-2 focus:ring-fuchsia-300"
+                                          />
+                                        </div>
+
+                                        <div>
+                                          <label className="block text-[9px] font-black uppercase tracking-wider text-gray-400 mb-1">
+                                            Contact Number
+                                          </label>
+
+                                          <input
+                                            type="tel"
+                                            placeholder="07X XXX XXXX"
+                                            value={item.vendor_contact || ""}
+                                            onChange={(e) =>
+                                              setMasterChecklistItems(
+                                                (current) =>
+                                                  current.map((row) =>
+                                                    row.id === item.id
+                                                      ? {
+                                                          ...row,
+                                                          vendor_contact:
+                                                            e.target.value,
+                                                        }
+                                                      : row,
+                                                  ),
+                                              )
+                                            }
+                                            className="w-full p-2.5 rounded-xl border border-gray-200 bg-white text-xs outline-none focus:ring-2 focus:ring-fuchsia-300"
+                                          />
+                                        </div>
+                                      </div>
+
+                                      {/* ADVANCE PAYMENT */}
+                                      <div className="rounded-xl border border-amber-100 bg-amber-50/50 p-3">
+                                        <div className="flex items-center justify-between gap-3">
+                                          <span className="text-[10px] font-black uppercase tracking-wider text-amber-800">
+                                            Advance Payment
+                                          </span>
+
+                                          <div className="flex items-center gap-3 text-xs font-bold">
+                                            <label className="flex items-center gap-1 cursor-pointer">
+                                              <input
+                                                type="radio"
+                                                name={`advance-payment-${item.id}`}
+                                                checked={
+                                                  !Boolean(
+                                                    item.advance_payment_done,
+                                                  )
+                                                }
+                                                onChange={() =>
+                                                  setMasterChecklistItems(
+                                                    (current) =>
+                                                      current.map((row) =>
+                                                        row.id === item.id
+                                                          ? {
+                                                              ...row,
+                                                              advance_payment_done: false,
+                                                              advance_payment_amount:
+                                                                "",
+                                                              advance_payment_date:
+                                                                "",
+                                                            }
+                                                          : row,
+                                                      ),
+                                                  )
+                                                }
+                                              />
+                                              No
+                                            </label>
+
+                                            <label className="flex items-center gap-1 cursor-pointer">
+                                              <input
+                                                type="radio"
+                                                name={`advance-payment-${item.id}`}
+                                                checked={Boolean(
+                                                  item.advance_payment_done,
+                                                )}
+                                                onChange={() =>
+                                                  setMasterChecklistItems(
+                                                    (current) =>
+                                                      current.map((row) =>
+                                                        row.id === item.id
+                                                          ? {
+                                                              ...row,
+                                                              advance_payment_done: true,
+                                                            }
+                                                          : row,
+                                                      ),
+                                                  )
+                                                }
+                                              />
+                                              Done
+                                            </label>
+                                          </div>
+                                        </div>
+
+                                        {Boolean(item.advance_payment_done) && (
+                                          <div className="grid grid-cols-2 gap-2 mt-3">
+                                            <input
+                                              type="number"
+                                              min="0"
+                                              step="0.01"
+                                              placeholder="Amount"
+                                              value={
+                                                item.advance_payment_amount ??
+                                                ""
+                                              }
+                                              onChange={(e) =>
+                                                setMasterChecklistItems(
+                                                  (current) =>
+                                                    current.map((row) =>
+                                                      row.id === item.id
+                                                        ? {
+                                                            ...row,
+                                                            advance_payment_amount:
+                                                              e.target.value,
+                                                          }
+                                                        : row,
+                                                    ),
+                                                )
+                                              }
+                                              className="w-full p-2.5 rounded-xl border border-amber-200 bg-white text-xs"
+                                            />
+
+                                            <input
+                                              type="date"
+                                              value={
+                                                item.advance_payment_date || ""
+                                              }
+                                              onChange={(e) =>
+                                                setMasterChecklistItems(
+                                                  (current) =>
+                                                    current.map((row) =>
+                                                      row.id === item.id
+                                                        ? {
+                                                            ...row,
+                                                            advance_payment_date:
+                                                              e.target.value,
+                                                          }
+                                                        : row,
+                                                    ),
+                                                )
+                                              }
+                                              className="w-full p-2.5 rounded-xl border border-amber-200 bg-white text-xs"
+                                            />
+                                          </div>
+                                        )}
+                                      </div>
+
+                                      {/* FULL PAYMENT */}
+                                      <div className="rounded-xl border border-emerald-100 bg-emerald-50/50 p-3">
+                                        <div className="flex items-center justify-between gap-3">
+                                          <span className="text-[10px] font-black uppercase tracking-wider text-emerald-800">
+                                            Full Payment
+                                          </span>
+
+                                          <div className="flex items-center gap-3 text-xs font-bold">
+                                            <label className="flex items-center gap-1 cursor-pointer">
+                                              <input
+                                                type="radio"
+                                                name={`full-payment-${item.id}`}
+                                                checked={
+                                                  !Boolean(
+                                                    item.full_payment_done,
+                                                  )
+                                                }
+                                                onChange={() =>
+                                                  setMasterChecklistItems(
+                                                    (current) =>
+                                                      current.map((row) =>
+                                                        row.id === item.id
+                                                          ? {
+                                                              ...row,
+                                                              full_payment_done: false,
+                                                              full_payment_amount:
+                                                                "",
+                                                              full_payment_date:
+                                                                "",
+                                                            }
+                                                          : row,
+                                                      ),
+                                                  )
+                                                }
+                                              />
+                                              No
+                                            </label>
+
+                                            <label className="flex items-center gap-1 cursor-pointer">
+                                              <input
+                                                type="radio"
+                                                name={`full-payment-${item.id}`}
+                                                checked={Boolean(
+                                                  item.full_payment_done,
+                                                )}
+                                                onChange={() =>
+                                                  setMasterChecklistItems(
+                                                    (current) =>
+                                                      current.map((row) =>
+                                                        row.id === item.id
+                                                          ? {
+                                                              ...row,
+                                                              full_payment_done: true,
+                                                            }
+                                                          : row,
+                                                      ),
+                                                  )
+                                                }
+                                              />
+                                              Done
+                                            </label>
+                                          </div>
+                                        </div>
+
+                                        {Boolean(item.full_payment_done) && (
+                                          <div className="grid grid-cols-2 gap-2 mt-3">
+                                            <input
+                                              type="number"
+                                              min="0"
+                                              step="0.01"
+                                              placeholder="Amount"
+                                              value={
+                                                item.full_payment_amount ?? ""
+                                              }
+                                              onChange={(e) =>
+                                                setMasterChecklistItems(
+                                                  (current) =>
+                                                    current.map((row) =>
+                                                      row.id === item.id
+                                                        ? {
+                                                            ...row,
+                                                            full_payment_amount:
+                                                              e.target.value,
+                                                          }
+                                                        : row,
+                                                    ),
+                                                )
+                                              }
+                                              className="w-full p-2.5 rounded-xl border border-emerald-200 bg-white text-xs"
+                                            />
+
+                                            <input
+                                              type="date"
+                                              value={
+                                                item.full_payment_date || ""
+                                              }
+                                              onChange={(e) =>
+                                                setMasterChecklistItems(
+                                                  (current) =>
+                                                    current.map((row) =>
+                                                      row.id === item.id
+                                                        ? {
+                                                            ...row,
+                                                            full_payment_date:
+                                                              e.target.value,
+                                                          }
+                                                        : row,
+                                                    ),
+                                                )
+                                              }
+                                              className="w-full p-2.5 rounded-xl border border-emerald-200 bg-white text-xs"
+                                            />
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
                                   </td>
 
                                   <td className="p-3">
@@ -6739,6 +7108,267 @@ Chathu Wedding Planners
                                   }
                                   className="w-full p-3 rounded-xl border border-gray-200 text-sm"
                                 />
+                              </div>
+
+                              {/* VENDOR DETAILS */}
+                              <div className="border-t border-gray-100 pt-3">
+                                <p className="text-xs font-black text-fuchsia-900 mb-3">
+                                  🏢 Vendor Details
+                                </p>
+
+                                <div className="space-y-3">
+                                  <div>
+                                    <label className="block text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">
+                                      Vendor / Company Name
+                                    </label>
+
+                                    <input
+                                      type="text"
+                                      placeholder="ABC Photography"
+                                      value={item.vendor_company || ""}
+                                      onChange={(e) =>
+                                        setMasterChecklistItems((current) =>
+                                          current.map((row) =>
+                                            row.id === item.id
+                                              ? {
+                                                  ...row,
+                                                  vendor_company:
+                                                    e.target.value,
+                                                }
+                                              : row,
+                                          ),
+                                        )
+                                      }
+                                      className="w-full p-3 rounded-xl border border-gray-200 text-sm"
+                                    />
+                                  </div>
+
+                                  <div>
+                                    <label className="block text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">
+                                      Contact Number
+                                    </label>
+
+                                    <input
+                                      type="tel"
+                                      placeholder="07X XXX XXXX"
+                                      value={item.vendor_contact || ""}
+                                      onChange={(e) =>
+                                        setMasterChecklistItems((current) =>
+                                          current.map((row) =>
+                                            row.id === item.id
+                                              ? {
+                                                  ...row,
+                                                  vendor_contact:
+                                                    e.target.value,
+                                                }
+                                              : row,
+                                          ),
+                                        )
+                                      }
+                                      className="w-full p-3 rounded-xl border border-gray-200 text-sm"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* ADVANCE PAYMENT */}
+                              <div className="rounded-2xl border border-amber-100 bg-amber-50/60 p-3">
+                                <p className="text-xs font-black text-amber-800 mb-3">
+                                  💰 Advance Payment
+                                </p>
+
+                                <div className="flex gap-5">
+                                  <label className="flex items-center gap-2 text-sm font-bold">
+                                    <input
+                                      type="radio"
+                                      name={`mobile-advance-${item.id}`}
+                                      checked={
+                                        !Boolean(item.advance_payment_done)
+                                      }
+                                      onChange={() =>
+                                        setMasterChecklistItems((current) =>
+                                          current.map((row) =>
+                                            row.id === item.id
+                                              ? {
+                                                  ...row,
+                                                  advance_payment_done: false,
+                                                  advance_payment_amount: "",
+                                                  advance_payment_date: "",
+                                                }
+                                              : row,
+                                          ),
+                                        )
+                                      }
+                                    />
+                                    No
+                                  </label>
+
+                                  <label className="flex items-center gap-2 text-sm font-bold">
+                                    <input
+                                      type="radio"
+                                      name={`mobile-advance-${item.id}`}
+                                      checked={Boolean(
+                                        item.advance_payment_done,
+                                      )}
+                                      onChange={() =>
+                                        setMasterChecklistItems((current) =>
+                                          current.map((row) =>
+                                            row.id === item.id
+                                              ? {
+                                                  ...row,
+                                                  advance_payment_done: true,
+                                                }
+                                              : row,
+                                          ),
+                                        )
+                                      }
+                                    />
+                                    Done
+                                  </label>
+                                </div>
+
+                                {Boolean(item.advance_payment_done) && (
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
+                                    <input
+                                      type="number"
+                                      min="0"
+                                      step="0.01"
+                                      placeholder="Advance amount"
+                                      value={item.advance_payment_amount ?? ""}
+                                      onChange={(e) =>
+                                        setMasterChecklistItems((current) =>
+                                          current.map((row) =>
+                                            row.id === item.id
+                                              ? {
+                                                  ...row,
+                                                  advance_payment_amount:
+                                                    e.target.value,
+                                                }
+                                              : row,
+                                          ),
+                                        )
+                                      }
+                                      className="w-full p-3 rounded-xl border border-amber-200 bg-white text-sm"
+                                    />
+
+                                    <input
+                                      type="date"
+                                      value={item.advance_payment_date || ""}
+                                      onChange={(e) =>
+                                        setMasterChecklistItems((current) =>
+                                          current.map((row) =>
+                                            row.id === item.id
+                                              ? {
+                                                  ...row,
+                                                  advance_payment_date:
+                                                    e.target.value,
+                                                }
+                                              : row,
+                                          ),
+                                        )
+                                      }
+                                      className="w-full p-3 rounded-xl border border-amber-200 bg-white text-sm"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* FULL PAYMENT */}
+                              <div className="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-3">
+                                <p className="text-xs font-black text-emerald-800 mb-3">
+                                  💳 Full Payment
+                                </p>
+
+                                <div className="flex gap-5">
+                                  <label className="flex items-center gap-2 text-sm font-bold">
+                                    <input
+                                      type="radio"
+                                      name={`mobile-full-${item.id}`}
+                                      checked={!Boolean(item.full_payment_done)}
+                                      onChange={() =>
+                                        setMasterChecklistItems((current) =>
+                                          current.map((row) =>
+                                            row.id === item.id
+                                              ? {
+                                                  ...row,
+                                                  full_payment_done: false,
+                                                  full_payment_amount: "",
+                                                  full_payment_date: "",
+                                                }
+                                              : row,
+                                          ),
+                                        )
+                                      }
+                                    />
+                                    No
+                                  </label>
+
+                                  <label className="flex items-center gap-2 text-sm font-bold">
+                                    <input
+                                      type="radio"
+                                      name={`mobile-full-${item.id}`}
+                                      checked={Boolean(item.full_payment_done)}
+                                      onChange={() =>
+                                        setMasterChecklistItems((current) =>
+                                          current.map((row) =>
+                                            row.id === item.id
+                                              ? {
+                                                  ...row,
+                                                  full_payment_done: true,
+                                                }
+                                              : row,
+                                          ),
+                                        )
+                                      }
+                                    />
+                                    Done
+                                  </label>
+                                </div>
+
+                                {Boolean(item.full_payment_done) && (
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
+                                    <input
+                                      type="number"
+                                      min="0"
+                                      step="0.01"
+                                      placeholder="Full payment amount"
+                                      value={item.full_payment_amount ?? ""}
+                                      onChange={(e) =>
+                                        setMasterChecklistItems((current) =>
+                                          current.map((row) =>
+                                            row.id === item.id
+                                              ? {
+                                                  ...row,
+                                                  full_payment_amount:
+                                                    e.target.value,
+                                                }
+                                              : row,
+                                          ),
+                                        )
+                                      }
+                                      className="w-full p-3 rounded-xl border border-emerald-200 bg-white text-sm"
+                                    />
+
+                                    <input
+                                      type="date"
+                                      value={item.full_payment_date || ""}
+                                      onChange={(e) =>
+                                        setMasterChecklistItems((current) =>
+                                          current.map((row) =>
+                                            row.id === item.id
+                                              ? {
+                                                  ...row,
+                                                  full_payment_date:
+                                                    e.target.value,
+                                                }
+                                              : row,
+                                          ),
+                                        )
+                                      }
+                                      className="w-full p-3 rounded-xl border border-emerald-200 bg-white text-sm"
+                                    />
+                                  </div>
+                                )}
                               </div>
 
                               <button
