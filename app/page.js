@@ -32,6 +32,7 @@ const COUNTRIES = [
   { code: "Lebanon", name: "Lebanon", flag: "🇱🇧" },
   { code: "Yemen", name: "Yemen", flag: "🇾🇪" },
   { code: "Italy", name: "Italy", flag: "🇮🇹" },
+  { code: "Malaysia", name: "Malaysia", flag: "🇲🇾" },
 ];
 
 const WindowsFlagFix = () => (
@@ -3906,7 +3907,7 @@ Chathu Wedding Planners
                     : activeTab === "all"
                       ? "Active Wedding Inquiries"
                       : activeTab === "completed"
-                        ? "Our Wedding Enquiries"
+                        ? "Completed Weddings"
                         : "Recycle Track Storage"
                   : activePage === "masterControl"
                     ? "Master Control Sheet"
@@ -3983,7 +3984,7 @@ Chathu Wedding Planners
                     : activeTab === "all"
                       ? "ACTIVE WEDDING INQUIRIES"
                       : activeTab === "completed"
-                        ? "OUR WEDDING ENQUIRIES"
+                        ? "COMPLETED WEDDINGS"
                         : "RECYCLE TRACK STORAGE"}
                 </p>
                 {upcomingWeddings.length > 0 && (
