@@ -3630,9 +3630,7 @@ Chathu Wedding Planners
   });
 
   const pendingPaymentRecords = paymentRecords.filter((item) => {
-    const totalPaid = Number(item.paid_amount || 0);
-
-    return totalPaid === 0;
+    return Number(item.pending_payment || 0) > 0;
   });
 
   const filteredPayments = paymentRecords.filter((item) => {
