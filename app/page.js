@@ -548,12 +548,10 @@ export default function Dashboard() {
   }, []);
 
   const handleTabChange = (tab) => {
-    setTabLoading(true);
+    if (tab === activeTab || tabLoading || isAppBusy) return;
 
-    setTimeout(() => {
-      setActiveTab(tab);
-      setTabLoading(false);
-    }, 350);
+    setTabLoading(true);
+    setActiveTab(tab);
   };
 
   const [formData, setFormData] = useState({
@@ -729,7 +727,19 @@ export default function Dashboard() {
   useEffect(() => {
     if (!mounted) return;
 
-    fetchData();
+    const loadDashboardRecords = async () => {
+      if (activePage === "dashboard") {
+        setTabLoading(true);
+      }
+
+      try {
+        await fetchData();
+      } finally {
+        setTabLoading(false);
+      }
+    };
+
+    loadDashboardRecords();
   }, [activeTab, mounted, deletedRecords.length]);
 
   useEffect(() => {
@@ -4355,20 +4365,21 @@ Chathu Wedding Planners
                   </button>
                 </div>
 
-                {tabLoading && (
-                  <div className="fixed inset-0 z-[99999] bg-black/20 backdrop-blur-sm flex items-center justify-center">
-                    <div className="bg-white/90 backdrop-blur-xl rounded-3xl px-8 py-6 shadow-2xl border border-white/40 flex flex-col items-center gap-4">
-                      <div className="w-14 h-14 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin" />
+                {/* DASHBOARD LOADING OVERLAY */}
+                {(tabLoading || isAppBusy) && (
+                  <div className="fixed inset-0 z-[999999] bg-black/20 backdrop-blur-[2px] flex items-center justify-center">
+                    <div className="bg-white rounded-3xl shadow-2xl border border-white/60 px-8 py-7 flex flex-col items-center min-w-[220px]">
+                      <div className="w-10 h-10 border-4 border-fuchsia-100 border-t-fuchsia-700 rounded-full animate-spin" />
 
-                      <div className="text-center">
-                        <p className="text-base font-bold text-gray-800">
-                          Loading Wedding Records
-                        </p>
+                      <p className="mt-4 text-sm font-black text-fuchsia-950">
+                        {isAppBusy
+                          ? "Saving Changes..."
+                          : "Loading Wedding Records..."}
+                      </p>
 
-                        <p className="text-xs text-gray-500 mt-1">
-                          Please wait a moment...
-                        </p>
-                      </div>
+                      <p className="mt-1 text-xs font-semibold text-gray-400">
+                        Please wait
+                      </p>
                     </div>
                   </div>
                 )}
