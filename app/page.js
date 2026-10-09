@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import axios from "axios";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
@@ -35,6 +36,14 @@ const COUNTRIES = [
 
 const WindowsFlagFix = () => (
   <style jsx global>{`
+    @keyframes toastProgress {
+      from {
+        width: 100%;
+      }
+      to {
+        width: 0%;
+      }
+    }
     .calendar-premium .rbc-calendar {
       font-family: inherit;
     }
@@ -4067,49 +4076,92 @@ Chathu Wedding Planners
           </div>
 
           <div className="relative z-10 flex-1 overflow-x-hidden pb-10">
-            {/* HIGH VISIBILITY FLOATING INTERACTIVE TOAST BARS */}
-            {toast.show && (
-              <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[99999] w-full max-w-md px-4 pointer-events-auto">
+            {/* RESPONSIVE SUCCESS / ERROR TOAST */}
+            {mounted &&
+              toast.show &&
+              createPortal(
                 <div
-                  className={`border backdrop-blur-xl p-4 rounded-2xl flex items-center gap-4 shadow-[0_20px_50px_rgba(0,0,0,0.15)] transition-all animate-notification ${
-                    toast.type === "delete"
-                      ? "bg-rose-950/95 border-rose-500/40 text-rose-50"
-                      : "bg-emerald-950/95 border-emerald-500/40 text-emerald-50"
-                  }`}
+                  role={toast.type === "delete" ? "alert" : "status"}
+                  aria-live={toast.type === "delete" ? "assertive" : "polite"}
+                  className="fixed top-[150px] md:top-6 left-1/2 -translate-x-1/2 z-[2147483647] w-[calc(100%-24px)] max-w-[420px] pointer-events-none"
                 >
                   <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold shrink-0 relative overflow-hidden ${
+                    className={`relative overflow-hidden rounded-2xl border bg-white shadow-[0_12px_35px_rgba(0,0,0,0.16)] pointer-events-auto animate-notification ${
                       toast.type === "delete"
-                        ? "bg-rose-500/20 text-rose-400"
-                        : "bg-emerald-500/20 text-emerald-400"
+                        ? "border-rose-200"
+                        : "border-emerald-200"
                     }`}
                   >
-                    <span className="absolute inset-0 opacity-20 blur-sm animate-pulse-glow bg-current" />
-                    <span className="relative z-10">
-                      {toast.type === "delete" ? "🗑️" : "✨"}
-                    </span>
+                    <div className="flex items-start gap-3 px-4 py-3.5">
+                      {/* Status icon */}
+                      <div
+                        className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
+                          toast.type === "delete"
+                            ? "bg-rose-500"
+                            : "bg-emerald-500"
+                        }`}
+                      >
+                        {toast.type === "delete" ? (
+                          <span className="text-white text-lg font-black">
+                            !
+                          </span>
+                        ) : (
+                          <span className="text-white text-lg font-black">
+                            ✓
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Notification text */}
+                      <div className="flex-1 min-w-0 pt-0.5">
+                        <p className="text-[13px] md:text-sm font-semibold text-slate-800 leading-relaxed break-words whitespace-pre-wrap">
+                          {toast.message}
+                        </p>
+                      </div>
+
+                      {/* Close button */}
+                      <button
+                        type="button"
+                        aria-label="Dismiss notification"
+                        onClick={() =>
+                          setToast({
+                            show: false,
+                            message: "",
+                            type: "success",
+                          })
+                        }
+                        className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                      >
+                        <span className="text-xl leading-none">×</span>
+                      </button>
+                    </div>
+
+                    {/* Notification duration progress bar */}
+                    <div
+                      className={`h-1 w-full ${
+                        toast.type === "delete"
+                          ? "bg-rose-100"
+                          : "bg-emerald-100"
+                      }`}
+                    >
+                      <div
+                        key={`${toast.type}-${toast.message}`}
+                        className={`h-full ${
+                          toast.type === "delete"
+                            ? "bg-rose-500"
+                            : "bg-emerald-500"
+                        }`}
+                        style={{
+                          width: "100%",
+                          animation: "toastProgress 4.5s linear forwards",
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h4 className="text-xs uppercase tracking-widest font-black opacity-60">
-                      {toast.type === "delete"
-                        ? "System Notice"
-                        : "Success Operation"}
-                    </h4>
-                    <p className="text-sm font-medium mt-0.5 leading-relaxed tracking-wide">
-                      {toast.message}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() =>
-                      setToast({ show: false, message: "", type: "success" })
-                    }
-                    className="text-white/40 hover:text-white/90 p-1 text-xs font-bold font-mono"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
-            )}
+                </div>,
+                document.body,
+              )}
+
             {activePage === "dashboard" && (
               <>
                 <div className="hidden md:block relative z-[100] max-w-[98%] mx-auto mt-4 bg-white/90 backdrop-blur-xl border border-gray-100 rounded-2xl shadow-sm p-3 overflow-visible">
@@ -11154,11 +11206,10 @@ Chathu Wedding Planners
           </div>
         </div>
       )}
-            {/* GLOBAL LOADING OVERLAY - ABOVE ALL MODALS */}
+      {/* GLOBAL LOADING OVERLAY - ABOVE ALL MODALS */}
       {isAppBusy && (
         <div className="fixed inset-0 z-[2147483647] bg-black/20 backdrop-blur-[2px] flex items-center justify-center">
           <div className="bg-white rounded-3xl shadow-2xl border border-white/60 px-8 py-7 flex flex-col items-center min-w-[220px]">
-
             <div className="w-10 h-10 border-4 border-fuchsia-100 border-t-fuchsia-700 rounded-full animate-spin" />
 
             <p className="mt-4 text-sm font-black text-fuchsia-950">
@@ -11168,7 +11219,6 @@ Chathu Wedding Planners
             <p className="mt-1 text-xs font-semibold text-gray-400">
               Please wait
             </p>
-
           </div>
         </div>
       )}
