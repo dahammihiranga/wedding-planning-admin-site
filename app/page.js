@@ -469,6 +469,21 @@ export default function Dashboard() {
     full_payment_date: "",
   });
 
+  // Wedding Budget Planner
+  const [budgetWeddingId, setBudgetWeddingId] = useState("");
+  const [budgetItems, setBudgetItems] = useState([]);
+  const [budgetLoading, setBudgetLoading] = useState(false);
+  const [budgetSaving, setBudgetSaving] = useState(false);
+
+  const [expandedBudgetItemId, setExpandedBudgetItemId] = useState(null);
+
+  const [newBudgetItem, setNewBudgetItem] = useState({
+    item_name: "",
+    subitems: "",
+    remarks: "",
+    estimated_amount: "",
+  });
+
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 10;
 
@@ -1478,6 +1493,375 @@ export default function Dashboard() {
     }
   };
 
+  const fetchWeddingBudget = async (weddingId) => {
+    if (!weddingId) {
+      setBudgetItems([]);
+      return;
+    }
+
+    setBudgetLoading(true);
+
+    try {
+      const res = await fetch(`/api/wedding-budget?inquiry_id=${weddingId}`);
+      const json = await res.json();
+
+      if (!res.ok || !Array.isArray(json)) {
+        throw new Error(json.detail || "Budget loading failed");
+      }
+
+      setBudgetItems(json);
+    } catch (error) {
+      console.error(error);
+      setBudgetItems([]);
+      triggerNotification("Unable to load wedding budget.", "delete");
+    } finally {
+      setBudgetLoading(false);
+    }
+  };
+
+  const changeBudgetField = (id, key, value) => {
+    setBudgetItems((current) =>
+      current.map((item) =>
+        item.id === id ? { ...item, [key]: value } : item,
+      ),
+    );
+  };
+
+  const budgetPayload = (item) => ({
+    item_name: item.item_name || "",
+    subitems: item.subitems || "",
+    remarks: item.remarks || "",
+    estimated_amount: String(item.estimated_amount ?? ""),
+  });
+
+  const saveBudgetItems = async (onlyItem = null) => {
+    if (budgetSaving || !budgetWeddingId) return;
+
+    const items = onlyItem ? [onlyItem] : budgetItems;
+
+    if (
+      !items.length ||
+      items.some((item) => !String(item.item_name || "").trim())
+    ) {
+      triggerNotification("Every budget item needs a name.", "delete");
+      return;
+    }
+
+    setBudgetSaving(true);
+
+    try {
+      for (const item of items) {
+        const res = await fetch(`/api/wedding-budget?id=${item.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(budgetPayload(item)),
+        });
+
+        const json = await res.json();
+
+        if (!res.ok || !json.success) {
+          throw new Error(json.detail || "Save failed");
+        }
+      }
+
+      triggerNotification(
+        onlyItem ? "Budget item saved!" : "All budget items saved!",
+        "success",
+      );
+    } catch (error) {
+      console.error(error);
+      triggerNotification("Unable to save all budget changes.", "delete");
+    } finally {
+      setBudgetSaving(false);
+    }
+  };
+
+  const addBudgetItem = async () => {
+    if (!budgetWeddingId || !newBudgetItem.item_name.trim() || budgetSaving) {
+      triggerNotification("Select a wedding and enter an item name.", "delete");
+      return;
+    }
+
+    setBudgetSaving(true);
+
+    try {
+      const res = await fetch("/api/wedding-budget", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          inquiry_id: Number(budgetWeddingId),
+          ...newBudgetItem,
+        }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok || !json.success) {
+        throw new Error(json.detail || "Add failed");
+      }
+
+      setNewBudgetItem({
+        item_name: "",
+        subitems: "",
+        remarks: "",
+        estimated_amount: "",
+      });
+
+      await fetchWeddingBudget(budgetWeddingId);
+
+      triggerNotification("Budget item added!", "success");
+    } catch (error) {
+      console.error(error);
+      triggerNotification("Unable to add budget item.", "delete");
+    } finally {
+      setBudgetSaving(false);
+    }
+  };
+
+  const deleteBudgetItem = async (id) => {
+    if (
+      budgetSaving ||
+      !window.confirm("Remove this budget item from this wedding?")
+    ) {
+      return;
+    }
+
+    setBudgetSaving(true);
+
+    try {
+      const res = await fetch(`/api/wedding-budget?id=${id}`, {
+        method: "DELETE",
+      });
+
+      const json = await res.json();
+
+      if (!res.ok || !json.success) {
+        throw new Error(json.detail || "Delete failed");
+      }
+
+      setBudgetItems((current) => current.filter((item) => item.id !== id));
+
+      triggerNotification("Budget item removed.", "success");
+    } catch (error) {
+      console.error(error);
+      triggerNotification("Unable to delete budget item.", "delete");
+    } finally {
+      setBudgetSaving(false);
+    }
+  };
+
+  const downloadBudgetExcel = async () => {
+    if (!selectedBudgetWedding || !budgetItems.length || budgetSaving) {
+      return;
+    }
+
+    try {
+      const ExcelJS = (await import("exceljs")).default;
+      const workbook = new ExcelJS.Workbook();
+
+      const sheet = workbook.addWorksheet("Wedding Budget", {
+        views: [{ state: "frozen", ySplit: 6 }],
+      });
+
+      sheet.columns = [
+        { width: 8 },
+        { width: 42 },
+        { width: 54 },
+        { width: 50 },
+        { width: 24 },
+      ];
+
+      const merged = (
+        range,
+        value,
+        color = "702477",
+        foreground = "FFFFFF",
+      ) => {
+        sheet.mergeCells(range);
+
+        const cell = sheet.getCell(range.split(":")[0]);
+
+        cell.value = value;
+
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: `FF${color}` },
+        };
+
+        cell.font = {
+          name: "Aptos",
+          bold: true,
+          color: { argb: `FF${foreground}` },
+          size: 12,
+        };
+
+        cell.alignment = {
+          vertical: "middle",
+          indent: 1,
+        };
+      };
+
+      merged("A1:E2", "CHATHU WEDDING PLANNERS - WEDDING BUDGET PLANNER");
+
+      sheet.getRow(1).height = 26;
+      sheet.getRow(2).height = 24;
+
+      merged(
+        "A3:E3",
+        `Couple: ${selectedBudgetWedding.couple_name || "-"}`,
+        "F7EAF8",
+        "702477",
+      );
+
+      merged(
+        "A4:E4",
+        `Date: ${selectedBudgetWedding.wedding_date || "-"}   |   Venue: ${selectedBudgetWedding.hotel || "-"}`,
+        "FFFFFF",
+        "273043",
+      );
+
+      const header = sheet.getRow(6);
+
+      header.values = [
+        "#",
+        "Description",
+        "Sub-items",
+        "Remarks",
+        "Estimated Amount (LKR)",
+      ];
+
+      header.height = 32;
+
+      header.eachCell((cell) => {
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FF702477" },
+        };
+
+        cell.font = {
+          bold: true,
+          color: { argb: "FFFFFFFF" },
+        };
+
+        cell.alignment = {
+          vertical: "middle",
+          wrapText: true,
+        };
+      });
+
+      const excelSafe = (value) => {
+        const text = String(value ?? "");
+
+        return /^[=+\-@\t\r\n]/.test(text) ? "'" + text : text;
+      };
+
+      budgetItems.forEach((item, index) => {
+        const amount =
+          item.estimated_amount === "" || item.estimated_amount == null
+            ? null
+            : Number(item.estimated_amount);
+
+        const row = sheet.getRow(index + 7);
+
+        row.values = [
+          index + 1,
+          excelSafe(item.item_name),
+          excelSafe(item.subitems),
+          excelSafe(item.remarks),
+          Number.isFinite(amount) ? amount : null,
+        ];
+
+        row.height = Math.max(
+          30,
+          Math.min(
+            105,
+            15 * (String(item.subitems || "").split("\n").length + 1),
+          ),
+        );
+
+        row.eachCell({ includeEmpty: true }, (cell) => {
+          cell.alignment = {
+            vertical: "middle",
+            wrapText: true,
+          };
+
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: {
+              argb: index % 2 ? "FFFAF7FB" : "FFFFFFFF",
+            },
+          };
+
+          cell.border = {
+            bottom: {
+              style: "hair",
+              color: { argb: "FFE5E7EB" },
+            },
+          };
+        });
+
+        row.getCell(5).numFmt = "#,##0.00";
+      });
+
+      const totalRow = budgetItems.length + 8;
+
+      merged(`A${totalRow}:D${totalRow}`, "TOTAL ESTIMATED WEDDING BUDGET");
+
+      sheet.getCell(`E${totalRow}`).value = {
+        formula: `SUM(E7:E${totalRow - 2})`,
+        result: budgetItems.reduce(
+          (sum, item) => sum + (Number(item.estimated_amount) || 0),
+          0,
+        ),
+      };
+
+      sheet.getCell(`E${totalRow}`).numFmt = "#,##0.00";
+
+      sheet.getCell(`E${totalRow}`).font = {
+        bold: true,
+        color: { argb: "FF702477" },
+      };
+
+      sheet.getRow(totalRow).height = 32;
+
+      sheet.autoFilter = {
+        from: "A6",
+        to: `E${totalRow - 2}`,
+      };
+
+      const buffer = await workbook.xlsx.writeBuffer();
+
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+
+      link.download = `${String(selectedBudgetWedding.couple_name || "Wedding")
+        .replace(/[^a-zA-Z0-9 -]/g, "")
+        .trim()
+        .replace(/\s+/g, "_")}_Budget_Plan.xlsx`;
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      triggerNotification("Budget Excel downloaded!", "success");
+    } catch (error) {
+      console.error(error);
+
+      triggerNotification("Unable to download budget Excel.", "delete");
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -1634,7 +2018,8 @@ export default function Dashboard() {
     if (
       (page === "customers" ||
         page === "payments" ||
-        page === "masterControl") &&
+        page === "masterControl" ||
+        page === "budgetPlanner") &&
       activeTab !== "allRecords"
     ) {
       setActiveTab("allRecords");
@@ -3167,6 +3552,15 @@ Chathu Wedding Planners
     (item) => Number(item.id) === Number(masterChecklistWeddingId),
   );
 
+  const selectedBudgetWedding = masterControlWeddings.find(
+    (item) => Number(item.id) === Number(budgetWeddingId),
+  );
+
+  const budgetTotal = budgetItems.reduce(
+    (sum, item) => sum + (Number(item.estimated_amount) || 0),
+    0,
+  );
+
   const completedChecklistCount = masterChecklistItems.filter(
     (item) => item.status === "Confirmed",
   ).length;
@@ -3566,6 +3960,11 @@ Chathu Wedding Planners
                     label: "Master Control Sheet",
                     icon: "📋",
                   },
+                  {
+                    key: "budgetPlanner",
+                    label: "Wedding Budget Planner",
+                    icon: "💰",
+                  },
                   { key: "vendors", label: "Vendors", icon: "🤝" },
                   { key: "payments", label: "Payments", icon: "💳" },
                   { key: "packages", label: "Our Packages", icon: "📦" },
@@ -3617,6 +4016,17 @@ Chathu Wedding Planners
                 }`}
               >
                 📋 Wedding Management
+              </button>
+
+              <button
+                onClick={() => navigateToPage("budgetPlanner")}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition ${
+                  activePage === "budgetPlanner"
+                    ? "bg-emerald-100 text-emerald-800"
+                    : "hover:bg-white/60 text-gray-700"
+                }`}
+              >
+                💰 Wedding Budget Planner
               </button>
 
               <button
@@ -7994,6 +8404,420 @@ Chathu Wedding Planners
                       </div>
                     </>
                   )}
+              </div>
+            )}
+
+            {/* WEDDING BUDGET PLANNER */}
+            {activePage === "budgetPlanner" && (
+              <div className="relative p-4 md:p-6">
+                {budgetSaving && (
+                  <div className="fixed inset-0 z-[999999] bg-black/20 backdrop-blur-[2px] flex items-center justify-center">
+                    <div className="bg-white rounded-3xl shadow-2xl border border-white/60 px-8 py-7 flex flex-col items-center">
+                      <div className="w-10 h-10 border-4 border-fuchsia-100 border-t-fuchsia-700 rounded-full animate-spin" />
+                      <p className="mt-4 text-sm font-black text-fuchsia-950">
+                        Saving Changes...
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <div className="mb-6">
+                  <h1 className="text-2xl md:text-3xl font-black text-fuchsia-950">
+                    💰 Wedding Budget Planner
+                  </h1>
+                  <p className="text-sm text-fuchsia-900/70 mt-1 font-semibold">
+                    Plan and track each wedding's estimated expenses.
+                  </p>
+                </div>
+                <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/50 shadow-xl p-4 md:p-5 mb-5">
+                  <label className="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">
+                    Select Wedding
+                  </label>
+                  <select
+                    value={budgetWeddingId}
+                    onChange={async (e) => {
+                      const id = e.target.value;
+                      setBudgetWeddingId(id);
+                      setExpandedBudgetItemId(null);
+                      setBudgetItems([]);
+                      await fetchWeddingBudget(id);
+                    }}
+                    className="w-full p-3.5 rounded-2xl border border-fuchsia-100 bg-white text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-fuchsia-300"
+                  >
+                    <option value="">
+                      Select a confirmed or completed wedding...
+                    </option>
+                    {masterControlWeddings.map((wedding) => (
+                      <option key={wedding.id} value={wedding.id}>
+                        {wedding.couple_name} —{" "}
+                        {wedding.wedding_date || "No wedding date"}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {!budgetWeddingId && (
+                  <div className="bg-white/80 rounded-3xl shadow-xl p-10 text-center text-gray-500">
+                    💍 Select a wedding to open its budget planner.
+                  </div>
+                )}
+                {budgetWeddingId && budgetLoading && (
+                  <div className="bg-white rounded-3xl shadow-xl p-10 text-center font-bold text-fuchsia-950">
+                    Loading Wedding Budget...
+                  </div>
+                )}
+                {budgetWeddingId && !budgetLoading && selectedBudgetWedding && (
+                  <>
+                    <div className="bg-gradient-to-br from-fuchsia-950 to-fuchsia-800 text-white rounded-3xl p-5 md:p-6 shadow-xl mb-5">
+                      <p className="text-[10px] uppercase tracking-[0.2em] font-black text-fuchsia-200">
+                        Wedding Budget
+                      </p>
+                      <h2 className="text-xl md:text-2xl font-black mt-1">
+                        {selectedBudgetWedding.couple_name}
+                      </h2>
+                      <p className="text-xs mt-2 text-fuchsia-100">
+                        📅{" "}
+                        {selectedBudgetWedding.wedding_date || "Date not set"} ·
+                        🏨 {selectedBudgetWedding.hotel || "Venue not set"}
+                      </p>
+                      <div className="mt-5 grid grid-cols-2 gap-3">
+                        <div className="bg-white/10 rounded-2xl p-4">
+                          <p className="text-xs text-fuchsia-100">
+                            Budget Items
+                          </p>
+                          <p className="text-xl font-black mt-1">
+                            {budgetItems.length}
+                          </p>
+                        </div>
+                        <div className="bg-white/10 rounded-2xl p-4">
+                          <p className="text-xs text-fuchsia-100">
+                            Estimated Total (LKR)
+                          </p>
+                          <p className="text-xl font-black mt-1">
+                            {budgetTotal.toLocaleString("en-LK", {
+                              maximumFractionDigits: 2,
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-2 justify-end mb-5">
+                      <button
+                        type="button"
+                        onClick={() => saveBudgetItems()}
+                        disabled={budgetSaving || !budgetItems.length}
+                        className="px-5 py-3 rounded-xl bg-fuchsia-700 text-white text-xs font-black shadow-md disabled:opacity-50"
+                      >
+                        💾 Save All
+                      </button>
+                      <button
+                        type="button"
+                        onClick={downloadBudgetExcel}
+                        disabled={budgetSaving || !budgetItems.length}
+                        className="px-5 py-3 rounded-xl bg-emerald-600 text-white text-xs font-black shadow-md disabled:opacity-50"
+                      >
+                        📊 Download Excel
+                      </button>
+                    </div>
+                    <div className="hidden md:block bg-white/90 backdrop-blur-xl rounded-3xl border border-white/50 shadow-xl overflow-x-auto mb-5">
+                      <table className="w-full min-w-[1000px] text-xs">
+                        <thead className="bg-fuchsia-950 text-white">
+                          <tr>
+                            {[
+                              "#",
+                              "Description",
+                              "Sub-items",
+                              "Remarks",
+                              "Estimated Amount (LKR)",
+                              "Actions",
+                            ].map((heading) => (
+                              <th
+                                key={heading}
+                                className="px-3 py-4 text-left font-black"
+                              >
+                                {heading}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {budgetItems.map((item, index) => (
+                            <tr
+                              key={item.id}
+                              className="border-b border-fuchsia-50 align-top hover:bg-fuchsia-50/30"
+                            >
+                              <td className="p-3 font-black text-fuchsia-800">
+                                {index + 1}
+                              </td>
+                              <td className="p-2">
+                                <input
+                                  value={item.item_name || ""}
+                                  onChange={(e) =>
+                                    changeBudgetField(
+                                      item.id,
+                                      "item_name",
+                                      e.target.value,
+                                    )
+                                  }
+                                  className="w-full min-w-[160px] p-2.5 rounded-xl border border-fuchsia-100 text-xs"
+                                />
+                              </td>
+                              <td className="p-2">
+                                <textarea
+                                  rows={3}
+                                  value={item.subitems || ""}
+                                  onChange={(e) =>
+                                    changeBudgetField(
+                                      item.id,
+                                      "subitems",
+                                      e.target.value,
+                                    )
+                                  }
+                                  className="w-full min-w-[200px] p-2.5 rounded-xl border border-fuchsia-100 text-xs"
+                                  placeholder="One sub-item per line"
+                                />
+                              </td>
+                              <td className="p-2">
+                                <textarea
+                                  rows={3}
+                                  value={item.remarks || ""}
+                                  onChange={(e) =>
+                                    changeBudgetField(
+                                      item.id,
+                                      "remarks",
+                                      e.target.value,
+                                    )
+                                  }
+                                  className="w-full min-w-[180px] p-2.5 rounded-xl border border-fuchsia-100 text-xs"
+                                />
+                              </td>
+                              <td className="p-2">
+                                <input
+                                  type="number"
+                                  min="0"
+                                  step="0.01"
+                                  value={item.estimated_amount ?? ""}
+                                  onChange={(e) =>
+                                    changeBudgetField(
+                                      item.id,
+                                      "estimated_amount",
+                                      e.target.value,
+                                    )
+                                  }
+                                  className="w-full min-w-[120px] p-2.5 rounded-xl border border-fuchsia-100 text-xs"
+                                />
+                              </td>
+                              <td className="p-2">
+                                <div className="flex gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => saveBudgetItems(item)}
+                                    disabled={budgetSaving}
+                                    className="px-3 py-2 bg-emerald-600 text-white rounded-xl font-black disabled:opacity-50"
+                                  >
+                                    Save
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => deleteBudgetItem(item.id)}
+                                    disabled={budgetSaving}
+                                    className="px-3 py-2 bg-rose-50 text-rose-600 rounded-xl font-black disabled:opacity-50"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="md:hidden space-y-3 mb-5">
+                      {budgetItems.map((item, index) => (
+                        <div
+                          key={item.id}
+                          className="bg-white/90 rounded-2xl border border-white/50 shadow-md overflow-hidden"
+                        >
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setExpandedBudgetItemId((current) =>
+                                current === item.id ? null : item.id,
+                              )
+                            }
+                            className="w-full flex items-center gap-3 p-4 text-left active:bg-fuchsia-50 transition"
+                          >
+                            <span className="w-8 h-8 shrink-0 rounded-full bg-fuchsia-100 text-fuchsia-700 flex items-center justify-center text-xs font-black">
+                              {index + 1}
+                            </span>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-black text-gray-800 truncate">
+                                {item.item_name || "Untitled Item"}
+                              </p>
+                              <p className="text-xs text-fuchsia-700 mt-1">
+                                {item.estimated_amount === "" ||
+                                item.estimated_amount == null
+                                  ? "Not budgeted"
+                                  : `LKR ${Number(item.estimated_amount).toLocaleString("en-LK")}`}
+                              </p>
+                            </div>
+                            <span
+                              className={`w-9 h-9 shrink-0 rounded-full bg-fuchsia-50 text-fuchsia-700 flex items-center justify-center text-lg font-black transition-transform duration-200 ${expandedBudgetItemId === item.id ? "rotate-180" : ""}`}
+                            >
+                              ⌄
+                            </span>
+                          </button>
+                          {expandedBudgetItemId === item.id && (
+                            <div className="p-4 pt-3 border-t border-gray-100 space-y-3">
+                              {[
+                                { key: "item_name", label: "Description" },
+                                {
+                                  key: "subitems",
+                                  label: "Sub-items (one per line)",
+                                  multiline: true,
+                                },
+                                {
+                                  key: "remarks",
+                                  label: "Remarks",
+                                  multiline: true,
+                                },
+                              ].map((field) => (
+                                <label key={field.key} className="block">
+                                  <span className="block text-xs font-black text-gray-500 mb-1">
+                                    {field.label}
+                                  </span>
+                                  {field.multiline ? (
+                                    <textarea
+                                      rows={4}
+                                      value={item[field.key] || ""}
+                                      onChange={(e) =>
+                                        changeBudgetField(
+                                          item.id,
+                                          field.key,
+                                          e.target.value,
+                                        )
+                                      }
+                                      className="w-full p-3 rounded-xl border border-fuchsia-100 text-sm"
+                                    />
+                                  ) : (
+                                    <input
+                                      value={item[field.key] || ""}
+                                      onChange={(e) =>
+                                        changeBudgetField(
+                                          item.id,
+                                          field.key,
+                                          e.target.value,
+                                        )
+                                      }
+                                      className="w-full p-3 rounded-xl border border-fuchsia-100 text-sm"
+                                    />
+                                  )}
+                                </label>
+                              ))}
+                              <label className="block">
+                                <span className="block text-xs font-black text-gray-500 mb-1">
+                                  Estimated Amount (LKR)
+                                </span>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  step="0.01"
+                                  value={item.estimated_amount ?? ""}
+                                  onChange={(e) =>
+                                    changeBudgetField(
+                                      item.id,
+                                      "estimated_amount",
+                                      e.target.value,
+                                    )
+                                  }
+                                  className="w-full p-3 rounded-xl border border-fuchsia-100 text-sm"
+                                />
+                              </label>
+                              <button
+                                type="button"
+                                onClick={() => saveBudgetItems(item)}
+                                disabled={budgetSaving}
+                                className="w-full p-3 rounded-xl bg-emerald-600 text-white text-sm font-black disabled:opacity-50"
+                              >
+                                Save Changes
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => deleteBudgetItem(item.id)}
+                                disabled={budgetSaving}
+                                className="w-full p-3 rounded-xl bg-rose-50 text-rose-600 text-sm font-black disabled:opacity-50"
+                              >
+                                ✕ Delete Item
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/50 shadow-xl p-4 md:p-5">
+                      <h3 className="text-lg font-black text-fuchsia-950 mb-4">
+                        ＋ Add New Budget Item
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          placeholder="Item name *"
+                          value={newBudgetItem.item_name}
+                          onChange={(e) =>
+                            setNewBudgetItem((current) => ({
+                              ...current,
+                              item_name: e.target.value,
+                            }))
+                          }
+                          className="p-3 rounded-xl border border-fuchsia-100 text-sm"
+                        />
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          placeholder="Estimated Amount (LKR)"
+                          value={newBudgetItem.estimated_amount}
+                          onChange={(e) =>
+                            setNewBudgetItem((current) => ({
+                              ...current,
+                              estimated_amount: e.target.value,
+                            }))
+                          }
+                          className="p-3 rounded-xl border border-fuchsia-100 text-sm"
+                        />
+                        <textarea
+                          rows={3}
+                          placeholder="Sub-items (one per line)"
+                          value={newBudgetItem.subitems}
+                          onChange={(e) =>
+                            setNewBudgetItem((current) => ({
+                              ...current,
+                              subitems: e.target.value,
+                            }))
+                          }
+                          className="p-3 rounded-xl border border-fuchsia-100 text-sm"
+                        />
+                        <textarea
+                          rows={3}
+                          placeholder="Remarks"
+                          value={newBudgetItem.remarks}
+                          onChange={(e) =>
+                            setNewBudgetItem((current) => ({
+                              ...current,
+                              remarks: e.target.value,
+                            }))
+                          }
+                          className="p-3 rounded-xl border border-fuchsia-100 text-sm"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={addBudgetItem}
+                        disabled={budgetSaving}
+                        className="mt-4 px-5 py-3 rounded-xl bg-fuchsia-700 text-white text-sm font-black shadow disabled:opacity-50"
+                      >
+                        ＋ Add Item
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
