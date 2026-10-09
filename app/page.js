@@ -4366,15 +4366,13 @@ Chathu Wedding Planners
                 </div>
 
                 {/* DASHBOARD LOADING OVERLAY */}
-                {(tabLoading || isAppBusy) && (
+                {tabLoading && (
                   <div className="fixed inset-0 z-[999999] bg-black/20 backdrop-blur-[2px] flex items-center justify-center">
                     <div className="bg-white rounded-3xl shadow-2xl border border-white/60 px-8 py-7 flex flex-col items-center min-w-[220px]">
                       <div className="w-10 h-10 border-4 border-fuchsia-100 border-t-fuchsia-700 rounded-full animate-spin" />
 
                       <p className="mt-4 text-sm font-black text-fuchsia-950">
-                        {isAppBusy
-                          ? "Saving Changes..."
-                          : "Loading Wedding Records..."}
+                        Loading Wedding Records...
                       </p>
 
                       <p className="mt-1 text-xs font-semibold text-gray-400">
@@ -11153,6 +11151,24 @@ Chathu Wedding Planners
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+            {/* GLOBAL LOADING OVERLAY - ABOVE ALL MODALS */}
+      {isAppBusy && (
+        <div className="fixed inset-0 z-[2147483647] bg-black/20 backdrop-blur-[2px] flex items-center justify-center">
+          <div className="bg-white rounded-3xl shadow-2xl border border-white/60 px-8 py-7 flex flex-col items-center min-w-[220px]">
+
+            <div className="w-10 h-10 border-4 border-fuchsia-100 border-t-fuchsia-700 rounded-full animate-spin" />
+
+            <p className="mt-4 text-sm font-black text-fuchsia-950">
+              Saving Changes...
+            </p>
+
+            <p className="mt-1 text-xs font-semibold text-gray-400">
+              Please wait
+            </p>
+
           </div>
         </div>
       )}
