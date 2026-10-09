@@ -3852,7 +3852,7 @@ Chathu Wedding Planners
       <div className="absolute inset-0 bg-white/75 backdrop-blur-[2px] pointer-events-none"></div>
       <div className="relative z-10 flex flex-col w-full">
         <header
-          className="w-full text-emerald-950 shadow-xl backdrop-blur-xl px-3 py-3 md:p-4 sticky top-0 z-[999] border-b border-white/30"
+          className="w-full text-emerald-950 shadow-xl backdrop-blur-xl px-3 py-2.5 md:p-4 sticky top-0 z-[999] border-b border-white/30"
           style={{
             backgroundImage: "url('/header-nav-img.jpg')",
             backgroundSize: "cover",
@@ -3860,7 +3860,104 @@ Chathu Wedding Planners
             backgroundRepeat: "no-repeat",
           }}
         >
-          <div className="flex items-center justify-between gap-2">
+          {/* COMPACT MOBILE HEADER - DESKTOP UNAFFECTED */}
+          <div className="md:hidden space-y-2">
+            {/* Row 1: Menu, logo, brand, logout */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                aria-label="Open navigation menu"
+                onClick={() => setIsMobileSidebarOpen(true)}
+                className="w-9 h-9 shrink-0 rounded-xl bg-white/70 border border-white/60 shadow-sm flex items-center justify-center text-fuchsia-950 text-xl font-bold"
+              >
+                ☰
+              </button>
+
+              <img
+                src="/official Logo.png"
+                alt="Chathu Wedding Planners"
+                className="w-10 h-10 shrink-0 object-contain rounded-full"
+              />
+
+              <div className="min-w-0 flex-1">
+                <h1 className="text-[14px] leading-tight font-extrabold text-fuchsia-950">
+                  Chathu Wedding Planners
+                </h1>
+                <p className="text-[9px] font-medium text-fuchsia-800/80">
+                  Wedding Management System
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="shrink-0 rounded-xl px-3 py-2 bg-white/70 border border-white/60 text-fuchsia-950 text-[11px] font-bold shadow-sm"
+              >
+                Logout
+              </button>
+            </div>
+
+            {/* Row 2: Current page and Sri Lanka time */}
+            <div className="flex items-center justify-between gap-3 border-t border-fuchsia-900/10 pt-2">
+              <p className="min-w-0 flex-1 text-[10px] font-bold uppercase tracking-wide text-fuchsia-950 leading-snug">
+                {activePage === "dashboard"
+                  ? activeTab === "allRecords"
+                    ? "All Wedding Records"
+                    : activeTab === "all"
+                      ? "Active Wedding Inquiries"
+                      : activeTab === "completed"
+                        ? "Our Wedding Enquiries"
+                        : "Recycle Track Storage"
+                  : activePage === "masterControl"
+                    ? "Master Control Sheet"
+                    : activePage === "budgetPlanner"
+                      ? "Wedding Budget Planner"
+                      : activePage === "customers"
+                        ? "Customer Management"
+                        : activePage === "payments"
+                          ? "Payment Management"
+                          : activePage === "vendors"
+                            ? "Vendor Management"
+                            : activePage === "calendar"
+                              ? "Wedding Calendar"
+                              : "Wedding Management"}
+              </p>
+
+              <div className="shrink-0 text-right">
+                <p className="text-[8px] font-bold uppercase tracking-wider text-fuchsia-800">
+                  Sri Lanka
+                </p>
+                <p className="text-[10px] font-bold text-fuchsia-950 whitespace-nowrap">
+                  {currentSLTime}
+                </p>
+              </div>
+            </div>
+
+            {/* Upcoming wedding alerts - mobile */}
+            {upcomingWeddings.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setIsWeddingAlertModalOpen(true)}
+                  className="rounded-full bg-rose-100/90 px-2.5 py-1 text-[10px] font-bold text-rose-700 border border-rose-200"
+                >
+                  🔔 {upcomingWeddings.length} Within 14 Days
+                </button>
+
+                {urgentUpcomingWeddings.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setIsWeddingAlertModalOpen(true)}
+                    className="rounded-full bg-red-600 px-2.5 py-1 text-[10px] font-bold text-white"
+                  >
+                    🚨 {urgentUpcomingWeddings.length} Within 7 Days
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="hidden md:flex items-center justify-between gap-2">
             <div className="flex items-center gap-3">
               <button
                 type="button"
@@ -4083,7 +4180,7 @@ Chathu Wedding Planners
                 <div
                   role={toast.type === "delete" ? "alert" : "status"}
                   aria-live={toast.type === "delete" ? "assertive" : "polite"}
-                  className="fixed top-[150px] md:top-6 left-1/2 -translate-x-1/2 z-[2147483647] w-[calc(100%-24px)] max-w-[420px] pointer-events-none"
+                  className="fixed top-[112px] md:top-6 left-1/2 -translate-x-1/2 z-[2147483647] w-[calc(100%-24px)] max-w-[420px] pointer-events-none"
                 >
                   <div
                     className={`relative overflow-hidden rounded-2xl border bg-white shadow-[0_12px_35px_rgba(0,0,0,0.16)] pointer-events-auto animate-notification ${
