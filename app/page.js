@@ -968,6 +968,405 @@ export default function Dashboard() {
     }
   };
 
+  const downloadMasterChecklistExcel = async () => {
+    if (
+      !selectedMasterWedding ||
+      masterChecklistItems.length === 0 ||
+      masterChecklistSaving ||
+      masterChecklistLoading
+    ) {
+      return;
+    }
+
+    try {
+      const ExcelJS = (await import("exceljs")).default;
+
+      const workbook = new ExcelJS.Workbook();
+      workbook.creator = "Chathu Wedding Planners";
+      workbook.created = new Date();
+
+      const sheet = workbook.addWorksheet("Master Control Sheet", {
+        views: [{ state: "frozen", ySplit: 7, xSplit: 2 }],
+        pageSetup: {
+          paperSize: 9,
+          orientation: "landscape",
+          fitToPage: true,
+          fitToWidth: 1,
+          fitToHeight: 0,
+        },
+      });
+
+      const purple = "702477";
+      const lightPurple = "F7EAF8";
+      const white = "FFFFFF";
+      const dark = "273043";
+      const green = "DCFCE7";
+      const yellow = "FEF3C7";
+      const red = "FEE2E2";
+      const gray = "F1F5F9";
+
+      const money = "#,##0.00;[Red](#,##0.00);–";
+
+      sheet.columns = [
+        { key: "number", width: 7 },
+        { key: "item", width: 38 },
+        { key: "status", width: 20 },
+        { key: "responsible", width: 22 },
+        { key: "deadline", width: 18 },
+        { key: "vendor", width: 32 },
+        { key: "contact", width: 22 },
+        { key: "fullAmount", width: 20 },
+        { key: "advancePaid", width: 17 },
+        { key: "advanceAmount", width: 21 },
+        { key: "advanceDate", width: 19 },
+        { key: "balance", width: 22 },
+        { key: "fullPaid", width: 18 },
+        { key: "fullDate", width: 19 },
+      ];
+
+      const mergeLabel = (range, value, background, color, fontSize) => {
+        sheet.mergeCells(range);
+        const cell = sheet.getCell(range.split(":")[0]);
+        cell.value = value;
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FF" + background },
+        };
+        cell.font = {
+          name: "Aptos",
+          size: fontSize,
+          bold: true,
+          color: { argb: "FF" + color },
+        };
+        cell.alignment = {
+          vertical: "middle",
+          horizontal: "left",
+          indent: 1,
+        };
+      };
+
+      mergeLabel("A1:N2", "CHATHU WEDDING PLANNERS", purple, white, 20);
+      sheet.getRow(1).height = 25;
+      sheet.getRow(2).height = 23;
+
+      mergeLabel(
+        "A3:N3",
+        "WEDDING MASTER CONTROL SHEET",
+        lightPurple,
+        purple,
+        14,
+      );
+      sheet.getRow(3).height = 32;
+
+      mergeLabel(
+        "A4:G4",
+        `Couple: ${selectedMasterWedding.couple_name || "-"}`,
+        white,
+        dark,
+        12,
+      );
+      mergeLabel(
+        "H4:N4",
+        `Wedding Date: ${selectedMasterWedding.wedding_date || "-"}`,
+        white,
+        dark,
+        12,
+      );
+      mergeLabel(
+        "A5:G5",
+        `Hotel: ${selectedMasterWedding.hotel || "-"}`,
+        white,
+        dark,
+        12,
+      );
+      mergeLabel(
+        "H5:N5",
+        `Service: ${selectedMasterWedding.service_type || "-"}`,
+        white,
+        dark,
+        11,
+      );
+
+      mergeLabel(
+        "A6:N6",
+        `Checklist Progress: ${completedChecklistCount} / ${masterChecklistItems.length} Confirmed (${checklistProgress}%)`,
+        "ECFDF5",
+        "047857",
+        12,
+      );
+      sheet.getRow(6).height = 30;
+
+      const headers = [
+        "#",
+        "Item",
+        "Status",
+        "Responsible",
+        "Deadline",
+        "Vendor / Company",
+        "Contact Number",
+        "Full Amount (LKR)",
+        "Advance Paid",
+        "Advance Amount (LKR)",
+        "Advance Paid Date",
+        "Remaining Balance (LKR)",
+        "Full Payment",
+        "Full Payment Date",
+      ];
+
+      const headerRow = sheet.getRow(7);
+      headerRow.values = headers;
+      headerRow.height = 42;
+
+      headerRow.eachCell((cell) => {
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FF" + purple },
+        };
+        cell.font = {
+          name: "Aptos",
+          bold: true,
+          color: { argb: "FF" + white },
+          size: 10,
+        };
+        cell.alignment = {
+          vertical: "middle",
+          horizontal: "center",
+          wrapText: true,
+        };
+      });
+
+      const dateValue = (value) => {
+        if (!value) return "";
+        const date = new Date(`${String(value).slice(0, 10)}T00:00:00`);
+        return Number.isNaN(date.getTime()) ? String(value) : date;
+      };
+
+      const safeNumber = (value) => {
+        const number = Number(value);
+        return Number.isFinite(number) ? Math.max(number, 0) : 0;
+      };
+
+      const safeText = (value) => {
+        const text = String(value ?? "");
+        return /^[=+\-@\t\r\n]/.test(text) ? "'" + text : text;
+      };
+
+      masterChecklistItems.forEach((item, index) => {
+        const rowNumber = index + 8;
+        const fullAmount = safeNumber(item.full_amount);
+        const advanceDone = Boolean(item.advance_payment_done);
+        const fullPaid = Boolean(item.full_payment_done);
+        const advanceAmount = advanceDone
+          ? safeNumber(item.advance_payment_amount)
+          : 0;
+
+        const row = sheet.getRow(rowNumber);
+
+        row.values = [
+          index + 1,
+          safeText(item.item_name),
+          item.status || "Not Started",
+          safeText(item.responsible),
+          dateValue(item.deadline),
+          safeText(item.vendor_company),
+          safeText(item.vendor_contact),
+          fullAmount,
+          advanceDone ? "Yes" : "No",
+          advanceAmount,
+          advanceDone ? dateValue(item.advance_payment_date) : "",
+          {
+            formula: `IF(M${rowNumber}="Yes","Fully Paid",MAX(H${rowNumber}-J${rowNumber},0))`,
+            result: fullPaid
+              ? "Fully Paid"
+              : Math.max(fullAmount - advanceAmount, 0),
+          },
+          fullPaid ? "Yes" : "No",
+          fullPaid ? dateValue(item.full_payment_date) : "",
+        ];
+
+        row.height = 30;
+
+        row.eachCell({ includeEmpty: true }, (cell) => {
+          cell.font = {
+            name: "Aptos",
+            size: 10,
+            color: { argb: "FF" + dark },
+          };
+          cell.alignment = {
+            vertical: "middle",
+            wrapText: true,
+          };
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: {
+              argb: "FF" + (index % 2 === 0 ? white : "FAF7FB"),
+            },
+          };
+          cell.border = {
+            bottom: {
+              style: "hair",
+              color: { argb: "FFE5E7EB" },
+            },
+            right: {
+              style: "hair",
+              color: { argb: "FFE5E7EB" },
+            },
+          };
+        });
+
+        const statusCell = row.getCell(3);
+        const statusColors = {
+          Confirmed: [green, "166534"],
+          "In Progress": [yellow, "92400E"],
+          "Action Required": [red, "991B1B"],
+          "Not Started": [gray, "475569"],
+        };
+
+        const [statusBg, statusText] =
+          statusColors[item.status] || statusColors["Not Started"];
+
+        statusCell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FF" + statusBg },
+        };
+        statusCell.font = {
+          bold: true,
+          color: { argb: "FF" + statusText },
+        };
+
+        if (fullPaid) {
+          const balanceCell = row.getCell(12);
+          balanceCell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FF" + green },
+          };
+          balanceCell.font = {
+            bold: true,
+            color: { argb: "FF166534" },
+          };
+        }
+
+        [8, 10, 12].forEach((column) => {
+          row.getCell(column).numFmt = money;
+        });
+
+        [5, 11, 14].forEach((column) => {
+          row.getCell(column).numFmt = "dd/mm/yyyy";
+        });
+
+        row.getCell(7).numFmt = "@";
+        row.getCell(7).alignment = { vertical: "middle" };
+      });
+
+      const lastDataRow = 7 + masterChecklistItems.length;
+      const summaryRowNumber = lastDataRow + 2;
+
+      const summaryRow = sheet.getRow(summaryRowNumber);
+      summaryRow.height = 34;
+
+      sheet.mergeCells(`A${summaryRowNumber}:G${summaryRowNumber}`);
+      summaryRow.getCell(1).value = "TOTAL WEDDING VENDOR BUDGET";
+
+      summaryRow.getCell(8).value = {
+        formula: `SUM(H8:H${lastDataRow})`,
+        result: masterChecklistItems.reduce(
+          (sum, item) => sum + safeNumber(item.full_amount),
+          0,
+        ),
+      };
+
+      summaryRow.getCell(10).value = {
+        formula: `SUM(J8:J${lastDataRow})`,
+        result: masterChecklistItems.reduce(
+          (sum, item) =>
+            sum +
+            (item.advance_payment_done
+              ? safeNumber(item.advance_payment_amount)
+              : 0),
+          0,
+        ),
+      };
+
+      summaryRow.getCell(12).value = {
+        formula: `SUMIF(M8:M${lastDataRow},"No",L8:L${lastDataRow})`,
+        result: masterChecklistItems.reduce((sum, item) => {
+          if (item.full_payment_done) return sum;
+          return (
+            sum +
+            Math.max(
+              safeNumber(item.full_amount) -
+                (item.advance_payment_done
+                  ? safeNumber(item.advance_payment_amount)
+                  : 0),
+              0,
+            )
+          );
+        }, 0),
+      };
+
+      summaryRow.eachCell({ includeEmpty: true }, (cell) => {
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FF" + purple },
+        };
+        cell.font = {
+          bold: true,
+          color: { argb: "FF" + white },
+          size: 11,
+        };
+        cell.alignment = { vertical: "middle" };
+      });
+
+      [8, 10, 12].forEach((column) => {
+        summaryRow.getCell(column).numFmt = money;
+      });
+
+      sheet.autoFilter = {
+        from: { row: 7, column: 1 },
+        to: { row: lastDataRow, column: 14 },
+      };
+
+      sheet.printTitlesRow = "1:7";
+      sheet.pageSetup.printArea = `A1:N${summaryRowNumber}`;
+
+      const buffer = await workbook.xlsx.writeBuffer();
+
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const safeName = String(selectedMasterWedding.couple_name || "Wedding")
+        .replace(/[^a-zA-Z0-9 -]/g, "")
+        .trim()
+        .replace(/\s+/g, "_");
+
+      link.href = url;
+      link.download = `${safeName || "Wedding"}_Master_Control_Sheet.xlsx`;
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      triggerNotification(
+        "Wedding checklist Excel downloaded successfully!",
+        "success",
+      );
+    } catch (error) {
+      console.error("Excel export error:", error);
+      triggerNotification("Unable to download Excel file.", "delete");
+    }
+  };
+
   const addMasterChecklistItem = async () => {
     if (!masterChecklistWeddingId) {
       triggerNotification("Please select a wedding first.", "delete");
@@ -6492,20 +6891,38 @@ Chathu Wedding Planners
                           </span>
                         </div>
 
-                        <button
-                          type="button"
-                          onClick={saveAllMasterChecklistItems}
-                          disabled={
-                            masterChecklistSaving ||
-                            masterChecklistLoading ||
-                            masterChecklistItems.length === 0
-                          }
-                          className="w-full md:w-auto px-5 py-2.5 rounded-xl bg-fuchsia-700 text-white text-xs font-black shadow-md hover:bg-fuchsia-800 active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
-                        >
-                          {masterChecklistSaving
-                            ? "⏳ Saving..."
-                            : "💾 Save All"}
-                        </button>
+                        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                          {/* SAVE ALL */}
+                          <button
+                            type="button"
+                            onClick={saveAllMasterChecklistItems}
+                            disabled={
+                              masterChecklistSaving ||
+                              masterChecklistLoading ||
+                              masterChecklistItems.length === 0
+                            }
+                            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-fuchsia-700 text-white text-xs font-black shadow-md hover:bg-fuchsia-800 active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {masterChecklistSaving
+                              ? "⏳ Saving..."
+                              : "💾 Save All"}
+                          </button>
+
+                          {/* DOWNLOAD EXCEL */}
+                          <button
+                            type="button"
+                            onClick={downloadMasterChecklistExcel}
+                            disabled={
+                              masterChecklistSaving ||
+                              masterChecklistLoading ||
+                              !selectedMasterWedding ||
+                              masterChecklistItems.length === 0
+                            }
+                            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-black shadow-md hover:bg-emerald-700 active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            📊 Download Excel
+                          </button>
+                        </div>
                       </div>
 
                       {/* DESKTOP TABLE */}
