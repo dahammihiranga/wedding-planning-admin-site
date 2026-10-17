@@ -5417,8 +5417,11 @@ Chathu Wedding Planners
                                     {/* Guest Count - Mobile Dashboard */}
                                     <div className="pt-2 mt-2 border-t border-blue-200/70 space-y-1">
                                       <p className="text-[11px] font-bold text-blue-700">
-                                        👥 Guests:{" "}
-                                        {item.guest_count || "Not added"}
+                                        👥{" "}
+                                        {item.wedding_type === "Two days"
+                                          ? "Day 1 Guests"
+                                          : "Guests"}
+                                        : {item.guest_count || "Not added"}
                                       </p>
 
                                       {item.wedding_type === "Two days" && (
