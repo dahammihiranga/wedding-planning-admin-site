@@ -749,19 +749,19 @@ export default function Dashboard() {
     };
 
     loadDashboardRecords();
-  }, [activeTab, mounted, deletedRecords.length]);
+  }, [activeTab, mounted, isLoggedIn, deletedRecords.length]);
 
   useEffect(() => {
     if (!mounted || !isLoggedIn) return;
 
     fetchPaymentTransactions();
-  }, [mounted]);
+  }, [mounted, isLoggedIn]);
 
   useEffect(() => {
     if (!mounted || !isLoggedIn) return;
 
     fetchHotels();
-  }, [mounted]);
+  }, [mounted, isLoggedIn]);
 
   const saveHotelSuggestion = async (hotelName) => {
     const cleanedName = String(hotelName || "").trim();
@@ -790,7 +790,7 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    if (!mounted || activePage !== "vendors") return;
+    if (!mounted || !isLoggedIn || activePage !== "vendors") return;
 
     if (vendors.length === 0) {
       fetchVendors();
@@ -799,7 +799,13 @@ export default function Dashboard() {
     if (vendorCommissions.length === 0) {
       fetchVendorCommissions();
     }
-  }, [activePage, mounted, vendors.length, vendorCommissions.length]);
+  }, [
+    activePage,
+    mounted,
+    isLoggedIn,
+    vendors.length,
+    vendorCommissions.length,
+  ]);
 
   const triggerNotification = (msg, type = "success") => {
     setToast({ show: true, message: msg, type });
