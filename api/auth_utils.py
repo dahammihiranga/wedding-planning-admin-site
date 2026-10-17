@@ -7,7 +7,7 @@ from fastapi import HTTPException, Request
 from libsql_client import create_client_sync
 
 COOKIE_NAME = 'cwp_session'
-SESSION_SECONDS = 60
+SESSION_SECONDS = 3600
 
 def db():
     return create_client_sync(url=os.environ['TURSO_DATABASE_URL'], auth_token=os.environ['TURSO_AUTH_TOKEN'])
