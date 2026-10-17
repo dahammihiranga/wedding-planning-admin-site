@@ -133,7 +133,7 @@ async function createPdf(packages) {
     }
 
     // Center the complete text block vertically, without touching the border.
-    let cursor = bottom + (h + fitted.total) / 2;
+    let cursor = bottom + (h + fitted.total) / 2 + 8;
     for (const line of titleLines) {
       cursor -= titleSize * 1.08;
       drawCentered(line, bold, titleSize, x, w, cursor);
