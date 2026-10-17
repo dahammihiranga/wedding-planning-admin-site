@@ -5,8 +5,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 from libsql_client import create_client_sync
+from fastapi import Depends
+from api.auth_utils import require_auth
 
-app = FastAPI(title="Chathu Wedding Planners CRM")
+app = FastAPI(
+    title="Chathu Wedding Planners CRM",
+    dependencies=[Depends(require_auth)],
+)
 
 app.add_middleware(
     CORSMiddleware,

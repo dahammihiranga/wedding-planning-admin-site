@@ -1,8 +1,10 @@
 import os
 from fastapi import FastAPI
 from libsql_client import create_client_sync
+from fastapi import Depends
+from api.auth_utils import require_auth
 
-app = FastAPI()
+app = FastAPI(dependencies=[Depends(require_auth)])
 
 url = os.environ.get("TURSO_DATABASE_URL")
 auth_token = os.environ.get("TURSO_AUTH_TOKEN")

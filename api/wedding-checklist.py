@@ -4,8 +4,10 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from libsql_client import create_client_sync
 from pydantic import BaseModel
+from fastapi import Depends
+from api.auth_utils import require_auth
 
-app = FastAPI()
+app = FastAPI(dependencies=[Depends(require_auth)])
 
 app.add_middleware(
     CORSMiddleware,
