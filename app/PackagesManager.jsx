@@ -94,55 +94,64 @@ async function createPdf(packages) {
     const offer = String(p.offer || "").trim();
     const investment = investmentLabel(p.price);
 
-    // Fit the content to the box while preserving the reference hierarchy:
-    // bold title at top, description in the middle, investment at bottom.
+    // Consistent typography across all four package boxes.
+    // Only description/offer text may shrink for unusually long content.
+    const titleSize = 16;
+    const priceSize = 13;
+    const gapTitle = 4;
+    const gapPrice = 8;
+    const minTopPadding = 10;
+    const minBottomPadding = 12;
+    const titleLines = wrapText(title, bold, titleSize, maxWidth);
+    const priceLines = investment ? wrapText(investment, bold, priceSize, maxWidth) : [];
+    const titleHeight = titleLines.length * titleSize * 1.08;
+    const priceHeight = priceLines.length * priceSize * 1.08;
+
     let fitted = null;
-    for (let scale = 1; scale >= 0.55; scale -= 0.025) {
-      const titleSize = 17 * scale;
-      const bodySize = 12.3 * scale;
-      const priceSize = 14 * scale;
-      const offerSize = 10.5 * scale;
-      const titleLines = wrapText(title, bold, titleSize, maxWidth);
-      const descriptionLines = description ? wrapText(description, regular, bodySize, maxWidth) : [];
-      const offerLines = offer ? wrapText(offer, regular, offerSize, maxWidth) : [];
-      const priceLines = investment ? wrapText(investment, bold, priceSize, maxWidth) : [];
-      const titleHeight = titleLines.length * titleSize * 1.08;
+    for (let bodySize = 11.7; bodySize >= 9.5; bodySize -= 0.2) {
+      const offerSize = Math.min(bodySize, 10);
+      const descriptionLines = description
+        ? wrapText(description, regular, bodySize, maxWidth)
+        : [];
+      const offerLines = offer
+        ? wrapText(offer, regular, offerSize, maxWidth)
+        : [];
       const bodyHeight = descriptionLines.length * bodySize * 1.12;
-      const offerHeight = offerLines.length * offerSize * 1.08;
-      const priceHeight = priceLines.length * priceSize * 1.08;
-      const gapTitle = descriptionLines.length ? 4 * scale : 0;
-      const gapOffer = offerLines.length ? 3 * scale : 0;
-      const gapPrice = priceLines.length ? 7 * scale : 0;
-      const total = titleHeight + gapTitle + bodyHeight + gapOffer + offerHeight + gapPrice + priceHeight;
-      if (total <= h - 30) {
-        fitted = { titleSize, bodySize, priceSize, offerSize, titleLines, descriptionLines, offerLines, priceLines, titleHeight, bodyHeight, offerHeight, priceHeight, gapTitle, gapOffer, gapPrice, total };
+      const offerHeight = offerLines.length * offerSize * 1.1;
+      const gapOffer = offerLines.length ? 3 : 0;
+      const total = titleHeight + (descriptionLines.length ? gapTitle : 0)
+        + bodyHeight + gapOffer + offerHeight
+        + (priceLines.length ? gapPrice : 0) + priceHeight;
+      if (total <= h - minTopPadding - minBottomPadding) {
+        fitted = { bodySize, offerSize, descriptionLines, offerLines,
+          gapOffer, total };
         break;
       }
     }
-    if (!fitted) throw new Error(`Package ${i + 1} has too much text. Shorten its description or offer.`);
+    if (!fitted) {
+      throw new Error(`Package ${i + 1} has too much text for the brochure box. Shorten its description or special offer.`);
+    }
 
-    const f = fitted;
-    // Center the text group with extra padding below the Investment line.
-    const bottomPaddingAdjustment = 8;
-    let cursor = bottom + (h + f.total) / 2 + bottomPaddingAdjustment;
-    for (const line of f.titleLines) {
-      cursor -= f.titleSize * 1.08;
-      drawCentered(line, bold, f.titleSize, x, w, cursor);
+    // Center the complete text block vertically, without touching the border.
+    let cursor = bottom + (h + fitted.total) / 2;
+    for (const line of titleLines) {
+      cursor -= titleSize * 1.08;
+      drawCentered(line, bold, titleSize, x, w, cursor);
     }
-    cursor -= f.gapTitle;
-    for (const line of f.descriptionLines) {
-      cursor -= f.bodySize * 1.12;
-      drawCentered(line, regular, f.bodySize, x, w, cursor);
+    if (fitted.descriptionLines.length) cursor -= gapTitle;
+    for (const line of fitted.descriptionLines) {
+      cursor -= fitted.bodySize * 1.12;
+      drawCentered(line, regular, fitted.bodySize, x, w, cursor);
     }
-    cursor -= f.gapOffer;
-    for (const line of f.offerLines) {
-      cursor -= f.offerSize * 1.08;
-      drawCentered(line, regular, f.offerSize, x, w, cursor);
+    cursor -= fitted.gapOffer;
+    for (const line of fitted.offerLines) {
+      cursor -= fitted.offerSize * 1.1;
+      drawCentered(line, regular, fitted.offerSize, x, w, cursor);
     }
-    cursor -= f.gapPrice;
-    for (const line of f.priceLines) {
-      cursor -= f.priceSize * 1.08;
-      drawCentered(line, bold, f.priceSize, x, w, cursor);
+    if (priceLines.length) cursor -= gapPrice;
+    for (const line of priceLines) {
+      cursor -= priceSize * 1.08;
+      drawCentered(line, bold, priceSize, x, w, cursor);
     }
   }
   return await pdf.save();
