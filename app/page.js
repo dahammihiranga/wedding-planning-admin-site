@@ -372,6 +372,7 @@ export default function Dashboard() {
   const [selectedRemark, setSelectedRemark] = useState(null);
   const [tabLoading, setTabLoading] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [authChecking, setAuthChecking] = useState(true);
   const [loginData, setLoginData] = useState({
     username: "",
     password: "",
@@ -604,48 +605,46 @@ export default function Dashboard() {
   useEffect(() => {
     setMounted(true);
 
-    const savedLogin = localStorage.getItem("chathu_admin_logged_in");
-    const loginTime = localStorage.getItem("chathu_admin_login_time");
-    const ONE_HOUR = 60 * 60 * 1000;
+    let cancelled = false;
 
-    if (
-      savedLogin === "true" &&
-      loginTime &&
-      Date.now() - Number(loginTime) < ONE_HOUR
-    ) {
-      setIsLoggedIn(true);
-    } else {
-      localStorage.removeItem("chathu_admin_logged_in");
-      localStorage.removeItem("chathu_admin_login_time");
-    }
+    const checkSession = async () => {
+      try {
+        const response = await fetch("/api/auth", {
+          method: "GET",
+          credentials: "same-origin",
+          cache: "no-store",
+        });
+
+        if (!cancelled) {
+          setIsLoggedIn(response.ok);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setIsLoggedIn(false);
+        }
+      } finally {
+        if (!cancelled) {
+          setAuthChecking(false);
+        }
+      }
+    };
+
+    checkSession();
 
     const savedTrash = localStorage.getItem("chathu_trash_bin");
 
     if (savedTrash) {
-      setDeletedRecords(JSON.parse(savedTrash));
+      try {
+        setDeletedRecords(JSON.parse(savedTrash));
+      } catch {
+        localStorage.removeItem("chathu_trash_bin");
+      }
     }
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
-
-  useEffect(() => {
-    if (!isLoggedIn) return;
-
-    const AUTO_LOGOUT_TIME = 60 * 60 * 1000;
-
-    const logoutTimer = setTimeout(() => {
-      localStorage.removeItem("chathu_admin_logged_in");
-      localStorage.removeItem("chathu_admin_login_time");
-
-      setLoginData({
-        username: "",
-        password: "",
-      });
-
-      setLoginError("");
-      setIsLoggedIn(false);
-    }, AUTO_LOGOUT_TIME);
-
-    return () => clearTimeout(logoutTimer);
-  }, [isLoggedIn]);
 
   useEffect(() => {
     const updateSLTime = () => {
@@ -735,7 +734,7 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !isLoggedIn) return;
 
     const loadDashboardRecords = async () => {
       if (activePage === "dashboard") {
@@ -753,13 +752,13 @@ export default function Dashboard() {
   }, [activeTab, mounted, deletedRecords.length]);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !isLoggedIn) return;
 
     fetchPaymentTransactions();
   }, [mounted]);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !isLoggedIn) return;
 
     fetchHotels();
   }, [mounted]);
@@ -3277,43 +3276,56 @@ Chathu Wedding Planners
     });
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     setLoginLoading(true);
     setLoginError("");
 
-    setTimeout(() => {
-      const ADMIN_USERNAME = "a";
-      const ADMIN_PASSWORD = "a";
+    try {
+      const response = await fetch("/api/auth", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginData),
+      });
 
-      if (
-        loginData.username === ADMIN_USERNAME &&
-        loginData.password === ADMIN_PASSWORD
-      ) {
-        localStorage.setItem("chathu_admin_logged_in", "true");
-        localStorage.setItem("chathu_admin_login_time", Date.now().toString());
-        setIsLoggedIn(true);
-        setLoginData({ username: "", password: "" });
-      } else {
-        setLoginError("Invalid username or password");
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          typeof result.detail === "string" ? result.detail : "Login failed",
+        );
       }
 
+      setLoginData({ username: "", password: "" });
+      setIsLoggedIn(true);
+    } catch (error) {
+      setLoginError(error.message || "Unable to log in");
+    } finally {
       setLoginLoading(false);
-    }, 900);
+    }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("chathu_admin_logged_in");
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth", {
+        method: "DELETE",
+        credentials: "same-origin",
+      });
+    } catch (error) {
+      console.error("Logout request failed:", error);
+    }
 
-    setLoginData({
-      username: "",
-      password: "",
-    });
-
+    setLoginData({ username: "", password: "" });
     setLoginError("");
-
     setIsLoggedIn(false);
+
+    setData([]);
+    setCalendarRecords([]);
+    setPaymentTransactions([]);
   };
 
   const openVendorModal = (vendor = null) => {
@@ -3696,7 +3708,9 @@ Chathu Wedding Planners
     }
   };
 
-  if (!mounted) return <div className="min-h-screen bg-gray-50" />;
+  if (!mounted || authChecking) {
+    return <div className="min-h-screen bg-gray-50" />;
+  }
 
   if (!isLoggedIn) {
     return (
