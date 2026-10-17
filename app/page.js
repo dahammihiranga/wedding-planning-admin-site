@@ -6,6 +6,7 @@ import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import PackagesManager from "./PackagesManager";
 
 // Country list mapping with flags and labels
 const COUNTRIES = [
@@ -7372,19 +7373,7 @@ Chathu Wedding Planners
               </div>
             )}
 
-            {activePage === "packages" && (
-              <div className="p-6">
-                <h1 className="text-3xl font-black text-fuchsia-950 mb-6">
-                  Our Packages
-                </h1>
-
-                <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/40">
-                  <p className="text-gray-500">
-                    Package PDF storage section will be added here.
-                  </p>
-                </div>
-              </div>
-            )}
+            {activePage === "packages" && <PackagesManager />}
 
             {/* WEDDING MASTER CONTROL SHEET */}
             {activePage === "masterControl" && (
