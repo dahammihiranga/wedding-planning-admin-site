@@ -114,7 +114,7 @@ async function createPdf(packages) {
       const gapOffer = offerLines.length ? 3 * scale : 0;
       const gapPrice = priceLines.length ? 7 * scale : 0;
       const total = titleHeight + gapTitle + bodyHeight + gapOffer + offerHeight + gapPrice + priceHeight;
-      if (total <= h - 17) {
+      if (total <= h - 30) {
         fitted = { titleSize, bodySize, priceSize, offerSize, titleLines, descriptionLines, offerLines, priceLines, titleHeight, bodyHeight, offerHeight, priceHeight, gapTitle, gapOffer, gapPrice, total };
         break;
       }
@@ -122,8 +122,9 @@ async function createPdf(packages) {
     if (!fitted) throw new Error(`Package ${i + 1} has too much text. Shorten its description or offer.`);
 
     const f = fitted;
-    // Balance the entire block vertically; retain space at the bottom.
-    let cursor = bottom + (h + f.total) / 2;
+    // Center the text group with extra padding below the Investment line.
+    const bottomPaddingAdjustment = 8;
+    let cursor = bottom + (h + f.total) / 2 + bottomPaddingAdjustment;
     for (const line of f.titleLines) {
       cursor -= f.titleSize * 1.08;
       drawCentered(line, bold, f.titleSize, x, w, cursor);
