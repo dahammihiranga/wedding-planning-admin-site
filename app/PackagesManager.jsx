@@ -36,57 +36,112 @@ function wrapText(text, font, size, maxWidth) {
   return lines;
 }
 
+function investmentLabel(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  const number = raw.replace(/^(?:investment\s*[-:]?\s*)?(?:lkr|rs\.?|රු\.?)\s*/i, "").replace(/,/g, "").trim();
+  if (/^\d+(?:\.\d{1,2})?$/.test(number)) {
+    return `Investment - LKR ${Number(number).toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+  }
+  return /^investment\b/i.test(raw) ? raw : `Investment - ${raw}`;
+}
+
 async function createPdf(packages) {
   const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
   const response = await fetch(TEMPLATE, { cache: "no-store" });
   if (!response.ok) throw new Error("PDF template not found in public folder.");
   const pdf = await PDFDocument.load(await response.arrayBuffer());
   if (pdf.getPageCount() !== 2) throw new Error("Expected a two-page brochure template.");
+
   const page = pdf.getPage(1);
   const { width, height } = page.getSize();
   const regular = await pdf.embedFont(StandardFonts.TimesRoman);
   const bold = await pdf.embedFont(StandardFonts.TimesRomanBold);
   const ink = rgb(0.32, 0.25, 0.20);
-  // Coordinates are relative to the 842.25 x 595.5 point landscape template.
-  // Top-down positions for the four outlined boxes on page 2.
+
+  // These match the four existing boxes on page 2 of the Canva PDF.
   const rectangles = [
     { x: 487, top: 113, w: 290, h: 98 },
     { x: 487, top: 225, w: 290, h: 110 },
     { x: 487, top: 349, w: 290, h: 107 },
     { x: 487, top: 470, w: 290, h: 99 },
   ];
+
+  const drawCentered = (line, font, size, boxX, boxWidth, baseline) => {
+    if (!line) return;
+    const lineWidth = font.widthOfTextAtSize(line, size);
+    page.drawText(line, {
+      x: boxX + (boxWidth - lineWidth) / 2,
+      y: baseline,
+      font,
+      size,
+      color: ink,
+    });
+  };
+
   for (let i = 0; i < 4; i++) {
     const p = packages[i];
     const r = rectangles[i];
-    const x = r.x * width / 842.25;
-    const boxTop = r.top * height / 595.5;
-    const boxWidth = r.w * width / 842.25;
-    const boxHeight = r.h * height / 595.5;
-    const maxWidth = boxWidth - 24;
-    const rows = [
-      { value: p.name.trim(), font: bold, base: 15, min: 10, gap: 3 },
-      ...(p.price.trim() ? [{ value: p.price.trim(), font: bold, base: 12, min: 9, gap: 2 }] : []),
-      ...(p.offer.trim() ? [{ value: p.offer.trim(), font: regular, base: 11, min: 8, gap: 2 }] : []),
-      ...(p.description.trim() ? [{ value: p.description.trim(), font: regular, base: 10.5, min: 7, gap: 0 }] : []),
-    ];
+    const x = (r.x * width) / 842.25;
+    const top = (r.top * height) / 595.5;
+    const w = (r.w * width) / 842.25;
+    const h = (r.h * height) / 595.5;
+    const bottom = height - top - h;
+    const maxWidth = w - 30;
+
+    const title = String(p.name || "").trim();
+    const description = String(p.description || "").trim();
+    const offer = String(p.offer || "").trim();
+    const investment = investmentLabel(p.price);
+
+    // Fit the content to the box while preserving the reference hierarchy:
+    // bold title at top, description in the middle, investment at bottom.
     let fitted = null;
-    for (let scale = 1; scale >= 0.50; scale -= 0.025) {
-      const items = rows.map(row => {
-        const size = Math.max(row.min, row.base * scale);
-        return { ...row, size, lines: wrapText(row.value, row.font, size, maxWidth) };
-      });
-      const needed = items.reduce((total, item) => total + item.lines.length * item.size * 1.2 + item.gap, 0);
-      if (needed <= boxHeight - 20) { fitted = { items, needed }; break; }
-    }
-    if (!fitted) throw new Error(`Package ${i + 1} contains too much text for its PDF box. Shorten the description.`);
-    let y = height - boxTop - Math.max(10, (boxHeight - fitted.needed) / 2);
-    for (const item of fitted.items) {
-      for (const line of item.lines) {
-        y -= item.size * 1.2;
-        const lineWidth = item.font.widthOfTextAtSize(line, item.size);
-        page.drawText(line, { x: x + (boxWidth - lineWidth) / 2, y, font: item.font, size: item.size, color: ink });
+    for (let scale = 1; scale >= 0.55; scale -= 0.025) {
+      const titleSize = 17 * scale;
+      const bodySize = 12.3 * scale;
+      const priceSize = 14 * scale;
+      const offerSize = 10.5 * scale;
+      const titleLines = wrapText(title, bold, titleSize, maxWidth);
+      const descriptionLines = description ? wrapText(description, regular, bodySize, maxWidth) : [];
+      const offerLines = offer ? wrapText(offer, regular, offerSize, maxWidth) : [];
+      const priceLines = investment ? wrapText(investment, bold, priceSize, maxWidth) : [];
+      const titleHeight = titleLines.length * titleSize * 1.08;
+      const bodyHeight = descriptionLines.length * bodySize * 1.12;
+      const offerHeight = offerLines.length * offerSize * 1.08;
+      const priceHeight = priceLines.length * priceSize * 1.08;
+      const gapTitle = descriptionLines.length ? 4 * scale : 0;
+      const gapOffer = offerLines.length ? 3 * scale : 0;
+      const gapPrice = priceLines.length ? 7 * scale : 0;
+      const total = titleHeight + gapTitle + bodyHeight + gapOffer + offerHeight + gapPrice + priceHeight;
+      if (total <= h - 17) {
+        fitted = { titleSize, bodySize, priceSize, offerSize, titleLines, descriptionLines, offerLines, priceLines, titleHeight, bodyHeight, offerHeight, priceHeight, gapTitle, gapOffer, gapPrice, total };
+        break;
       }
-      y -= item.gap;
+    }
+    if (!fitted) throw new Error(`Package ${i + 1} has too much text. Shorten its description or offer.`);
+
+    const f = fitted;
+    // Balance the entire block vertically; retain space at the bottom.
+    let cursor = bottom + (h + f.total) / 2;
+    for (const line of f.titleLines) {
+      cursor -= f.titleSize * 1.08;
+      drawCentered(line, bold, f.titleSize, x, w, cursor);
+    }
+    cursor -= f.gapTitle;
+    for (const line of f.descriptionLines) {
+      cursor -= f.bodySize * 1.12;
+      drawCentered(line, regular, f.bodySize, x, w, cursor);
+    }
+    cursor -= f.gapOffer;
+    for (const line of f.offerLines) {
+      cursor -= f.offerSize * 1.08;
+      drawCentered(line, regular, f.offerSize, x, w, cursor);
+    }
+    cursor -= f.gapPrice;
+    for (const line of f.priceLines) {
+      cursor -= f.priceSize * 1.08;
+      drawCentered(line, bold, f.priceSize, x, w, cursor);
     }
   }
   return await pdf.save();
