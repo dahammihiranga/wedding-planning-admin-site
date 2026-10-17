@@ -646,6 +646,78 @@ export default function Dashboard() {
     };
   }, []);
 
+  // Automatically log out when the server session expires.
+  useEffect(() => {
+    if (!mounted || !isLoggedIn) return;
+
+    let cancelled = false;
+    let checking = false;
+
+    const checkActiveSession = async () => {
+      if (cancelled || checking) return;
+
+      checking = true;
+
+      try {
+        const response = await fetch("/api/auth", {
+          method: "GET",
+          credentials: "same-origin",
+          cache: "no-store",
+        });
+
+        if (cancelled) return;
+
+        if (response.status === 401) {
+          setIsLoggedIn(false);
+          setLoginData({ username: "", password: "" });
+          setLoginError("Your session has expired. Please log in again.");
+
+          // Clear sensitive data already loaded into the Dashboard.
+          setData([]);
+          setCalendarRecords([]);
+          setPaymentTransactions([]);
+          setHotels([]);
+          setVendors([]);
+          setVendorCommissions([]);
+          setMasterChecklistItems([]);
+          setBudgetItems([]);
+
+          setActivePage("dashboard");
+          setIsMobileSidebarOpen(false);
+        }
+      } catch (error) {
+        // Do not log out for temporary internet or server failures.
+        console.error("Session verification failed:", error);
+      } finally {
+        checking = false;
+      }
+    };
+
+    // Check immediately after login, then every 15 seconds.
+    checkActiveSession();
+
+    const interval = window.setInterval(checkActiveSession, 15000);
+
+    // Also check when the user returns to the application.
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        checkActiveSession();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", checkActiveSession);
+    window.addEventListener("online", checkActiveSession);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", checkActiveSession);
+      window.removeEventListener("online", checkActiveSession);
+    };
+  }, [mounted, isLoggedIn]);
+
   useEffect(() => {
     const updateSLTime = () => {
       const now = new Date();
