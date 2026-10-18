@@ -7600,14 +7600,14 @@ Chathu Wedding Planners
                       </div>
 
                       {/* STATUS FILTER */}
-                      <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-sm p-4 mb-4">
+                      <div className="relative z-30 bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-sm p-4 mb-4">
                         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
                           <div className="w-full sm:w-72">
                             <label className="block text-xs font-black uppercase tracking-wider text-fuchsia-950 mb-2">
                               Filter by Status
                             </label>
 
-                            <details className="relative group">
+                            <details className="relative group z-40">
                               <summary className="flex items-center justify-between gap-3 w-full px-4 py-3 rounded-xl border border-fuchsia-100 bg-white text-sm font-bold text-gray-700 cursor-pointer select-none list-none focus:outline-none focus:ring-2 focus:ring-fuchsia-300 [&::-webkit-details-marker]:hidden">
                                 <span className="truncate">
                                   {masterChecklistStatusFilter.length === 0
@@ -7622,7 +7622,7 @@ Chathu Wedding Planners
                                 </span>
                               </summary>
 
-                              <div className="absolute z-50 mt-2 w-full bg-white border border-fuchsia-100 rounded-xl shadow-xl p-3 space-y-1">
+                              <div className="absolute z-[100] mt-2 w-full bg-white border border-fuchsia-100 rounded-xl shadow-2xl p-3 space-y-1">
                                 {[
                                   { value: "Confirmed", icon: "🟢" },
                                   { value: "In Progress", icon: "🟡" },
