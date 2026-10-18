@@ -458,7 +458,7 @@ export default function Dashboard() {
   const [masterChecklistWeddingId, setMasterChecklistWeddingId] = useState("");
   const [masterChecklistItems, setMasterChecklistItems] = useState([]);
   const [masterChecklistStatusFilter, setMasterChecklistStatusFilter] =
-    useState("All");
+    useState([]);
   const [masterChecklistLoading, setMasterChecklistLoading] = useState(false);
   const [masterChecklistSaving, setMasterChecklistSaving] = useState(false);
   const [expandedMasterChecklistItemId, setExpandedMasterChecklistItemId] =
@@ -3676,8 +3676,8 @@ Chathu Wedding Planners
 
   const filteredMasterChecklistItems = masterChecklistItems.filter(
     (item) =>
-      masterChecklistStatusFilter === "All" ||
-      (item.status || "Not Started") === masterChecklistStatusFilter,
+      masterChecklistStatusFilter.length === 0 ||
+      masterChecklistStatusFilter.includes(item.status || "Not Started"),
   );
 
   const completedChecklistCount = masterChecklistItems.filter(
@@ -7425,7 +7425,7 @@ Chathu Wedding Planners
                       const weddingId = e.target.value;
 
                       setMasterChecklistWeddingId(weddingId);
-                      setMasterChecklistStatusFilter("All");
+                      setMasterChecklistStatusFilter([]);
 
                       if (!weddingId) {
                         setMasterChecklistItems([]);
@@ -7601,35 +7601,76 @@ Chathu Wedding Planners
 
                       {/* STATUS FILTER */}
                       <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-sm p-4 mb-4">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                          <div>
-                            <label
-                              htmlFor="masterChecklistStatusFilter"
-                              className="block text-xs font-black uppercase tracking-wider text-fuchsia-950 mb-2"
-                            >
+                        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+                          <div className="w-full sm:w-72">
+                            <label className="block text-xs font-black uppercase tracking-wider text-fuchsia-950 mb-2">
                               Filter by Status
                             </label>
 
-                            <select
-                              id="masterChecklistStatusFilter"
-                              value={masterChecklistStatusFilter}
-                              onChange={(e) =>
-                                setMasterChecklistStatusFilter(e.target.value)
-                              }
-                              className="w-full sm:w-64 px-4 py-3 rounded-xl border border-fuchsia-100 bg-white text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-fuchsia-300"
-                            >
-                              <option value="All">All Statuses</option>
-                              <option value="Confirmed">🟢 Confirmed</option>
-                              <option value="In Progress">
-                                🟡 In Progress
-                              </option>
-                              <option value="Action Required">
-                                🔴 Action Required
-                              </option>
-                              <option value="Not Started">
-                                ⚪ Not Started
-                              </option>
-                            </select>
+                            <details className="relative group">
+                              <summary className="flex items-center justify-between gap-3 w-full px-4 py-3 rounded-xl border border-fuchsia-100 bg-white text-sm font-bold text-gray-700 cursor-pointer select-none list-none focus:outline-none focus:ring-2 focus:ring-fuchsia-300 [&::-webkit-details-marker]:hidden">
+                                <span className="truncate">
+                                  {masterChecklistStatusFilter.length === 0
+                                    ? "All Statuses"
+                                    : masterChecklistStatusFilter.length === 1
+                                      ? masterChecklistStatusFilter[0]
+                                      : `${masterChecklistStatusFilter.length} Statuses Selected`}
+                                </span>
+
+                                <span className="text-fuchsia-600 text-xs group-open:rotate-180 transition-transform">
+                                  ▼
+                                </span>
+                              </summary>
+
+                              <div className="absolute z-50 mt-2 w-full bg-white border border-fuchsia-100 rounded-xl shadow-xl p-3 space-y-1">
+                                {[
+                                  { value: "Confirmed", icon: "🟢" },
+                                  { value: "In Progress", icon: "🟡" },
+                                  { value: "Action Required", icon: "🔴" },
+                                  { value: "Not Started", icon: "⚪" },
+                                ].map((status) => (
+                                  <label
+                                    key={status.value}
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-fuchsia-50 cursor-pointer transition-colors"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={masterChecklistStatusFilter.includes(
+                                        status.value,
+                                      )}
+                                      onChange={(e) => {
+                                        setMasterChecklistStatusFilter(
+                                          (current) =>
+                                            e.target.checked
+                                              ? [...current, status.value]
+                                              : current.filter(
+                                                  (value) =>
+                                                    value !== status.value,
+                                                ),
+                                        );
+                                      }}
+                                      className="w-4 h-4 accent-fuchsia-700 cursor-pointer"
+                                    />
+
+                                    <span className="text-sm font-semibold text-gray-700">
+                                      {status.icon} {status.value}
+                                    </span>
+                                  </label>
+                                ))}
+
+                                <div className="border-t border-gray-100 pt-2 mt-2">
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setMasterChecklistStatusFilter([])
+                                    }
+                                    className="w-full px-3 py-2 rounded-lg bg-fuchsia-50 hover:bg-fuchsia-100 text-fuchsia-800 text-xs font-bold transition-colors"
+                                  >
+                                    Clear Filters / Show All
+                                  </button>
+                                </div>
+                              </div>
+                            </details>
                           </div>
 
                           <p className="text-xs font-bold text-gray-500">
