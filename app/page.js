@@ -457,6 +457,8 @@ export default function Dashboard() {
 
   const [masterChecklistWeddingId, setMasterChecklistWeddingId] = useState("");
   const [masterChecklistItems, setMasterChecklistItems] = useState([]);
+  const [masterChecklistStatusFilter, setMasterChecklistStatusFilter] =
+    useState("All");
   const [masterChecklistLoading, setMasterChecklistLoading] = useState(false);
   const [masterChecklistSaving, setMasterChecklistSaving] = useState(false);
   const [expandedMasterChecklistItemId, setExpandedMasterChecklistItemId] =
@@ -3670,6 +3672,12 @@ Chathu Wedding Planners
   const budgetTotal = budgetItems.reduce(
     (sum, item) => sum + (Number(item.estimated_amount) || 0),
     0,
+  );
+
+  const filteredMasterChecklistItems = masterChecklistItems.filter(
+    (item) =>
+      masterChecklistStatusFilter === "All" ||
+      (item.status || "Not Started") === masterChecklistStatusFilter,
   );
 
   const completedChecklistCount = masterChecklistItems.filter(
@@ -7417,6 +7425,7 @@ Chathu Wedding Planners
                       const weddingId = e.target.value;
 
                       setMasterChecklistWeddingId(weddingId);
+                      setMasterChecklistStatusFilter("All");
 
                       if (!weddingId) {
                         setMasterChecklistItems([]);
@@ -7590,6 +7599,46 @@ Chathu Wedding Planners
                         </div>
                       </div>
 
+                      {/* STATUS FILTER */}
+                      <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-sm p-4 mb-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                          <div>
+                            <label
+                              htmlFor="masterChecklistStatusFilter"
+                              className="block text-xs font-black uppercase tracking-wider text-fuchsia-950 mb-2"
+                            >
+                              Filter by Status
+                            </label>
+
+                            <select
+                              id="masterChecklistStatusFilter"
+                              value={masterChecklistStatusFilter}
+                              onChange={(e) =>
+                                setMasterChecklistStatusFilter(e.target.value)
+                              }
+                              className="w-full sm:w-64 px-4 py-3 rounded-xl border border-fuchsia-100 bg-white text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-fuchsia-300"
+                            >
+                              <option value="All">All Statuses</option>
+                              <option value="Confirmed">🟢 Confirmed</option>
+                              <option value="In Progress">
+                                🟡 In Progress
+                              </option>
+                              <option value="Action Required">
+                                🔴 Action Required
+                              </option>
+                              <option value="Not Started">
+                                ⚪ Not Started
+                              </option>
+                            </select>
+                          </div>
+
+                          <p className="text-xs font-bold text-gray-500">
+                            Showing {filteredMasterChecklistItems.length} of{" "}
+                            {masterChecklistItems.length} items
+                          </p>
+                        </div>
+                      </div>
+
                       {/* DESKTOP TABLE */}
                       <div className="hidden md:block bg-white/90 backdrop-blur-xl rounded-3xl border border-white/50 shadow-xl overflow-hidden">
                         <div className="overflow-x-auto">
@@ -7633,273 +7682,387 @@ Chathu Wedding Planners
                             </thead>
 
                             <tbody className="divide-y divide-gray-100">
-                              {masterChecklistItems.map((item, index) => (
-                                <tr
-                                  key={item.id}
-                                  className="hover:bg-fuchsia-50/30 transition"
-                                >
-                                  <td className="p-4 text-center text-gray-400 font-bold">
-                                    {index + 1}
-                                  </td>
+                              {filteredMasterChecklistItems.map(
+                                (item, index) => (
+                                  <tr
+                                    key={item.id}
+                                    className="hover:bg-fuchsia-50/30 transition"
+                                  >
+                                    <td className="p-4 text-center text-gray-400 font-bold">
+                                      {index + 1}
+                                    </td>
 
-                                  <td className="p-3">
-                                    <input
-                                      type="text"
-                                      value={item.item_name || ""}
-                                      onChange={(e) =>
-                                        setMasterChecklistItems((current) =>
-                                          current.map((row) =>
-                                            row.id === item.id
-                                              ? {
-                                                  ...row,
-                                                  item_name: e.target.value,
-                                                }
-                                              : row,
-                                          ),
-                                        )
-                                      }
-                                      className="w-full min-w-[170px] p-2 rounded-lg border border-gray-200 bg-white text-xs font-bold outline-none focus:ring-2 focus:ring-fuchsia-300"
-                                    />
-                                  </td>
+                                    <td className="p-3">
+                                      <input
+                                        type="text"
+                                        value={item.item_name || ""}
+                                        onChange={(e) =>
+                                          setMasterChecklistItems((current) =>
+                                            current.map((row) =>
+                                              row.id === item.id
+                                                ? {
+                                                    ...row,
+                                                    item_name: e.target.value,
+                                                  }
+                                                : row,
+                                            ),
+                                          )
+                                        }
+                                        className="w-full min-w-[170px] p-2 rounded-lg border border-gray-200 bg-white text-xs font-bold outline-none focus:ring-2 focus:ring-fuchsia-300"
+                                      />
+                                    </td>
 
-                                  <td className="p-3">
-                                    <select
-                                      value={item.status}
-                                      onChange={(e) =>
-                                        setMasterChecklistItems((current) =>
-                                          current.map((row) =>
-                                            row.id === item.id
-                                              ? {
-                                                  ...row,
-                                                  status: e.target.value,
-                                                }
-                                              : row,
-                                          ),
-                                        )
-                                      }
-                                      className={`w-full min-w-[125px] p-2 rounded-lg border text-[11px] font-black outline-none focus:ring-2 focus:ring-fuchsia-300 ${
-                                        item.status === "Confirmed"
-                                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                                          : item.status === "In Progress"
-                                            ? "bg-amber-50 text-amber-700 border-amber-200"
-                                            : item.status === "Action Required"
-                                              ? "bg-rose-50 text-rose-700 border-rose-200"
-                                              : "bg-gray-50 text-gray-600 border-gray-200"
-                                      }`}
-                                    >
-                                      <option value="Confirmed">
-                                        🟢 Confirmed
-                                      </option>
+                                    <td className="p-3">
+                                      <select
+                                        value={item.status}
+                                        onChange={(e) =>
+                                          setMasterChecklistItems((current) =>
+                                            current.map((row) =>
+                                              row.id === item.id
+                                                ? {
+                                                    ...row,
+                                                    status: e.target.value,
+                                                  }
+                                                : row,
+                                            ),
+                                          )
+                                        }
+                                        className={`w-full min-w-[125px] p-2 rounded-lg border text-[11px] font-black outline-none focus:ring-2 focus:ring-fuchsia-300 ${
+                                          item.status === "Confirmed"
+                                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                            : item.status === "In Progress"
+                                              ? "bg-amber-50 text-amber-700 border-amber-200"
+                                              : item.status ===
+                                                  "Action Required"
+                                                ? "bg-rose-50 text-rose-700 border-rose-200"
+                                                : "bg-gray-50 text-gray-600 border-gray-200"
+                                        }`}
+                                      >
+                                        <option value="Confirmed">
+                                          🟢 Confirmed
+                                        </option>
 
-                                      <option value="In Progress">
-                                        🟡 In Progress
-                                      </option>
+                                        <option value="In Progress">
+                                          🟡 In Progress
+                                        </option>
 
-                                      <option value="Action Required">
-                                        🔴 Action Required
-                                      </option>
+                                        <option value="Action Required">
+                                          🔴 Action Required
+                                        </option>
 
-                                      <option value="Not Started">
-                                        ⚪ Not Started
-                                      </option>
-                                    </select>
-                                  </td>
+                                        <option value="Not Started">
+                                          ⚪ Not Started
+                                        </option>
+                                      </select>
+                                    </td>
 
-                                  <td className="p-3">
-                                    <input
-                                      type="text"
-                                      placeholder="Responsible person"
-                                      value={item.responsible || ""}
-                                      onChange={(e) =>
-                                        setMasterChecklistItems((current) =>
-                                          current.map((row) =>
-                                            row.id === item.id
-                                              ? {
-                                                  ...row,
-                                                  responsible: e.target.value,
-                                                }
-                                              : row,
-                                          ),
-                                        )
-                                      }
-                                      className="w-full min-w-[120px] p-2 rounded-lg border border-gray-200 bg-white text-xs outline-none focus:ring-2 focus:ring-fuchsia-300"
-                                    />
-                                  </td>
+                                    <td className="p-3">
+                                      <input
+                                        type="text"
+                                        placeholder="Responsible person"
+                                        value={item.responsible || ""}
+                                        onChange={(e) =>
+                                          setMasterChecklistItems((current) =>
+                                            current.map((row) =>
+                                              row.id === item.id
+                                                ? {
+                                                    ...row,
+                                                    responsible: e.target.value,
+                                                  }
+                                                : row,
+                                            ),
+                                          )
+                                        }
+                                        className="w-full min-w-[120px] p-2 rounded-lg border border-gray-200 bg-white text-xs outline-none focus:ring-2 focus:ring-fuchsia-300"
+                                      />
+                                    </td>
 
-                                  <td className="p-3">
-                                    <input
-                                      type="date"
-                                      value={item.deadline || ""}
-                                      onChange={(e) =>
-                                        setMasterChecklistItems((current) =>
-                                          current.map((row) =>
-                                            row.id === item.id
-                                              ? {
-                                                  ...row,
-                                                  deadline: e.target.value,
-                                                }
-                                              : row,
-                                          ),
-                                        )
-                                      }
-                                      className="w-full min-w-[120px] p-2 rounded-lg border border-gray-200 bg-white text-xs outline-none focus:ring-2 focus:ring-fuchsia-300"
-                                    />
-                                  </td>
+                                    <td className="p-3">
+                                      <input
+                                        type="date"
+                                        value={item.deadline || ""}
+                                        onChange={(e) =>
+                                          setMasterChecklistItems((current) =>
+                                            current.map((row) =>
+                                              row.id === item.id
+                                                ? {
+                                                    ...row,
+                                                    deadline: e.target.value,
+                                                  }
+                                                : row,
+                                            ),
+                                          )
+                                        }
+                                        className="w-full min-w-[120px] p-2 rounded-lg border border-gray-200 bg-white text-xs outline-none focus:ring-2 focus:ring-fuchsia-300"
+                                      />
+                                    </td>
 
-                                  {/* VENDOR COMPANY */}
-                                  <td className="p-2 align-middle">
-                                    <input
-                                      type="text"
-                                      placeholder="Vendor name/company"
-                                      value={item.vendor_company || ""}
-                                      onChange={(e) =>
-                                        setMasterChecklistItems((current) =>
-                                          current.map((row) =>
-                                            row.id === item.id
-                                              ? {
-                                                  ...row,
-                                                  vendor_company:
-                                                    e.target.value,
-                                                }
-                                              : row,
-                                          ),
-                                        )
-                                      }
-                                      className="w-full min-w-[150px] p-2 rounded-lg border border-gray-200 bg-white text-xs outline-none focus:ring-2 focus:ring-fuchsia-300"
-                                    />
-                                  </td>
+                                    {/* VENDOR COMPANY */}
+                                    <td className="p-2 align-middle">
+                                      <input
+                                        type="text"
+                                        placeholder="Vendor name/company"
+                                        value={item.vendor_company || ""}
+                                        onChange={(e) =>
+                                          setMasterChecklistItems((current) =>
+                                            current.map((row) =>
+                                              row.id === item.id
+                                                ? {
+                                                    ...row,
+                                                    vendor_company:
+                                                      e.target.value,
+                                                  }
+                                                : row,
+                                            ),
+                                          )
+                                        }
+                                        className="w-full min-w-[150px] p-2 rounded-lg border border-gray-200 bg-white text-xs outline-none focus:ring-2 focus:ring-fuchsia-300"
+                                      />
+                                    </td>
 
-                                  {/* VENDOR CONTACT */}
-                                  <td className="p-2 align-middle">
-                                    <input
-                                      type="tel"
-                                      placeholder="07X XXX XXXX"
-                                      value={item.vendor_contact || ""}
-                                      onChange={(e) =>
-                                        setMasterChecklistItems((current) =>
-                                          current.map((row) =>
-                                            row.id === item.id
-                                              ? {
-                                                  ...row,
-                                                  vendor_contact:
-                                                    e.target.value,
-                                                }
-                                              : row,
-                                          ),
-                                        )
-                                      }
-                                      className="w-full min-w-[125px] p-2 rounded-lg border border-gray-200 bg-white text-xs outline-none focus:ring-2 focus:ring-fuchsia-300"
-                                    />
-                                  </td>
+                                    {/* VENDOR CONTACT */}
+                                    <td className="p-2 align-middle">
+                                      <input
+                                        type="tel"
+                                        placeholder="07X XXX XXXX"
+                                        value={item.vendor_contact || ""}
+                                        onChange={(e) =>
+                                          setMasterChecklistItems((current) =>
+                                            current.map((row) =>
+                                              row.id === item.id
+                                                ? {
+                                                    ...row,
+                                                    vendor_contact:
+                                                      e.target.value,
+                                                  }
+                                                : row,
+                                            ),
+                                          )
+                                        }
+                                        className="w-full min-w-[125px] p-2 rounded-lg border border-gray-200 bg-white text-xs outline-none focus:ring-2 focus:ring-fuchsia-300"
+                                      />
+                                    </td>
 
-                                  {/* FULL AMOUNT */}
-                                  <td className="p-2 align-middle">
-                                    <input
-                                      type="number"
-                                      min="0"
-                                      step="0.01"
-                                      placeholder="Full amount"
-                                      value={item.full_amount ?? ""}
-                                      onChange={(e) =>
-                                        setMasterChecklistItems((current) =>
-                                          current.map((row) =>
-                                            row.id === item.id
-                                              ? {
-                                                  ...row,
-                                                  full_amount: e.target.value,
-                                                }
-                                              : row,
-                                          ),
-                                        )
-                                      }
-                                      className="w-[100px] p-2 rounded-lg border border-fuchsia-200 bg-white text-[11px] outline-none focus:ring-2 focus:ring-fuchsia-300"
-                                    />
-                                  </td>
+                                    {/* FULL AMOUNT */}
+                                    <td className="p-2 align-middle">
+                                      <input
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="Full amount"
+                                        value={item.full_amount ?? ""}
+                                        onChange={(e) =>
+                                          setMasterChecklistItems((current) =>
+                                            current.map((row) =>
+                                              row.id === item.id
+                                                ? {
+                                                    ...row,
+                                                    full_amount: e.target.value,
+                                                  }
+                                                : row,
+                                            ),
+                                          )
+                                        }
+                                        className="w-[100px] p-2 rounded-lg border border-fuchsia-200 bg-white text-[11px] outline-none focus:ring-2 focus:ring-fuchsia-300"
+                                      />
+                                    </td>
 
-                                  {/* ADVANCE PAYMENT */}
-                                  <td className="p-2 align-middle">
-                                    <div className="flex items-center gap-2 whitespace-nowrap">
-                                      <label className="flex items-center gap-1 text-[11px] font-bold cursor-pointer">
-                                        <input
-                                          type="radio"
-                                          name={`advance-payment-${item.id}`}
-                                          checked={
-                                            !Boolean(item.advance_payment_done)
-                                          }
-                                          onChange={() =>
-                                            setMasterChecklistItems((current) =>
-                                              current.map((row) =>
-                                                row.id === item.id
-                                                  ? {
-                                                      ...row,
-                                                      advance_payment_done: false,
-                                                      advance_payment_amount:
-                                                        "",
-                                                      advance_payment_date: "",
-                                                    }
-                                                  : row,
-                                              ),
-                                            )
-                                          }
-                                        />
-                                        No
-                                      </label>
-
-                                      <label className="flex items-center gap-1 text-[11px] font-bold cursor-pointer">
-                                        <input
-                                          type="radio"
-                                          name={`advance-payment-${item.id}`}
-                                          checked={Boolean(
-                                            item.advance_payment_done,
-                                          )}
-                                          onChange={() =>
-                                            setMasterChecklistItems((current) =>
-                                              current.map((row) =>
-                                                row.id === item.id
-                                                  ? {
-                                                      ...row,
-                                                      advance_payment_done: true,
-                                                    }
-                                                  : row,
-                                              ),
-                                            )
-                                          }
-                                        />
-                                        Done
-                                      </label>
-
-                                      {Boolean(item.advance_payment_done) && (
-                                        <>
+                                    {/* ADVANCE PAYMENT */}
+                                    <td className="p-2 align-middle">
+                                      <div className="flex items-center gap-2 whitespace-nowrap">
+                                        <label className="flex items-center gap-1 text-[11px] font-bold cursor-pointer">
                                           <input
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            placeholder="Amount"
-                                            value={
-                                              item.advance_payment_amount ?? ""
+                                            type="radio"
+                                            name={`advance-payment-${item.id}`}
+                                            checked={
+                                              !Boolean(
+                                                item.advance_payment_done,
+                                              )
                                             }
-                                            onChange={(e) =>
+                                            onChange={() =>
                                               setMasterChecklistItems(
                                                 (current) =>
                                                   current.map((row) =>
                                                     row.id === item.id
                                                       ? {
                                                           ...row,
+                                                          advance_payment_done: false,
                                                           advance_payment_amount:
-                                                            e.target.value,
+                                                            "",
+                                                          advance_payment_date:
+                                                            "",
                                                         }
                                                       : row,
                                                   ),
                                               )
                                             }
-                                            className="w-[90px] p-2 rounded-lg border border-amber-200 bg-amber-50/40 text-[11px]"
                                           />
+                                          No
+                                        </label>
 
+                                        <label className="flex items-center gap-1 text-[11px] font-bold cursor-pointer">
+                                          <input
+                                            type="radio"
+                                            name={`advance-payment-${item.id}`}
+                                            checked={Boolean(
+                                              item.advance_payment_done,
+                                            )}
+                                            onChange={() =>
+                                              setMasterChecklistItems(
+                                                (current) =>
+                                                  current.map((row) =>
+                                                    row.id === item.id
+                                                      ? {
+                                                          ...row,
+                                                          advance_payment_done: true,
+                                                        }
+                                                      : row,
+                                                  ),
+                                              )
+                                            }
+                                          />
+                                          Done
+                                        </label>
+
+                                        {Boolean(item.advance_payment_done) && (
+                                          <>
+                                            <input
+                                              type="number"
+                                              min="0"
+                                              step="0.01"
+                                              placeholder="Amount"
+                                              value={
+                                                item.advance_payment_amount ??
+                                                ""
+                                              }
+                                              onChange={(e) =>
+                                                setMasterChecklistItems(
+                                                  (current) =>
+                                                    current.map((row) =>
+                                                      row.id === item.id
+                                                        ? {
+                                                            ...row,
+                                                            advance_payment_amount:
+                                                              e.target.value,
+                                                          }
+                                                        : row,
+                                                    ),
+                                                )
+                                              }
+                                              className="w-[90px] p-2 rounded-lg border border-amber-200 bg-amber-50/40 text-[11px]"
+                                            />
+
+                                            <input
+                                              type="date"
+                                              value={
+                                                item.advance_payment_date || ""
+                                              }
+                                              onChange={(e) =>
+                                                setMasterChecklistItems(
+                                                  (current) =>
+                                                    current.map((row) =>
+                                                      row.id === item.id
+                                                        ? {
+                                                            ...row,
+                                                            advance_payment_date:
+                                                              e.target.value,
+                                                          }
+                                                        : row,
+                                                    ),
+                                                )
+                                              }
+                                              className="w-[125px] p-2 rounded-lg border border-amber-200 bg-amber-50/40 text-[11px]"
+                                            />
+                                          </>
+                                        )}
+                                      </div>
+                                    </td>
+
+                                    {/* REMAINING BALANCE */}
+                                    <td className="p-2 align-middle">
+                                      <input
+                                        type="text"
+                                        readOnly
+                                        value={
+                                          Boolean(item.full_payment_done)
+                                            ? "Fully Paid"
+                                            : Math.max(
+                                                (parseFloat(item.full_amount) ||
+                                                  0) -
+                                                  (Boolean(
+                                                    item.advance_payment_done,
+                                                  )
+                                                    ? parseFloat(
+                                                        item.advance_payment_amount,
+                                                      ) || 0
+                                                    : 0),
+                                                0,
+                                              ).toLocaleString()
+                                        }
+                                        className={`w-[110px] p-2 rounded-lg border text-[11px] font-black cursor-not-allowed ${
+                                          Boolean(item.full_payment_done)
+                                            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                                            : "border-gray-200 bg-gray-100 text-gray-700"
+                                        }`}
+                                      />
+                                    </td>
+
+                                    {/* FULL PAYMENT */}
+                                    <td className="p-2 align-middle">
+                                      <div className="flex items-center gap-2 whitespace-nowrap">
+                                        <label className="flex items-center gap-1 text-[11px] font-bold cursor-pointer">
+                                          <input
+                                            type="radio"
+                                            name={`full-payment-${item.id}`}
+                                            checked={
+                                              !Boolean(item.full_payment_done)
+                                            }
+                                            onChange={() =>
+                                              setMasterChecklistItems(
+                                                (current) =>
+                                                  current.map((row) =>
+                                                    row.id === item.id
+                                                      ? {
+                                                          ...row,
+                                                          full_payment_done: false,
+                                                          full_payment_date: "",
+                                                        }
+                                                      : row,
+                                                  ),
+                                              )
+                                            }
+                                          />
+                                          No
+                                        </label>
+
+                                        <label className="flex items-center gap-1 text-[11px] font-bold cursor-pointer">
+                                          <input
+                                            type="radio"
+                                            name={`full-payment-${item.id}`}
+                                            checked={Boolean(
+                                              item.full_payment_done,
+                                            )}
+                                            onChange={() =>
+                                              setMasterChecklistItems(
+                                                (current) =>
+                                                  current.map((row) =>
+                                                    row.id === item.id
+                                                      ? {
+                                                          ...row,
+                                                          full_payment_done: true,
+                                                        }
+                                                      : row,
+                                                  ),
+                                              )
+                                            }
+                                          />
+                                          Done
+                                        </label>
+
+                                        {Boolean(item.full_payment_done) && (
                                           <input
                                             type="date"
-                                            value={
-                                              item.advance_payment_date || ""
-                                            }
+                                            value={item.full_payment_date || ""}
                                             onChange={(e) =>
                                               setMasterChecklistItems(
                                                 (current) =>
@@ -7907,151 +8070,49 @@ Chathu Wedding Planners
                                                     row.id === item.id
                                                       ? {
                                                           ...row,
-                                                          advance_payment_date:
+                                                          full_payment_date:
                                                             e.target.value,
                                                         }
                                                       : row,
                                                   ),
                                               )
                                             }
-                                            className="w-[125px] p-2 rounded-lg border border-amber-200 bg-amber-50/40 text-[11px]"
+                                            className="w-[125px] p-2 rounded-lg border border-emerald-200 bg-emerald-50/40 text-[11px]"
                                           />
-                                        </>
-                                      )}
-                                    </div>
-                                  </td>
+                                        )}
+                                      </div>
+                                    </td>
 
-                                  {/* REMAINING BALANCE */}
-                                  <td className="p-2 align-middle">
-                                    <input
-                                      type="text"
-                                      readOnly
-                                      value={
-                                        Boolean(item.full_payment_done)
-                                          ? "Fully Paid"
-                                          : Math.max(
-                                              (parseFloat(item.full_amount) ||
-                                                0) -
-                                                (Boolean(
-                                                  item.advance_payment_done,
-                                                )
-                                                  ? parseFloat(
-                                                      item.advance_payment_amount,
-                                                    ) || 0
-                                                  : 0),
-                                              0,
-                                            ).toLocaleString()
-                                      }
-                                      className={`w-[110px] p-2 rounded-lg border text-[11px] font-black cursor-not-allowed ${
-                                        Boolean(item.full_payment_done)
-                                          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                                          : "border-gray-200 bg-gray-100 text-gray-700"
-                                      }`}
-                                    />
-                                  </td>
-
-                                  {/* FULL PAYMENT */}
-                                  <td className="p-2 align-middle">
-                                    <div className="flex items-center gap-2 whitespace-nowrap">
-                                      <label className="flex items-center gap-1 text-[11px] font-bold cursor-pointer">
-                                        <input
-                                          type="radio"
-                                          name={`full-payment-${item.id}`}
-                                          checked={
-                                            !Boolean(item.full_payment_done)
+                                    <td className="p-3">
+                                      <div className="flex items-center justify-center gap-2">
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            updateMasterChecklistItem(item)
                                           }
-                                          onChange={() =>
-                                            setMasterChecklistItems((current) =>
-                                              current.map((row) =>
-                                                row.id === item.id
-                                                  ? {
-                                                      ...row,
-                                                      full_payment_done: false,
-                                                      full_payment_date: "",
-                                                    }
-                                                  : row,
-                                              ),
-                                            )
+                                          disabled={masterChecklistSaving}
+                                          className="px-3 py-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-black hover:bg-emerald-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                          {masterChecklistSaving
+                                            ? "Saving..."
+                                            : "Save"}
+                                        </button>
+
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            deleteMasterChecklistItem(item.id)
                                           }
-                                        />
-                                        No
-                                      </label>
-
-                                      <label className="flex items-center gap-1 text-[11px] font-bold cursor-pointer">
-                                        <input
-                                          type="radio"
-                                          name={`full-payment-${item.id}`}
-                                          checked={Boolean(
-                                            item.full_payment_done,
-                                          )}
-                                          onChange={() =>
-                                            setMasterChecklistItems((current) =>
-                                              current.map((row) =>
-                                                row.id === item.id
-                                                  ? {
-                                                      ...row,
-                                                      full_payment_done: true,
-                                                    }
-                                                  : row,
-                                              ),
-                                            )
-                                          }
-                                        />
-                                        Done
-                                      </label>
-
-                                      {Boolean(item.full_payment_done) && (
-                                        <input
-                                          type="date"
-                                          value={item.full_payment_date || ""}
-                                          onChange={(e) =>
-                                            setMasterChecklistItems((current) =>
-                                              current.map((row) =>
-                                                row.id === item.id
-                                                  ? {
-                                                      ...row,
-                                                      full_payment_date:
-                                                        e.target.value,
-                                                    }
-                                                  : row,
-                                              ),
-                                            )
-                                          }
-                                          className="w-[125px] p-2 rounded-lg border border-emerald-200 bg-emerald-50/40 text-[11px]"
-                                        />
-                                      )}
-                                    </div>
-                                  </td>
-
-                                  <td className="p-3">
-                                    <div className="flex items-center justify-center gap-2">
-                                      <button
-                                        type="button"
-                                        onClick={() =>
-                                          updateMasterChecklistItem(item)
-                                        }
-                                        disabled={masterChecklistSaving}
-                                        className="px-3 py-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-black hover:bg-emerald-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                                      >
-                                        {masterChecklistSaving
-                                          ? "Saving..."
-                                          : "Save"}
-                                      </button>
-
-                                      <button
-                                        type="button"
-                                        onClick={() =>
-                                          deleteMasterChecklistItem(item.id)
-                                        }
-                                        disabled={masterChecklistSaving}
-                                        className="px-3 py-2 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 text-xs font-black hover:bg-rose-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                                      >
-                                        ✕
-                                      </button>
-                                    </div>
-                                  </td>
-                                </tr>
-                              ))}
+                                          disabled={masterChecklistSaving}
+                                          className="px-3 py-2 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 text-xs font-black hover:bg-rose-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                          ✕
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                ),
+                              )}
                             </tbody>
                           </table>
                         </div>
@@ -8059,7 +8120,7 @@ Chathu Wedding Planners
 
                       {/* MOBILE CARDS */}
                       <div className="md:hidden space-y-3">
-                        {masterChecklistItems.map((item, index) => (
+                        {filteredMasterChecklistItems.map((item, index) => (
                           <div
                             key={item.id}
                             className="bg-white/90 rounded-2xl border border-white/50 shadow-md overflow-hidden"
