@@ -461,6 +461,7 @@ export default function Dashboard() {
     useState([]);
   const [masterChecklistDeadlineFilter, setMasterChecklistDeadlineFilter] =
     useState("");
+  const [showDeadlineReminder, setShowDeadlineReminder] = useState(true);
   const [masterChecklistLoading, setMasterChecklistLoading] = useState(false);
   const [masterChecklistSaving, setMasterChecklistSaving] = useState(false);
   const [expandedMasterChecklistItemId, setExpandedMasterChecklistItemId] =
@@ -7697,11 +7698,12 @@ Chathu Wedding Planners
                                 id="masterChecklistDeadlineFilter"
                                 type="date"
                                 value={masterChecklistDeadlineFilter}
-                                onChange={(e) =>
+                                onChange={(e) => {
                                   setMasterChecklistDeadlineFilter(
                                     e.target.value,
-                                  )
-                                }
+                                  );
+                                  setShowDeadlineReminder(true);
+                                }}
                                 className="w-full min-w-0 px-4 py-3 rounded-xl border border-fuchsia-100 bg-white text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-fuchsia-300"
                               />
 
@@ -7727,6 +7729,40 @@ Chathu Wedding Planners
                           </p>
                         </div>
                       </div>
+
+                      {/* DEADLINE REMINDER */}
+                      {masterChecklistDeadlineFilter &&
+                        showDeadlineReminder && (
+                          <div className="flex items-center justify-between gap-4 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 shadow-sm">
+                            <div className="flex items-center gap-3">
+                              <span className="text-xl">📅</span>
+
+                              <p className="text-sm font-semibold text-amber-900">
+                                These items need to be finalized before{" "}
+                                <span className="font-black">
+                                  {new Date(
+                                    `${masterChecklistDeadlineFilter}T00:00:00`,
+                                  ).toLocaleDateString("en-GB", {
+                                    day: "numeric",
+                                    month: "long",
+                                    year: "numeric",
+                                  })}
+                                </span>
+                                .
+                              </p>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => setShowDeadlineReminder(false)}
+                              className="shrink-0 rounded-lg px-3 py-2 text-amber-800 hover:bg-amber-100 transition-colors font-bold"
+                              title="Dismiss reminder"
+                              aria-label="Dismiss deadline reminder"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
 
                       {/* DESKTOP TABLE */}
                       <div className="hidden md:block bg-white/90 backdrop-blur-xl rounded-3xl border border-white/50 shadow-xl overflow-hidden">
