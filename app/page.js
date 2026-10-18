@@ -459,6 +459,8 @@ export default function Dashboard() {
   const [masterChecklistItems, setMasterChecklistItems] = useState([]);
   const [masterChecklistStatusFilter, setMasterChecklistStatusFilter] =
     useState([]);
+  const [masterChecklistDeadlineFilter, setMasterChecklistDeadlineFilter] =
+    useState("");
   const [masterChecklistLoading, setMasterChecklistLoading] = useState(false);
   const [masterChecklistSaving, setMasterChecklistSaving] = useState(false);
   const [expandedMasterChecklistItemId, setExpandedMasterChecklistItemId] =
@@ -3674,11 +3676,18 @@ Chathu Wedding Planners
     0,
   );
 
-  const filteredMasterChecklistItems = masterChecklistItems.filter(
-    (item) =>
+  const filteredMasterChecklistItems = masterChecklistItems.filter((item) => {
+    const matchesStatus =
       masterChecklistStatusFilter.length === 0 ||
-      masterChecklistStatusFilter.includes(item.status || "Not Started"),
-  );
+      masterChecklistStatusFilter.includes(item.status || "Not Started");
+
+    const matchesDeadline =
+      !masterChecklistDeadlineFilter ||
+      String(item.deadline || "").slice(0, 10) ===
+        masterChecklistDeadlineFilter;
+
+    return matchesStatus && matchesDeadline;
+  });
 
   const completedChecklistCount = masterChecklistItems.filter(
     (item) => item.status === "Confirmed",
@@ -7426,6 +7435,7 @@ Chathu Wedding Planners
 
                       setMasterChecklistWeddingId(weddingId);
                       setMasterChecklistStatusFilter([]);
+                      setMasterChecklistDeadlineFilter("");
 
                       if (!weddingId) {
                         setMasterChecklistItems([]);
@@ -7671,6 +7681,44 @@ Chathu Wedding Planners
                                 </div>
                               </div>
                             </details>
+                          </div>
+
+                          {/* DEADLINE DATE FILTER */}
+                          <div className="w-full sm:w-64">
+                            <label
+                              htmlFor="masterChecklistDeadlineFilter"
+                              className="block text-xs font-black uppercase tracking-wider text-fuchsia-950 mb-2"
+                            >
+                              Filter by Deadline
+                            </label>
+
+                            <div className="flex items-center gap-2">
+                              <input
+                                id="masterChecklistDeadlineFilter"
+                                type="date"
+                                value={masterChecklistDeadlineFilter}
+                                onChange={(e) =>
+                                  setMasterChecklistDeadlineFilter(
+                                    e.target.value,
+                                  )
+                                }
+                                className="w-full min-w-0 px-4 py-3 rounded-xl border border-fuchsia-100 bg-white text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-fuchsia-300"
+                              />
+
+                              {masterChecklistDeadlineFilter && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setMasterChecklistDeadlineFilter("")
+                                  }
+                                  className="shrink-0 px-3 py-3 rounded-xl bg-fuchsia-50 hover:bg-fuchsia-100 text-fuchsia-800 text-sm font-bold"
+                                  title="Clear deadline filter"
+                                  aria-label="Clear deadline filter"
+                                >
+                                  ✕
+                                </button>
+                              )}
+                            </div>
                           </div>
 
                           <p className="text-xs font-bold text-gray-500">
