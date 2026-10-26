@@ -4882,49 +4882,73 @@ Chathu Wedding Planners
 
                 {/* DASHBOARD TAB SEGMENT CONSOLE NAVIGATION BAR */}
                 <div className="max-w-[98%] mx-auto mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 md:border-b bg-white/50 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none rounded-3xl md:rounded-none p-3 md:p-0 shadow-xl md:shadow-none border border-white/40 md:border-0">
-                  <div className="grid grid-cols-1 gap-2 w-full md:flex md:flex-wrap">
+                  <div className="grid grid-cols-2 gap-2 w-full md:flex md:flex-wrap">
+                    {/* ACTIVE INQUIRIES */}
                     <button
                       onClick={() => handleTabChange("all")}
-                      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
+                      className={`min-w-0 min-h-[60px] py-3 px-3 md:px-4 rounded-xl md:rounded-none font-bold text-[11px] sm:text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center justify-center md:justify-start gap-2 text-center md:text-left ${
                         activeTab === "all"
-                          ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
-                          : "bg-white/60 text-gray-500 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-700"
+                          ? "bg-fuchsia-200 text-fuchsia-950 border-fuchsia-300 shadow-md md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
+                          : "bg-white/70 text-gray-600 border-white/60 hover:bg-fuchsia-50 md:bg-transparent md:border-transparent md:hover:text-gray-700"
                       }`}
                     >
-                      ❤️ Active Wedding Inquiries
+                      <span className="shrink-0">❤️</span>
+                      <span>
+                        <span className="md:hidden">Active Inquiries</span>
+                        <span className="hidden md:inline">
+                          Active Wedding Inquiries
+                        </span>
+                      </span>
                     </button>
 
+                    {/* COMPLETED WEDDINGS */}
                     <button
                       onClick={() => handleTabChange("completed")}
-                      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
+                      className={`min-w-0 min-h-[60px] py-3 px-3 md:px-4 rounded-xl md:rounded-none font-bold text-[11px] sm:text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center justify-center md:justify-start gap-2 text-center md:text-left ${
                         activeTab === "completed"
-                          ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
-                          : "bg-white/60 text-gray-500 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-700"
+                          ? "bg-fuchsia-200 text-fuchsia-950 border-fuchsia-300 shadow-md md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
+                          : "bg-white/70 text-gray-600 border-white/60 hover:bg-fuchsia-50 md:bg-transparent md:border-transparent md:hover:text-gray-700"
                       }`}
                     >
-                      ✨ Completed Weddings
+                      <span className="shrink-0">✨</span>
+                      <span>
+                        <span className="md:hidden">Completed</span>
+                        <span className="hidden md:inline">
+                          Completed Weddings
+                        </span>
+                      </span>
                     </button>
 
+                    {/* ALL RECORDS */}
                     <button
                       onClick={() => handleTabChange("allRecords")}
-                      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
+                      className={`min-w-0 min-h-[60px] py-3 px-3 md:px-4 rounded-xl md:rounded-none font-bold text-[11px] sm:text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center justify-center md:justify-start gap-2 text-center md:text-left ${
                         activeTab === "allRecords"
-                          ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
-                          : "bg-white/60 text-gray-500 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-700"
+                          ? "bg-fuchsia-200 text-fuchsia-950 border-fuchsia-300 shadow-md md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
+                          : "bg-white/70 text-gray-600 border-white/60 hover:bg-fuchsia-50 md:bg-transparent md:border-transparent md:hover:text-gray-700"
                       }`}
                     >
-                      📁 All Records
+                      <span className="shrink-0">📁</span>
+                      <span>All Records</span>
                     </button>
 
+                    {/* DELETED RECORDS */}
                     <button
                       onClick={() => handleTabChange("trash")}
-                      className={`py-3 px-4 rounded-2xl md:rounded-none font-bold text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center gap-2 ${
+                      className={`min-w-0 min-h-[60px] py-3 px-3 md:px-4 rounded-xl md:rounded-none font-bold text-[11px] sm:text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center justify-center md:justify-start gap-2 text-center md:text-left ${
                         activeTab === "trash"
-                          ? "bg-fuchsia-200 text-white border-fuchsia-200 shadow-lg md:bg-amber-50/40 md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
-                          : "bg-white/60 text-gray-400 border-white/40 hover:bg-white/80 md:bg-transparent md:border-transparent md:hover:text-gray-600"
+                          ? "bg-fuchsia-200 text-fuchsia-950 border-fuchsia-300 shadow-md md:bg-amber-50/40 md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
+                          : "bg-white/70 text-gray-600 border-white/60 hover:bg-fuchsia-50 md:bg-transparent md:border-transparent md:hover:text-gray-600"
                       }`}
                     >
-                      🗑️ Deleted Records
+                      <span className="shrink-0">🗑️</span>
+                      <span>
+                        <span className="md:hidden">Deleted</span>
+                        <span className="hidden md:inline">
+                          Deleted Records
+                        </span>
+                      </span>
+
                       {deletedRecords.length > 0 && (
                         <span
                           className={`text-[10px] px-1.5 py-0.5 rounded-full font-black animate-pulse ${
