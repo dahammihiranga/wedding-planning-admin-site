@@ -461,6 +461,12 @@ export default function Dashboard() {
   });
 
   const [masterChecklistWeddingId, setMasterChecklistWeddingId] = useState("");
+
+  // Searchable wedding dropdown - Master Control Sheet
+  const [masterWeddingSearch, setMasterWeddingSearch] = useState("");
+  const [masterWeddingDropdownOpen, setMasterWeddingDropdownOpen] =
+    useState(false);
+
   const [masterChecklistItems, setMasterChecklistItems] = useState([]);
   const [masterChecklistStatusFilter, setMasterChecklistStatusFilter] =
     useState([]);
@@ -507,6 +513,12 @@ export default function Dashboard() {
 
   // Wedding Budget Planner
   const [budgetWeddingId, setBudgetWeddingId] = useState("");
+
+  // Searchable wedding dropdown - Budget Planner
+  const [budgetWeddingSearch, setBudgetWeddingSearch] = useState("");
+  const [budgetWeddingDropdownOpen, setBudgetWeddingDropdownOpen] =
+    useState(false);
+
   const [budgetItems, setBudgetItems] = useState([]);
   const [budgetLoading, setBudgetLoading] = useState(false);
   const [budgetSaving, setBudgetSaving] = useState(false);
@@ -3758,6 +3770,18 @@ Chathu Wedding Planners
     .sort((a, b) =>
       String(a.wedding_date || "").localeCompare(String(b.wedding_date || "")),
     );
+
+  const filteredMasterWeddings = masterControlWeddings.filter((wedding) =>
+    `${wedding.couple_name || ""} ${wedding.wedding_date || ""}`
+      .toLowerCase()
+      .includes(masterWeddingSearch.toLowerCase().trim()),
+  );
+
+  const filteredBudgetWeddings = masterControlWeddings.filter((wedding) =>
+    `${wedding.couple_name || ""} ${wedding.wedding_date || ""}`
+      .toLowerCase()
+      .includes(budgetWeddingSearch.toLowerCase().trim()),
+  );
 
   const selectedMasterWedding = masterControlWeddings.find(
     (item) => Number(item.id) === Number(masterChecklistWeddingId),
@@ -7524,37 +7548,77 @@ Chathu Wedding Planners
                     Select Wedding
                   </label>
 
-                  <select
-                    value={masterChecklistWeddingId}
-                    onChange={async (e) => {
-                      const weddingId = e.target.value;
-
-                      setMasterChecklistWeddingId(weddingId);
-                      setMasterChecklistStatusFilter([]);
-                      setMasterChecklistDeadlineFilter("");
-                      setHighlightedMasterItemId(null);
-
-                      if (!weddingId) {
-                        setMasterChecklistItems([]);
-                        return;
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={
+                        masterWeddingDropdownOpen
+                          ? masterWeddingSearch
+                          : selectedMasterWedding
+                            ? `${selectedMasterWedding.couple_name} — ${selectedMasterWedding.wedding_date || "No wedding date"}`
+                            : ""
                       }
+                      placeholder="Search wedding by couple name or date..."
+                      onFocus={() => {
+                        setMasterWeddingSearch("");
+                        setMasterWeddingDropdownOpen(true);
+                      }}
+                      onChange={(e) => {
+                        setMasterWeddingSearch(e.target.value);
+                        setMasterWeddingDropdownOpen(true);
+                      }}
+                      onBlur={() => {
+                        setTimeout(
+                          () => setMasterWeddingDropdownOpen(false),
+                          150,
+                        );
+                      }}
+                      className="w-full p-3.5 pr-12 rounded-2xl border border-fuchsia-100 bg-white text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-fuchsia-300"
+                    />
 
-                      await fetchMasterChecklist(weddingId);
-                    }}
-                    className="w-full p-3.5 rounded-2xl border border-fuchsia-100 bg-white text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-fuchsia-300"
-                  >
-                    <option value="">
-                      Select a confirmed or completed wedding...
-                    </option>
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                      🔍
+                    </span>
 
-                    {masterControlWeddings.map((wedding) => (
-                      <option key={wedding.id} value={wedding.id}>
-                        {wedding.couple_name}
-                        {" — "}
-                        {wedding.wedding_date || "No wedding date"}
-                      </option>
-                    ))}
-                  </select>
+                    {masterWeddingDropdownOpen && (
+                      <div className="absolute z-[100] top-full left-0 right-0 mt-2 max-h-72 overflow-y-auto rounded-2xl border border-fuchsia-100 bg-white shadow-2xl">
+                        {filteredMasterWeddings.length > 0 ? (
+                          filteredMasterWeddings.map((wedding) => (
+                            <button
+                              key={wedding.id}
+                              type="button"
+                              onMouseDown={(e) => e.preventDefault()}
+                              onClick={async () => {
+                                const weddingId = String(wedding.id);
+
+                                setMasterChecklistWeddingId(weddingId);
+                                setMasterChecklistStatusFilter([]);
+                                setMasterChecklistDeadlineFilter("");
+                                setHighlightedMasterItemId(null);
+                                setMasterWeddingDropdownOpen(false);
+                                setMasterWeddingSearch("");
+
+                                await fetchMasterChecklist(weddingId);
+                              }}
+                              className={`w-full text-left px-4 py-3 text-sm font-semibold border-b border-gray-50 transition hover:bg-fuchsia-50 ${
+                                String(masterChecklistWeddingId) ===
+                                String(wedding.id)
+                                  ? "bg-fuchsia-100 text-fuchsia-950"
+                                  : "text-gray-700"
+                              }`}
+                            >
+                              {wedding.couple_name} —{" "}
+                              {wedding.wedding_date || "No wedding date"}
+                            </button>
+                          ))
+                        ) : (
+                          <div className="px-4 py-5 text-center text-sm text-gray-400">
+                            No matching weddings found
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* EMPTY STATE */}
@@ -9142,28 +9206,76 @@ Chathu Wedding Planners
                   <label className="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">
                     Select Wedding
                   </label>
-                  <select
-                    value={budgetWeddingId}
-                    onChange={async (e) => {
-                      const id = e.target.value;
-                      setBudgetWeddingId(id);
-                      setExpandedBudgetItemId(null);
-                      setHighlightedBudgetItemId(null);
-                      setBudgetItems([]);
-                      await fetchWeddingBudget(id);
-                    }}
-                    className="w-full p-3.5 rounded-2xl border border-fuchsia-100 bg-white text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-fuchsia-300"
-                  >
-                    <option value="">
-                      Select a confirmed or completed wedding...
-                    </option>
-                    {masterControlWeddings.map((wedding) => (
-                      <option key={wedding.id} value={wedding.id}>
-                        {wedding.couple_name} —{" "}
-                        {wedding.wedding_date || "No wedding date"}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={
+                        budgetWeddingDropdownOpen
+                          ? budgetWeddingSearch
+                          : selectedBudgetWedding
+                            ? `${selectedBudgetWedding.couple_name} — ${selectedBudgetWedding.wedding_date || "No wedding date"}`
+                            : ""
+                      }
+                      placeholder="Search wedding by couple name or date..."
+                      onFocus={() => {
+                        setBudgetWeddingSearch("");
+                        setBudgetWeddingDropdownOpen(true);
+                      }}
+                      onChange={(e) => {
+                        setBudgetWeddingSearch(e.target.value);
+                        setBudgetWeddingDropdownOpen(true);
+                      }}
+                      onBlur={() => {
+                        setTimeout(
+                          () => setBudgetWeddingDropdownOpen(false),
+                          150,
+                        );
+                      }}
+                      className="w-full p-3.5 pr-12 rounded-2xl border border-fuchsia-100 bg-white text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-fuchsia-300"
+                    />
+
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                      🔍
+                    </span>
+
+                    {budgetWeddingDropdownOpen && (
+                      <div className="absolute z-[100] top-full left-0 right-0 mt-2 max-h-72 overflow-y-auto rounded-2xl border border-fuchsia-100 bg-white shadow-2xl">
+                        {filteredBudgetWeddings.length > 0 ? (
+                          filteredBudgetWeddings.map((wedding) => (
+                            <button
+                              key={wedding.id}
+                              type="button"
+                              onMouseDown={(e) => e.preventDefault()}
+                              onClick={async () => {
+                                const id = String(wedding.id);
+
+                                setBudgetWeddingId(id);
+                                setExpandedBudgetItemId(null);
+                                setHighlightedBudgetItemId(null);
+                                setBudgetItems([]);
+                                setBudgetWeddingDropdownOpen(false);
+                                setBudgetWeddingSearch("");
+
+                                await fetchWeddingBudget(id);
+                              }}
+                              className={`w-full text-left px-4 py-3 text-sm font-semibold border-b border-gray-50 transition hover:bg-fuchsia-50 ${
+                                String(budgetWeddingId) === String(wedding.id)
+                                  ? "bg-fuchsia-100 text-fuchsia-950"
+                                  : "text-gray-700"
+                              }`}
+                            >
+                              {wedding.couple_name} —{" "}
+                              {wedding.wedding_date || "No wedding date"}
+                            </button>
+                          ))
+                        ) : (
+                          <div className="px-4 py-5 text-center text-sm text-gray-400">
+                            No matching weddings found
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 {!budgetWeddingId && (
                   <div className="bg-white/80 rounded-3xl shadow-xl p-10 text-center text-gray-500">
