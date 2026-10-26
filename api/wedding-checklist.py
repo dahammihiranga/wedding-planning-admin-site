@@ -72,6 +72,8 @@ ALLOWED_STATUSES = [
 class ChecklistCreate(BaseModel):
     inquiry_id: int
     item_name: str
+    subitems: str = ""
+    remarks: str = ""
     status: str = "Not Started"
     responsible: str = ""
     deadline: str = ""
@@ -91,6 +93,8 @@ class ChecklistCreate(BaseModel):
 
 class ChecklistUpdate(BaseModel):
     item_name: str
+    subitems: str = ""
+    remarks: str = ""
     status: str
     responsible: str = ""
     deadline: str = ""
@@ -177,6 +181,8 @@ async def get_checklist(
                 id,
                 inquiry_id,
                 item_name,
+                subitems,
+                remarks,
                 status,
                 responsible,
                 deadline,
@@ -247,6 +253,8 @@ async def add_checklist_item(data: ChecklistCreate):
             INSERT INTO wedding_checklist_items (
                     inquiry_id,
                     item_name,
+                    subitems,
+                    remarks,
                     status,
                     responsible,
                     deadline,
@@ -265,11 +273,13 @@ async def add_checklist_item(data: ChecklistCreate):
 
                     sort_order
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             [
                 data.inquiry_id,
                 item_name,
+                data.subitems.strip(),
+                data.remarks.strip(),
                 status,
                 data.responsible.strip() or None,
                 data.deadline or None,
@@ -349,6 +359,8 @@ async def update_checklist_item(
     UPDATE wedding_checklist_items
     SET
         item_name = ?,
+        subitems = ?,
+        remarks = ?,
         status = ?,
         responsible = ?,
         deadline = ?,
@@ -369,6 +381,8 @@ async def update_checklist_item(
     """,
     [
         item_name,
+        data.subitems.strip(),
+        data.remarks.strip(),
         data.status,
         data.responsible.strip() or None,
         data.deadline or None,

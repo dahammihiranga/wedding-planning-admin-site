@@ -469,6 +469,8 @@ export default function Dashboard() {
 
   const [newChecklistItem, setNewChecklistItem] = useState({
     item_name: "",
+    subitems: "",
+    remarks: "",
     status: "Not Started",
     responsible: "",
     deadline: "",
@@ -969,6 +971,8 @@ export default function Dashboard() {
         },
         body: JSON.stringify({
           item_name: item.item_name,
+          subitems: item.subitems || "",
+          remarks: item.remarks || "",
           status: item.status,
           responsible: item.responsible || "",
           deadline: item.deadline || "",
@@ -1034,6 +1038,8 @@ export default function Dashboard() {
             },
             body: JSON.stringify({
               item_name: item.item_name,
+              subitems: item.subitems || "",
+              remarks: item.remarks || "",
               status: item.status,
               responsible: item.responsible || "",
               deadline: item.deadline || "",
@@ -1140,6 +1146,8 @@ export default function Dashboard() {
         { key: "balance", width: 22 },
         { key: "fullPaid", width: 18 },
         { key: "fullDate", width: 19 },
+        { key: "subitems", width: 38 },
+        { key: "remarks", width: 38 },
       ];
 
       const mergeLabel = (range, value, background, color, fontSize) => {
@@ -1164,12 +1172,12 @@ export default function Dashboard() {
         };
       };
 
-      mergeLabel("A1:N2", "CHATHU WEDDING PLANNERS", purple, white, 20);
+      mergeLabel("A1:P2", "CHATHU WEDDING PLANNERS", purple, white, 20);
       sheet.getRow(1).height = 25;
       sheet.getRow(2).height = 23;
 
       mergeLabel(
-        "A3:N3",
+        "A3:P3",
         "WEDDING MASTER CONTROL SHEET",
         lightPurple,
         purple,
@@ -1185,7 +1193,7 @@ export default function Dashboard() {
         12,
       );
       mergeLabel(
-        "H4:N4",
+        "H4:P4",
         `Wedding Date: ${selectedMasterWedding.wedding_date || "-"}`,
         white,
         dark,
@@ -1199,7 +1207,7 @@ export default function Dashboard() {
         12,
       );
       mergeLabel(
-        "H5:N5",
+        "H5:P5",
         `Service: ${selectedMasterWedding.service_type || "-"}`,
         white,
         dark,
@@ -1207,7 +1215,7 @@ export default function Dashboard() {
       );
 
       mergeLabel(
-        "A6:N6",
+        "A6:P6",
         `Checklist Progress: ${completedChecklistCount} / ${masterChecklistItems.length} Confirmed (${checklistProgress}%)`,
         "ECFDF5",
         "047857",
@@ -1230,6 +1238,8 @@ export default function Dashboard() {
         "Remaining Balance (LKR)",
         "Full Payment",
         "Full Payment Date",
+        "Sub Items",
+        "Remarks",
       ];
 
       const headerRow = sheet.getRow(7);
@@ -1302,6 +1312,8 @@ export default function Dashboard() {
           },
           fullPaid ? "Yes" : "No",
           fullPaid ? dateValue(item.full_payment_date) : "",
+          safeText(item.subitems),
+          safeText(item.remarks),
         ];
 
         row.height = 30;
@@ -1447,11 +1459,11 @@ export default function Dashboard() {
 
       sheet.autoFilter = {
         from: { row: 7, column: 1 },
-        to: { row: lastDataRow, column: 14 },
+        to: { row: lastDataRow, column: 16 },
       };
 
       sheet.printTitlesRow = "1:7";
-      sheet.pageSetup.printArea = `A1:N${summaryRowNumber}`;
+      sheet.pageSetup.printArea = `A1:P${summaryRowNumber}`;
 
       const buffer = await workbook.xlsx.writeBuffer();
 
@@ -1505,6 +1517,8 @@ export default function Dashboard() {
         body: JSON.stringify({
           inquiry_id: Number(masterChecklistWeddingId),
           item_name: newChecklistItem.item_name,
+          subitems: newChecklistItem.subitems,
+          remarks: newChecklistItem.remarks,
           status: newChecklistItem.status,
           responsible: newChecklistItem.responsible,
           deadline: newChecklistItem.deadline,
@@ -1535,6 +1549,8 @@ export default function Dashboard() {
 
       setNewChecklistItem({
         item_name: "",
+        subitems: "",
+        remarks: "",
         status: "Not Started",
         responsible: "",
         deadline: "",
@@ -7774,6 +7790,10 @@ Chathu Wedding Planners
 
                                 <th className="p-3 min-w-[180px]">Item</th>
 
+                                <th className="p-3 min-w-[230px]">Sub Items</th>
+
+                                <th className="p-3 min-w-[230px]">Remarks</th>
+
                                 <th className="p-3 min-w-[135px]">Status</th>
 
                                 <th className="p-3 min-w-[130px]">
@@ -7834,6 +7854,52 @@ Chathu Wedding Planners
                                           )
                                         }
                                         className="w-full min-w-[170px] p-2 rounded-lg border border-gray-200 bg-white text-xs font-bold outline-none focus:ring-2 focus:ring-fuchsia-300"
+                                      />
+                                    </td>
+
+                                    {/* SUB ITEMS */}
+                                    <td className="p-3 align-top">
+                                      <textarea
+                                        rows={3}
+                                        placeholder={
+                                          "Add sub items, one per line"
+                                        }
+                                        value={item.subitems || ""}
+                                        onChange={(e) =>
+                                          setMasterChecklistItems((current) =>
+                                            current.map((row) =>
+                                              row.id === item.id
+                                                ? {
+                                                    ...row,
+                                                    subitems: e.target.value,
+                                                  }
+                                                : row,
+                                            ),
+                                          )
+                                        }
+                                        className="w-full min-w-[210px] p-2 rounded-lg border border-gray-200 bg-white text-xs outline-none focus:ring-2 focus:ring-fuchsia-300 resize-y"
+                                      />
+                                    </td>
+
+                                    {/* REMARKS */}
+                                    <td className="p-3 align-top">
+                                      <textarea
+                                        rows={3}
+                                        placeholder="Add remarks"
+                                        value={item.remarks || ""}
+                                        onChange={(e) =>
+                                          setMasterChecklistItems((current) =>
+                                            current.map((row) =>
+                                              row.id === item.id
+                                                ? {
+                                                    ...row,
+                                                    remarks: e.target.value,
+                                                  }
+                                                : row,
+                                            ),
+                                          )
+                                        }
+                                        className="w-full min-w-[210px] p-2 rounded-lg border border-gray-200 bg-white text-xs outline-none focus:ring-2 focus:ring-fuchsia-300 resize-y"
                                       />
                                     </td>
 
@@ -8347,6 +8413,58 @@ Chathu Wedding Planners
                                     />
                                   </div>
 
+                                  {/* SUB ITEMS */}
+                                  <div>
+                                    <label className="block text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">
+                                      Sub Items
+                                    </label>
+
+                                    <textarea
+                                      rows={4}
+                                      placeholder="Enter sub items, one per line"
+                                      value={item.subitems || ""}
+                                      onChange={(e) =>
+                                        setMasterChecklistItems((current) =>
+                                          current.map((row) =>
+                                            row.id === item.id
+                                              ? {
+                                                  ...row,
+                                                  subitems: e.target.value,
+                                                }
+                                              : row,
+                                          ),
+                                        )
+                                      }
+                                      className="w-full p-3 rounded-xl border border-gray-200 text-sm resize-y"
+                                    />
+                                  </div>
+
+                                  {/* REMARKS */}
+                                  <div>
+                                    <label className="block text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">
+                                      Remarks
+                                    </label>
+
+                                    <textarea
+                                      rows={3}
+                                      placeholder="Enter remarks"
+                                      value={item.remarks || ""}
+                                      onChange={(e) =>
+                                        setMasterChecklistItems((current) =>
+                                          current.map((row) =>
+                                            row.id === item.id
+                                              ? {
+                                                  ...row,
+                                                  remarks: e.target.value,
+                                                }
+                                              : row,
+                                          ),
+                                        )
+                                      }
+                                      className="w-full p-3 rounded-xl border border-gray-200 text-sm resize-y"
+                                    />
+                                  </div>
+
                                   <div>
                                     <label className="block text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">
                                       Status
@@ -8841,6 +8959,33 @@ Chathu Wedding Planners
                           >
                             ＋ Add Item
                           </button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                          <textarea
+                            rows={3}
+                            placeholder="Sub items (one per line)"
+                            value={newChecklistItem.subitems}
+                            onChange={(e) =>
+                              setNewChecklistItem((current) => ({
+                                ...current,
+                                subitems: e.target.value,
+                              }))
+                            }
+                            className="w-full p-3 rounded-xl border border-fuchsia-100 bg-white text-sm resize-y"
+                          />
+
+                          <textarea
+                            rows={3}
+                            placeholder="Remarks"
+                            value={newChecklistItem.remarks}
+                            onChange={(e) =>
+                              setNewChecklistItem((current) => ({
+                                ...current,
+                                remarks: e.target.value,
+                              }))
+                            }
+                            className="w-full p-3 rounded-xl border border-fuchsia-100 bg-white text-sm resize-y"
+                          />
                         </div>
                       </div>
                     </>
