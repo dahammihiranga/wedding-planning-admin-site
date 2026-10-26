@@ -380,6 +380,7 @@ export default function Dashboard() {
   });
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [activePage, setActivePage] = useState("dashboard");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [vendors, setVendors] = useState([]);
@@ -4001,16 +4002,64 @@ Chathu Wedding Planners
                 className="w-full p-3.5 text-black rounded-2xl bg-white/80 border border-fuchsia-200 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold disabled:opacity-60"
               />
 
-              <input
-                type="password"
-                placeholder="Password"
-                value={loginData.password}
-                disabled={loginLoading}
-                onChange={(e) =>
-                  setLoginData({ ...loginData, password: e.target.value })
-                }
-                className="w-full p-3.5 text-black rounded-2xl bg-white/80 border border-fuchsia-200 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold disabled:opacity-60"
-              />
+              <div className="relative">
+                <input
+                  type={showLoginPassword ? "text" : "password"}
+                  placeholder="Password"
+                  value={loginData.password}
+                  disabled={loginLoading}
+                  onChange={(e) =>
+                    setLoginData({ ...loginData, password: e.target.value })
+                  }
+                  className="w-full p-3.5 pr-12 text-black rounded-2xl bg-white/80 border border-fuchsia-200 outline-none focus:ring-2 focus:ring-fuchsia-300 text-sm font-semibold disabled:opacity-60"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowLoginPassword(!showLoginPassword)}
+                  disabled={loginLoading}
+                  aria-label={
+                    showLoginPassword ? "Hide password" : "Show password"
+                  }
+                  aria-pressed={showLoginPassword}
+                  title={showLoginPassword ? "Hide password" : "Show password"}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-fuchsia-700 transition-colors disabled:opacity-50"
+                >
+                  {showLoginPassword ? (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-5 0-9.27-3.11-11-8a11.8 11.8 0 0 1 5.06-5.94" />
+                      <path d="M9.9 4.24A10.9 10.9 0 0 1 12 4c5 0 9.27 3.11 11 8a11.7 11.7 0 0 1-2.12 3.19" />
+                      <path d="M1 1l22 22" />
+                      <path d="M10.59 10.59a2 2 0 0 0 2.82 2.82" />
+                    </svg>
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M2.06 12.35a1 1 0 0 1 0-.7C3.65 7.67 7.36 5 12 5s8.35 2.67 9.94 6.65a1 1 0 0 1 0 .7C20.35 16.33 16.64 19 12 19s-8.35-2.67-9.94-6.65Z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  )}
+                </button>
+              </div>
 
               {loginError && (
                 <div className="bg-red-50 border border-red-100 text-red-600 text-xs font-bold rounded-2xl p-3">
@@ -7581,7 +7630,7 @@ Chathu Wedding Planners
                     </span>
 
                     {masterWeddingDropdownOpen && (
-                      <div className="absolute z-[100] top-full left-0 right-0 mt-2 max-h-72 overflow-y-auto rounded-2xl border border-fuchsia-100 bg-white shadow-2xl">
+                      <div className="relative z-10 mt-2 max-h-72 overflow-y-auto rounded-2xl border border-fuchsia-100 bg-white shadow-lg">
                         {filteredMasterWeddings.length > 0 ? (
                           filteredMasterWeddings.map((wedding) => (
                             <button
@@ -9239,7 +9288,7 @@ Chathu Wedding Planners
                     </span>
 
                     {budgetWeddingDropdownOpen && (
-                      <div className="absolute z-[100] top-full left-0 right-0 mt-2 max-h-72 overflow-y-auto rounded-2xl border border-fuchsia-100 bg-white shadow-2xl">
+                      <div className="relative z-10 mt-2 max-h-72 overflow-y-auto rounded-2xl border border-fuchsia-100 bg-white shadow-lg">
                         {filteredBudgetWeddings.length > 0 ? (
                           filteredBudgetWeddings.map((wedding) => (
                             <button
