@@ -422,6 +422,11 @@ export default function Dashboard() {
   const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
   const [paymentTransactions, setPaymentTransactions] = useState([]);
   const [highlightedRecordId, setHighlightedRecordId] = useState(null);
+
+  // Row highlighting for Master Control Sheet and Budget Planner
+  const [highlightedMasterItemId, setHighlightedMasterItemId] = useState(null);
+  const [highlightedBudgetItemId, setHighlightedBudgetItemId] = useState(null);
+
   const [expandedMobileRecordId, setExpandedMobileRecordId] = useState(null);
   const [selectedInvoiceItem, setSelectedInvoiceItem] = useState(null);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
@@ -462,6 +467,18 @@ export default function Dashboard() {
   const [masterChecklistDeadlineFilter, setMasterChecklistDeadlineFilter] =
     useState("");
   const [showDeadlineReminder, setShowDeadlineReminder] = useState(true);
+
+  // Floating horizontal scrollbar for Master Control Sheet
+  const masterTableScrollRef = useRef(null);
+  const masterFloatingScrollRef = useRef(null);
+
+  const [masterScrollInfo, setMasterScrollInfo] = useState({
+    visible: false,
+    left: 0,
+    width: 0,
+    contentWidth: 0,
+  });
+
   const [masterChecklistLoading, setMasterChecklistLoading] = useState(false);
   const [masterChecklistSaving, setMasterChecklistSaving] = useState(false);
   const [expandedMasterChecklistItemId, setExpandedMasterChecklistItemId] =
@@ -725,6 +742,68 @@ export default function Dashboard() {
       window.removeEventListener("online", checkActiveSession);
     };
   }, [mounted, isLoggedIn]);
+
+  // MASTER CONTROL SHEET - FLOATING HORIZONTAL SCROLLBAR
+  useEffect(() => {
+    if (activePage !== "masterControl") return;
+
+    const table = masterTableScrollRef.current;
+    const floating = masterFloatingScrollRef.current;
+
+    if (!table) return;
+
+    const updateScrollbar = () => {
+      const rect = table.getBoundingClientRect();
+
+      const hasHorizontalOverflow = table.scrollWidth > table.clientWidth + 1;
+
+      const isTableInView = rect.top < window.innerHeight && rect.bottom > 0;
+
+      const isDesktop = window.innerWidth >= 768;
+
+      setMasterScrollInfo({
+        visible: hasHorizontalOverflow && isTableInView && isDesktop,
+        left: Math.max(0, rect.left),
+        width: Math.min(rect.width, window.innerWidth - Math.max(0, rect.left)),
+        contentWidth: table.scrollWidth,
+      });
+    };
+
+    const syncFromTable = () => {
+      if (masterFloatingScrollRef.current) {
+        masterFloatingScrollRef.current.scrollLeft = table.scrollLeft;
+      }
+    };
+
+    const resizeObserver = new ResizeObserver(updateScrollbar);
+
+    resizeObserver.observe(table);
+
+    if (table.firstElementChild) {
+      resizeObserver.observe(table.firstElementChild);
+    }
+
+    table.addEventListener("scroll", syncFromTable);
+    window.addEventListener("scroll", updateScrollbar, {
+      passive: true,
+    });
+    window.addEventListener("resize", updateScrollbar);
+
+    updateScrollbar();
+    syncFromTable();
+
+    return () => {
+      resizeObserver.disconnect();
+      table.removeEventListener("scroll", syncFromTable);
+      window.removeEventListener("scroll", updateScrollbar);
+      window.removeEventListener("resize", updateScrollbar);
+    };
+  }, [
+    activePage,
+    masterChecklistWeddingId,
+    masterChecklistLoading,
+    masterChecklistItems.length,
+  ]);
 
   useEffect(() => {
     const updateSLTime = () => {
@@ -7453,6 +7532,7 @@ Chathu Wedding Planners
                       setMasterChecklistWeddingId(weddingId);
                       setMasterChecklistStatusFilter([]);
                       setMasterChecklistDeadlineFilter("");
+                      setHighlightedMasterItemId(null);
 
                       if (!weddingId) {
                         setMasterChecklistItems([]);
@@ -7782,7 +7862,10 @@ Chathu Wedding Planners
 
                       {/* DESKTOP TABLE */}
                       <div className="hidden md:block bg-white/90 backdrop-blur-xl rounded-3xl border border-white/50 shadow-xl overflow-hidden">
-                        <div className="overflow-x-auto">
+                        <div
+                          ref={masterTableScrollRef}
+                          className="overflow-x-auto"
+                        >
                           <table className="w-full text-left border-collapse">
                             <thead>
                               <tr className="bg-fuchsia-50 text-fuchsia-900 uppercase text-[10px] font-black border-b border-fuchsia-100">
@@ -7831,7 +7914,19 @@ Chathu Wedding Planners
                                 (item, index) => (
                                   <tr
                                     key={item.id}
-                                    className="hover:bg-fuchsia-50/30 transition"
+                                    onClick={() =>
+                                      setHighlightedMasterItemId((currentId) =>
+                                        Number(currentId) === Number(item.id)
+                                          ? null
+                                          : item.id,
+                                      )
+                                    }
+                                    className={`cursor-pointer transition ${
+                                      Number(highlightedMasterItemId) ===
+                                      Number(item.id)
+                                        ? "bg-amber-100 ring-2 ring-amber-300 shadow-inner"
+                                        : "hover:bg-fuchsia-50/30"
+                                    }`}
                                   >
                                     <td className="p-4 text-center text-gray-400 font-bold">
                                       {index + 1}
@@ -8307,6 +8402,35 @@ Chathu Wedding Planners
                             </tbody>
                           </table>
                         </div>
+                      </div>
+
+                      {/* FLOATING HORIZONTAL SCROLLBAR */}
+                      <div
+                        ref={masterFloatingScrollRef}
+                        onScroll={(e) => {
+                          const table = masterTableScrollRef.current;
+
+                          if (table) {
+                            table.scrollLeft = e.currentTarget.scrollLeft;
+                          }
+                        }}
+                        aria-label="Master Control Sheet horizontal scrollbar"
+                        className="fixed bottom-0 z-[100] overflow-x-scroll overflow-y-hidden bg-gray-100 border border-gray-300 rounded-t-lg shadow-lg"
+                        style={{
+                          display: masterScrollInfo.visible ? "block" : "none",
+                          left: masterScrollInfo.left,
+                          width: masterScrollInfo.width,
+                          height: "22px",
+                          scrollbarWidth: "auto",
+                          scrollbarColor: "#9333ea #e5e7eb",
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: masterScrollInfo.contentWidth,
+                            height: "1px",
+                          }}
+                        />
                       </div>
 
                       {/* MOBILE CARDS */}
@@ -9024,6 +9148,7 @@ Chathu Wedding Planners
                       const id = e.target.value;
                       setBudgetWeddingId(id);
                       setExpandedBudgetItemId(null);
+                      setHighlightedBudgetItemId(null);
                       setBudgetItems([]);
                       await fetchWeddingBudget(id);
                     }}
@@ -9128,7 +9253,19 @@ Chathu Wedding Planners
                           {budgetItems.map((item, index) => (
                             <tr
                               key={item.id}
-                              className="border-b border-fuchsia-50 align-top hover:bg-fuchsia-50/30"
+                              onClick={() =>
+                                setHighlightedBudgetItemId((currentId) =>
+                                  Number(currentId) === Number(item.id)
+                                    ? null
+                                    : item.id,
+                                )
+                              }
+                              className={`cursor-pointer border-b border-fuchsia-50 align-top transition ${
+                                Number(highlightedBudgetItemId) ===
+                                Number(item.id)
+                                  ? "bg-amber-100 ring-2 ring-amber-300 shadow-inner"
+                                  : "hover:bg-fuchsia-50/30"
+                              }`}
                             >
                               <td className="p-3 font-black text-fuchsia-800">
                                 {index + 1}
