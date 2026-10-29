@@ -4882,14 +4882,14 @@ Chathu Wedding Planners
 
                 {/* DASHBOARD TAB SEGMENT CONSOLE NAVIGATION BAR */}
                 <div className="max-w-[98%] mx-auto mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 md:border-b bg-white/50 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none rounded-3xl md:rounded-none p-3 md:p-0 shadow-xl md:shadow-none border border-white/40 md:border-0">
-                  <div className="grid grid-cols-2 gap-2 w-full md:flex md:flex-wrap">
+                  <div className="grid grid-cols-2 gap-3 w-full md:flex md:flex-wrap">
                     {/* ACTIVE INQUIRIES */}
                     <button
                       onClick={() => handleTabChange("all")}
-                      className={`min-w-0 min-h-[60px] py-3 px-3 md:px-4 rounded-xl md:rounded-none font-bold text-[11px] sm:text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center justify-center md:justify-start gap-2 text-center md:text-left ${
+                      className={`min-w-0 min-h-[68px] py-3 px-3 md:px-4 rounded-2xl md:rounded-none font-bold text-[11px] sm:text-xs md:text-lg transition-all border-2 md:border-0 md:border-b-2 flex items-center justify-center md:justify-start gap-2 text-center md:text-left shadow-sm md:shadow-none active:scale-[0.98] ${
                         activeTab === "all"
-                          ? "bg-fuchsia-200 text-fuchsia-950 border-fuchsia-300 shadow-md md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
-                          : "bg-white/70 text-gray-600 border-white/60 hover:bg-fuchsia-50 md:bg-transparent md:border-transparent md:hover:text-gray-700"
+                          ? "bg-fuchsia-100 text-fuchsia-950 border-fuchsia-400 shadow-md"
+                          : "bg-white text-gray-700 border-gray-200 hover:border-fuchsia-300 hover:bg-fuchsia-50"
                       }`}
                     >
                       <span className="shrink-0">❤️</span>
@@ -4904,10 +4904,10 @@ Chathu Wedding Planners
                     {/* COMPLETED WEDDINGS */}
                     <button
                       onClick={() => handleTabChange("completed")}
-                      className={`min-w-0 min-h-[60px] py-3 px-3 md:px-4 rounded-xl md:rounded-none font-bold text-[11px] sm:text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center justify-center md:justify-start gap-2 text-center md:text-left ${
+                      className={`min-w-0 min-h-[68px] py-3 px-3 md:px-4 rounded-2xl md:rounded-none font-bold text-[11px] sm:text-xs md:text-lg transition-all border-2 md:border-0 md:border-b-2 flex items-center justify-center md:justify-start gap-2 text-center md:text-left shadow-sm md:shadow-none active:scale-[0.98] ${
                         activeTab === "completed"
-                          ? "bg-fuchsia-200 text-fuchsia-950 border-fuchsia-300 shadow-md md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
-                          : "bg-white/70 text-gray-600 border-white/60 hover:bg-fuchsia-50 md:bg-transparent md:border-transparent md:hover:text-gray-700"
+                          ? "bg-fuchsia-100 text-fuchsia-950 border-fuchsia-400 shadow-md"
+                          : "bg-white text-gray-700 border-gray-200 hover:border-fuchsia-300 hover:bg-fuchsia-50"
                       }`}
                     >
                       <span className="shrink-0">✨</span>
@@ -4922,10 +4922,10 @@ Chathu Wedding Planners
                     {/* ALL RECORDS */}
                     <button
                       onClick={() => handleTabChange("allRecords")}
-                      className={`min-w-0 min-h-[60px] py-3 px-3 md:px-4 rounded-xl md:rounded-none font-bold text-[11px] sm:text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center justify-center md:justify-start gap-2 text-center md:text-left ${
+                      className={`min-w-0 min-h-[68px] py-3 px-3 md:px-4 rounded-2xl md:rounded-none font-bold text-[11px] sm:text-xs md:text-lg transition-all border-2 md:border-0 md:border-b-2 flex items-center justify-center md:justify-start gap-2 text-center md:text-left shadow-sm md:shadow-none active:scale-[0.98] ${
                         activeTab === "allRecords"
-                          ? "bg-fuchsia-200 text-fuchsia-950 border-fuchsia-300 shadow-md md:bg-transparent md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
-                          : "bg-white/70 text-gray-600 border-white/60 hover:bg-fuchsia-50 md:bg-transparent md:border-transparent md:hover:text-gray-700"
+                          ? "bg-fuchsia-100 text-fuchsia-950 border-fuchsia-400 shadow-md"
+                          : "bg-white text-gray-700 border-gray-200 hover:border-fuchsia-300 hover:bg-fuchsia-50"
                       }`}
                     >
                       <span className="shrink-0">📁</span>
@@ -4935,10 +4935,10 @@ Chathu Wedding Planners
                     {/* DELETED RECORDS */}
                     <button
                       onClick={() => handleTabChange("trash")}
-                      className={`min-w-0 min-h-[60px] py-3 px-3 md:px-4 rounded-xl md:rounded-none font-bold text-[11px] sm:text-xs md:text-lg transition-all border md:border-0 md:border-b-2 flex items-center justify-center md:justify-start gap-2 text-center md:text-left ${
+                      className={`min-w-0 min-h-[68px] py-3 px-3 md:px-4 rounded-2xl md:rounded-none font-bold text-[11px] sm:text-xs md:text-lg transition-all border-2 md:border-0 md:border-b-2 flex items-center justify-center md:justify-start gap-2 text-center md:text-left shadow-sm md:shadow-none active:scale-[0.98] ${
                         activeTab === "trash"
-                          ? "bg-fuchsia-200 text-fuchsia-950 border-fuchsia-300 shadow-md md:bg-amber-50/40 md:text-fuchsia-500 md:border-fuchsia-200 md:shadow-none"
-                          : "bg-white/70 text-gray-600 border-white/60 hover:bg-fuchsia-50 md:bg-transparent md:border-transparent md:hover:text-gray-600"
+                          ? "bg-fuchsia-100 text-fuchsia-950 border-fuchsia-400 shadow-md"
+                          : "bg-white text-gray-700 border-gray-200 hover:border-fuchsia-300 hover:bg-fuchsia-50"
                       }`}
                     >
                       <span className="shrink-0">🗑️</span>
