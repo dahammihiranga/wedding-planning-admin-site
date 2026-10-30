@@ -3903,6 +3903,26 @@ Chathu Wedding Planners
     0,
   );
 
+  const budgetActualTotal = budgetItems.reduce(
+    (sum, item) => sum + (Number(item.actual_amount) || 0),
+    0,
+  );
+
+  const budgetPaidTotal = budgetItems.reduce(
+    (sum, item) => sum + (Number(item.paid_amount) || 0),
+    0,
+  );
+
+  const budgetPendingTotal = budgetItems.reduce(
+    (sum, item) =>
+      sum +
+      Math.max(
+        0,
+        (Number(item.actual_amount) || 0) - (Number(item.paid_amount) || 0),
+      ),
+    0,
+  );
+
   const filteredMasterChecklistItems = masterChecklistItems.filter((item) => {
     const matchesStatus =
       masterChecklistStatusFilter.length === 0 ||
@@ -9579,25 +9599,51 @@ Chathu Wedding Planners
                         {selectedBudgetWedding.wedding_date || "Date not set"} ·
                         🏨 {selectedBudgetWedding.hotel || "Venue not set"}
                       </p>
-                      <div className="mt-5 grid grid-cols-2 gap-3">
-                        <div className="bg-white/10 rounded-2xl p-4">
-                          <p className="text-xs text-fuchsia-100">
-                            Budget Items
-                          </p>
-                          <p className="text-xl font-black mt-1">
-                            {budgetItems.length}
-                          </p>
-                        </div>
-                        <div className="bg-white/10 rounded-2xl p-4">
-                          <p className="text-xs text-fuchsia-100">
-                            Estimated Total (LKR)
-                          </p>
-                          <p className="text-xl font-black mt-1">
-                            {budgetTotal.toLocaleString("en-LK", {
-                              maximumFractionDigits: 2,
-                            })}
-                          </p>
-                        </div>
+
+                      <div className="mt-5 grid grid-cols-2 lg:grid-cols-4 gap-3">
+                        {[
+                          {
+                            label: "ESTIMATED",
+                            amount: budgetTotal,
+                            dot: "bg-gray-300",
+                          },
+                          {
+                            label: "ACTUAL SPENT",
+                            amount: budgetActualTotal,
+                            dot: "bg-amber-400",
+                          },
+                          {
+                            label: "PAID SO FAR",
+                            amount: budgetPaidTotal,
+                            dot: "bg-emerald-400",
+                          },
+                          {
+                            label: "STILL TO PAY (PENDING)",
+                            amount: budgetPendingTotal,
+                            dot: "bg-rose-400",
+                          },
+                        ].map((summary) => (
+                          <div
+                            key={summary.label}
+                            className="bg-white rounded-2xl p-4 shadow-sm border border-fuchsia-100 min-w-0"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={`w-2 h-2 rounded-full shrink-0 ${summary.dot}`}
+                              />
+                              <p className="text-[10px] uppercase tracking-wider font-bold text-gray-500">
+                                {summary.label}
+                              </p>
+                            </div>
+
+                            <p className="text-lg md:text-xl font-black text-gray-950 mt-2 break-words">
+                              Rs.{" "}
+                              {summary.amount.toLocaleString("en-LK", {
+                                maximumFractionDigits: 2,
+                              })}
+                            </p>
+                          </div>
+                        ))}
                       </div>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-2 justify-end mb-5">
