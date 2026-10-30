@@ -3814,6 +3814,18 @@ Chathu Wedding Planners
     (item) => item.status === "Confirmed",
   ).length;
 
+  const inProgressChecklistCount = masterChecklistItems.filter(
+    (item) => item.status === "In Progress",
+  ).length;
+
+  const actionRequiredChecklistCount = masterChecklistItems.filter(
+    (item) => item.status === "Action Required",
+  ).length;
+
+  const notStartedChecklistCount = masterChecklistItems.filter(
+    (item) => !item.status || item.status === "Not Started",
+  ).length;
+
   const checklistProgress =
     masterChecklistItems.length > 0
       ? Math.round(
@@ -7786,6 +7798,69 @@ Chathu Wedding Planners
                               />
                             </div>
                           </div>
+                        </div>
+                      </div>
+
+                      {/* MASTER CONTROL SHEET STATUS SUMMARY */}
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+                        {/* CONFIRMED */}
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 shadow-sm">
+                          <p className="text-[10px] uppercase tracking-wider font-black text-emerald-700">
+                            Confirmed
+                          </p>
+
+                          <p className="text-3xl font-black text-emerald-950 mt-2">
+                            {completedChecklistCount}
+                          </p>
+
+                          <p className="text-xs font-semibold text-emerald-700 mt-1">
+                            🟢 Completed items
+                          </p>
+                        </div>
+
+                        {/* IN PROGRESS */}
+                        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 shadow-sm">
+                          <p className="text-[10px] uppercase tracking-wider font-black text-amber-700">
+                            In Progress
+                          </p>
+
+                          <p className="text-3xl font-black text-amber-950 mt-2">
+                            {inProgressChecklistCount}
+                          </p>
+
+                          <p className="text-xs font-semibold text-amber-700 mt-1">
+                            🟡 Currently ongoing
+                          </p>
+                        </div>
+
+                        {/* ACTION REQUIRED */}
+                        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 shadow-sm">
+                          <p className="text-[10px] uppercase tracking-wider font-black text-rose-700">
+                            Action Required
+                          </p>
+
+                          <p className="text-3xl font-black text-rose-950 mt-2">
+                            {actionRequiredChecklistCount}
+                          </p>
+
+                          <p className="text-xs font-semibold text-rose-700 mt-1">
+                            🔴 Needs attention
+                          </p>
+                        </div>
+
+                        {/* NOT STARTED */}
+                        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm">
+                          <p className="text-[10px] uppercase tracking-wider font-black text-slate-600">
+                            Not Started
+                          </p>
+
+                          <p className="text-3xl font-black text-slate-900 mt-2">
+                            {notStartedChecklistCount}
+                          </p>
+
+                          <p className="text-xs font-semibold text-slate-500 mt-1">
+                            ⚪ Pending items
+                          </p>
                         </div>
                       </div>
 
