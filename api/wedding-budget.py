@@ -11,18 +11,26 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, 
 
 DEFAULT_BUDGET_ITEMS = [{'name': 'Registration', 'remarks': '', 'subitems': ['Registration Fee', 'Registar - Gift']}, {'name': 'Auspicious timing(Nekath)', 'remarks': '', 'subitems': []}, {'name': 'Venue / Hotel', 'remarks': '', 'subitems': ['{hotel_name}']}, {'name': 'Poruwa Ceremony', 'remarks': '', 'subitems': ['Astaka', 'Dancing group', 'Jayamangala gatha', 'Poruwa ingredients']}, {'name': 'Photographer', 'remarks': '', 'subitems': ['Wedding day morning shoot', 'Wedding Shoot ', 'Wedding function coverage']}, {'name': 'Videography', 'remarks': '', 'subitems': []}, {'name': 'Salon - Bride', 'remarks': '', 'subitems': ['{salon_name} Salon wedding day makeup', 'Going away change']}, {'name': 'Salon - Groom', 'remarks': '', 'subitems': ['Salon wedding day makeup', 'Going away change']}, {'name': 'Jewellery', 'remarks': '', 'subitems': []}, {'name': 'Decorations', 'remarks': '', 'subitems': []}, {'name': 'Band - Music (Wanted Band)', 'remarks': '', 'subitems': ['Wedding day full coverage']}, {'name': 'Wedding planner', 'remarks': '', 'subitems': []}, {'name': 'Cake boxes & cards', 'remarks': '', 'subitems': ['CAKE BOX- {count} , CARD- {count}']}, {'name': 'Wedding cake', 'remarks': '', 'subitems': ['Per cake piece - {number of peaces*peace price)']}, {'name': 'Wedding Car', 'remarks': 'Depends on the vehicle type', 'subitems': []}, {'name': 'Wedding Shoes - Bride side', 'remarks': '', 'subitems': []}, {'name': 'Wedding Shoes - Groom side', 'remarks': '', 'subitems': []}, {'name': "Wedding dress - Bride side(without bride'smaids)", 'remarks': 'First fitton or rent price would be lower cost', 'subitems': ['Bride - Wedding']}, {'name': 'Wedding dress - Groom side(withthout bestman)', 'remarks': '', 'subitems': []}, {'name': 'Going away dress - Bride', 'remarks': '', 'subitems': []}, {'name': 'Going away dress - Groom', 'remarks': '', 'subitems': []}, {'name': 'Bites - Cooked (From hotel)', 'remarks': '', 'subitems': []}, {'name': 'Bites - Dried (From Outside)', 'remarks': '', 'subitems': []}, {'name': 'Liquor (Depends on the bottle brand)', 'remarks': '', 'subitems': []}, {'name': 'Preshoot', 'remarks': '', 'subitems': []}, {'name': 'Honey moon', 'remarks': '', 'subitems': []}, {'name': 'Cake Strcture', 'remarks': '', 'subitems': []}, {'name': 'Bridesmaids / Bestman', 'remarks': '', 'subitems': []}, {'name': 'Parent dress and other family expences', 'remarks': '', 'subitems': []}, {'name': 'Other expences', 'remarks': '', 'subitems': []}]
 
+
 class BudgetCreate(BaseModel):
     inquiry_id: int
     item_name: str
     subitems: str = ""
     remarks: str = ""
     estimated_amount: str = ""
+    actual_amount: str = ""
+    paid_amount: str = ""
+    due_date: str = ""
 
 class BudgetUpdate(BaseModel):
     item_name: str
     subitems: str = ""
     remarks: str = ""
     estimated_amount: str = ""
+    actual_amount: str = ""
+    paid_amount: str = ""
+    due_date: str = ""
+
 
 def client_open():
     return create_client_sync(url=os.environ.get("TURSO_DATABASE_URL"), auth_token=os.environ.get("TURSO_AUTH_TOKEN"))
@@ -34,6 +42,66 @@ def parse_amount(value):
     if not 0 <= amount <= 1_000_000_000_000:
         raise ValueError("Amount must be between 0 and 1 trillion")
     return amount
+
+
+from datetime import date
+
+def validate_payment_fields(data):
+    try:
+        estimated = parse_amount(data.estimated_amount)
+        actual = parse_amount(data.actual_amount)
+        paid = parse_amount(data.paid_amount)
+    except (ValueError, TypeError) as e:
+        raise HTTPException(400, str(e))
+
+    paid = paid if paid is not None else 0.0
+
+    if actual is not None and paid > actual:
+        raise HTTPException(
+            400,
+            "Paid amount cannot exceed actual amount"
+        )
+
+    due_date = (data.due_date or "").strip()
+
+    if due_date:
+        try:
+            date.fromisoformat(due_date)
+        except ValueError:
+            raise HTTPException(
+                400,
+                "Due date must be a valid YYYY-MM-DD date"
+            )
+
+    return estimated, actual, paid, due_date or None
+
+
+def get_payment_status(actual, paid):
+    actual = float(actual or 0)
+    paid = float(paid or 0)
+
+    if paid <= 0:
+        return "Pending"
+
+    if actual > 0 and paid >= actual - 0.005:
+        return "Paid"
+
+    return "Partial"
+
+
+def serialize_budget_rows(result):
+    items = []
+
+    for row in result.rows:
+        item = dict(zip(result.columns, row))
+        item["payment_status"] = get_payment_status(
+            item.get("actual_amount"),
+            item.get("paid_amount")
+        )
+        items.append(item)
+
+    return items
+
 
 def ensure_budget(client, inquiry_id):
     # One-time initialization marker prevents deleted default items from reappearing.
@@ -49,42 +117,112 @@ async def get_budget(inquiry_id: int = Query(...)):
     client = client_open()
     try:
         ensure_budget(client, inquiry_id)
-        result = client.execute("SELECT id, inquiry_id, item_name, subitems, remarks, estimated_amount, sort_order FROM wedding_budget_items WHERE inquiry_id=? ORDER BY sort_order, id", [inquiry_id])
-        return [dict(zip(result.columns, row)) for row in result.rows]
+        
+        result = client.execute(
+            """
+            SELECT id, inquiry_id, item_name, subitems, remarks,
+                   estimated_amount, actual_amount, paid_amount,
+                   due_date, sort_order
+            FROM wedding_budget_items
+            WHERE inquiry_id=?
+            ORDER BY sort_order, id
+            """,
+            [inquiry_id]
+        )
+        return serialize_budget_rows(result)
+
     finally:
         client.close()
+
 
 @app.post("/api/wedding-budget")
 async def create_budget(data: BudgetCreate):
     if not data.item_name.strip():
         raise HTTPException(400, "Item name required")
-    try:
-        amount = parse_amount(data.estimated_amount)
-    except ValueError as e:
-        raise HTTPException(400, str(e))
+
+    estimated, actual, paid, due_date = validate_payment_fields(data)
+
     client = client_open()
     try:
         ensure_budget(client, data.inquiry_id)
-        max_order = client.execute("SELECT COALESCE(MAX(sort_order),0) FROM wedding_budget_items WHERE inquiry_id=?", [data.inquiry_id]).rows[0][0]
-        result = client.execute("INSERT INTO wedding_budget_items (inquiry_id,item_name,subitems,remarks,estimated_amount,sort_order) VALUES (?,?,?,?,?,?)", [data.inquiry_id,data.item_name.strip(),data.subitems,data.remarks,amount,int(max_order)+1])
-        return {"success":True,"id":result.last_insert_rowid}
+
+        max_order = client.execute(
+            "SELECT COALESCE(MAX(sort_order),0) FROM wedding_budget_items WHERE inquiry_id=?",
+            [data.inquiry_id]
+        ).rows[0][0]
+
+        result = client.execute(
+            """
+            INSERT INTO wedding_budget_items
+            (inquiry_id, item_name, subitems, remarks,
+             estimated_amount, actual_amount, paid_amount,
+             due_date, sort_order)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            [
+                data.inquiry_id,
+                data.item_name.strip(),
+                data.subitems,
+                data.remarks,
+                estimated,
+                actual,
+                paid,
+                due_date,
+                int(max_order) + 1
+            ]
+        )
+
+        return {
+            "success": True,
+            "id": result.last_insert_rowid,
+            "payment_status": get_payment_status(actual, paid)
+        }
     finally:
         client.close()
+
+
 
 @app.put("/api/wedding-budget")
 async def update_budget(id: int = Query(...), data: BudgetUpdate = None):
     if not data or not data.item_name.strip():
         raise HTTPException(400, "Item name required")
-    try:
-        amount = parse_amount(data.estimated_amount)
-    except ValueError as e:
-        raise HTTPException(400, str(e))
+
+    estimated, actual, paid, due_date = validate_payment_fields(data)
+
     client = client_open()
     try:
-        result = client.execute("UPDATE wedding_budget_items SET item_name=?,subitems=?,remarks=?,estimated_amount=? WHERE id=?", [data.item_name.strip(),data.subitems,data.remarks,amount,id])
-        return {"success":bool(result.rows_affected),"id":id}
+        result = client.execute(
+            """
+            UPDATE wedding_budget_items
+            SET item_name=?,
+                subitems=?,
+                remarks=?,
+                estimated_amount=?,
+                actual_amount=?,
+                paid_amount=?,
+                due_date=?
+            WHERE id=?
+            """,
+            [
+                data.item_name.strip(),
+                data.subitems,
+                data.remarks,
+                estimated,
+                actual,
+                paid,
+                due_date,
+                id
+            ]
+        )
+
+        return {
+            "success": bool(result.rows_affected),
+            "id": id,
+            "payment_status": get_payment_status(actual, paid)
+        }
     finally:
         client.close()
+
 
 @app.delete("/api/wedding-budget")
 async def delete_budget(id: int = Query(...)):
