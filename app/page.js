@@ -526,7 +526,6 @@ export default function Dashboard() {
 
   const [expandedBudgetItemId, setExpandedBudgetItemId] = useState(null);
 
-  
   const [newBudgetItem, setNewBudgetItem] = useState({
     item_name: "",
     subitems: "",
@@ -536,7 +535,6 @@ export default function Dashboard() {
     paid_amount: "",
     due_date: "",
   });
-
 
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 10;
@@ -1735,7 +1733,6 @@ export default function Dashboard() {
     }
   };
 
-  
   const getBudgetPaymentStatus = (item) => {
     const actual = Number(item.actual_amount) || 0;
     const paid = Number(item.paid_amount) || 0;
@@ -1763,7 +1760,6 @@ export default function Dashboard() {
     );
   };
 
-
   const changeBudgetField = (id, key, value) => {
     setBudgetItems((current) =>
       current.map((item) =>
@@ -1772,7 +1768,6 @@ export default function Dashboard() {
     );
   };
 
-  
   const budgetPayload = (item) => ({
     item_name: item.item_name || "",
     subitems: item.subitems || "",
@@ -1782,7 +1777,6 @@ export default function Dashboard() {
     paid_amount: String(item.paid_amount ?? ""),
     due_date: item.due_date || "",
   });
-
 
   const saveBudgetItems = async (onlyItem = null) => {
     if (budgetSaving || !budgetWeddingId) return;
@@ -1797,7 +1791,6 @@ export default function Dashboard() {
       return;
     }
 
-    
     if (
       items.some((item) => {
         const paid = Number(item.paid_amount) || 0;
@@ -1812,10 +1805,7 @@ export default function Dashboard() {
         );
       })
     ) {
-      triggerNotification(
-        "Paid amount cannot exceed actual amount.",
-        "delete",
-      );
+      triggerNotification("Paid amount cannot exceed actual amount.", "delete");
       return;
     }
 
@@ -1823,7 +1813,6 @@ export default function Dashboard() {
 
     try {
       for (const item of items) {
-
         const res = await fetch(`/api/wedding-budget?id=${item.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -1855,7 +1844,6 @@ export default function Dashboard() {
       return;
     }
 
-    
     const actual = Number(newBudgetItem.actual_amount) || 0;
     const paid = Number(newBudgetItem.paid_amount) || 0;
 
@@ -1864,10 +1852,7 @@ export default function Dashboard() {
       actual < 0 ||
       (newBudgetItem.actual_amount !== "" && paid > actual)
     ) {
-      triggerNotification(
-        "Paid amount cannot exceed actual amount.",
-        "delete",
-      );
+      triggerNotification("Paid amount cannot exceed actual amount.", "delete");
       return;
     }
 
@@ -1875,7 +1860,6 @@ export default function Dashboard() {
 
     try {
       const res = await fetch("/api/wedding-budget", {
-
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1890,7 +1874,6 @@ export default function Dashboard() {
         throw new Error(json.detail || "Add failed");
       }
 
-      
       setNewBudgetItem({
         item_name: "",
         subitems: "",
@@ -1900,7 +1883,6 @@ export default function Dashboard() {
         paid_amount: "",
         due_date: "",
       });
-
 
       await fetchWeddingBudget(budgetWeddingId);
 
@@ -1958,7 +1940,6 @@ export default function Dashboard() {
         views: [{ state: "frozen", ySplit: 6 }],
       });
 
-      
       sheet.columns = [
         { width: 8 },
         { width: 42 },
@@ -1970,7 +1951,6 @@ export default function Dashboard() {
         { width: 20 },
         { width: 20 },
       ];
-
 
       const merged = (
         range,
@@ -2024,7 +2004,6 @@ export default function Dashboard() {
 
       const header = sheet.getRow(6);
 
-      
       header.values = [
         "#",
         "Item",
@@ -2036,7 +2015,6 @@ export default function Dashboard() {
         "Due Date",
         "Payment Status",
       ];
-
 
       header.height = 32;
 
@@ -2072,7 +2050,6 @@ export default function Dashboard() {
 
         const row = sheet.getRow(index + 7);
 
-        
         row.values = [
           index + 1,
           excelSafe(item.item_name),
@@ -2083,12 +2060,9 @@ export default function Dashboard() {
             ? null
             : Number(item.actual_amount),
           Number(item.paid_amount) || 0,
-          item.due_date
-            ? String(item.due_date).slice(0, 10)
-            : "",
+          item.due_date ? String(item.due_date).slice(0, 10) : "",
           getBudgetPaymentStatus(item),
         ];
-
 
         row.height = Math.max(
           30,
@@ -2120,11 +2094,9 @@ export default function Dashboard() {
           };
         });
 
-        
         [5, 6, 7].forEach((column) => {
           row.getCell(column).numFmt = "#,##0.00";
         });
-
       });
 
       const totalRow = budgetItems.length + 8;
@@ -2141,7 +2113,6 @@ export default function Dashboard() {
 
       sheet.getCell(`E${totalRow}`).numFmt = "#,##0.00";
 
-      
       sheet.getCell(`F${totalRow}`).value = {
         formula: `SUM(F7:F${totalRow - 2})`,
         result: budgetItems.reduce(
@@ -2166,7 +2137,6 @@ export default function Dashboard() {
         };
       });
 
-
       sheet.getCell(`E${totalRow}`).font = {
         bold: true,
         color: { argb: "FF702477" },
@@ -2174,12 +2144,10 @@ export default function Dashboard() {
 
       sheet.getRow(totalRow).height = 32;
 
-      
       sheet.autoFilter = {
         from: "A6",
         to: `I${totalRow - 2}`,
       };
-
 
       const buffer = await workbook.xlsx.writeBuffer();
 
@@ -9658,14 +9626,13 @@ Chathu Wedding Planners
                               "#",
                               "Item",
                               "Sub-items",
-                              "Remarks",                           
+                              "Remarks",
                               "Estimated Amount (LKR)",
                               "Actual Amount (LKR)",
                               "Paid So Far (LKR)",
                               "Due Date",
                               "Payment Status",
                               "Actions",
-
                             ].map((heading) => (
                               <th
                                 key={heading}
@@ -9755,7 +9722,7 @@ Chathu Wedding Planners
                                   className="w-full min-w-[120px] p-2.5 rounded-xl border border-fuchsia-100 text-xs"
                                 />
                               </td>
-                              
+
                               {/* ACTUAL AMOUNT */}
                               <td className="p-2">
                                 <input
@@ -9796,7 +9763,10 @@ Chathu Wedding Planners
                               <td className="p-2">
                                 <input
                                   type="date"
-                                  value={String(item.due_date || "").slice(0, 10)}
+                                  value={String(item.due_date || "").slice(
+                                    0,
+                                    10,
+                                  )}
                                   onChange={(e) =>
                                     changeBudgetField(
                                       item.id,
@@ -9815,79 +9785,6 @@ Chathu Wedding Planners
 
                               <td className="p-2">
                                 <div className="flex gap-2">
-
-                                  
-                              {/* ACTUAL AMOUNT */}
-                              <label className="block">
-                                <span className="block text-xs font-black text-gray-500 mb-1">
-                                  Actual Amount (LKR)
-                                </span>
-                                <input
-                                  type="number"
-                                  min="0"
-                                  step="0.01"
-                                  value={item.actual_amount ?? ""}
-                                  onChange={(e) =>
-                                    changeBudgetField(
-                                      item.id,
-                                      "actual_amount",
-                                      e.target.value,
-                                    )
-                                  }
-                                  className="w-full p-3 rounded-xl border border-fuchsia-100 text-sm"
-                                />
-                              </label>
-
-                              {/* PAID AMOUNT */}
-                              <label className="block">
-                                <span className="block text-xs font-black text-gray-500 mb-1">
-                                  Paid So Far (LKR)
-                                </span>
-                                <input
-                                  type="number"
-                                  min="0"
-                                  step="0.01"
-                                  value={item.paid_amount ?? ""}
-                                  onChange={(e) =>
-                                    changeBudgetField(
-                                      item.id,
-                                      "paid_amount",
-                                      e.target.value,
-                                    )
-                                  }
-                                  className="w-full p-3 rounded-xl border border-fuchsia-100 text-sm"
-                                />
-                              </label>
-
-                              {/* DUE DATE */}
-                              <label className="block">
-                                <span className="block text-xs font-black text-gray-500 mb-1">
-                                  Payment Due Date
-                                </span>
-                                <input
-                                  type="date"
-                                  value={String(item.due_date || "").slice(0, 10)}
-                                  onChange={(e) =>
-                                    changeBudgetField(
-                                      item.id,
-                                      "due_date",
-                                      e.target.value,
-                                    )
-                                  }
-                                  className="w-full p-3 rounded-xl border border-fuchsia-100 text-sm"
-                                />
-                              </label>
-
-                              {/* PAYMENT STATUS */}
-                              <div className="flex items-center justify-between rounded-xl bg-gray-50 p-3">
-                                <span className="text-xs font-black text-gray-500">
-                                  Payment Status
-                                </span>
-                                <BudgetPaymentBadge item={item} />
-                              </div>
-
-
-
                                   <button
                                     type="button"
                                     onClick={() => saveBudgetItems(item)}
@@ -9949,7 +9846,7 @@ Chathu Wedding Planners
                           {expandedBudgetItemId === item.id && (
                             <div className="p-4 pt-3 border-t border-gray-100 space-y-3">
                               {[
-                                { key: "item_name", label: "Description" },
+                                { key: "item_name", label: "Item" },
                                 {
                                   key: "subitems",
                                   label: "Sub-items (one per line)",
@@ -10012,6 +9909,79 @@ Chathu Wedding Planners
                                   className="w-full p-3 rounded-xl border border-fuchsia-100 text-sm"
                                 />
                               </label>
+
+                              {/* Actual Amount */}
+                              <label className="block">
+                                <span className="block text-xs font-black text-gray-500 mb-1">
+                                  Actual Amount (LKR)
+                                </span>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  step="0.01"
+                                  value={item.actual_amount ?? ""}
+                                  onChange={(e) =>
+                                    changeBudgetField(
+                                      item.id,
+                                      "actual_amount",
+                                      e.target.value,
+                                    )
+                                  }
+                                  className="w-full p-3 rounded-xl border border-fuchsia-100 text-sm"
+                                />
+                              </label>
+
+                              {/* Paid So Far */}
+                              <label className="block">
+                                <span className="block text-xs font-black text-gray-500 mb-1">
+                                  Paid So Far (LKR)
+                                </span>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  step="0.01"
+                                  value={item.paid_amount ?? ""}
+                                  onChange={(e) =>
+                                    changeBudgetField(
+                                      item.id,
+                                      "paid_amount",
+                                      e.target.value,
+                                    )
+                                  }
+                                  className="w-full p-3 rounded-xl border border-fuchsia-100 text-sm"
+                                />
+                              </label>
+
+                              {/* Payment Due Date */}
+                              <label className="block">
+                                <span className="block text-xs font-black text-gray-500 mb-1">
+                                  Payment Due Date
+                                </span>
+                                <input
+                                  type="date"
+                                  value={String(item.due_date || "").slice(
+                                    0,
+                                    10,
+                                  )}
+                                  onChange={(e) =>
+                                    changeBudgetField(
+                                      item.id,
+                                      "due_date",
+                                      e.target.value,
+                                    )
+                                  }
+                                  className="w-full p-3 rounded-xl border border-fuchsia-100 text-sm"
+                                />
+                              </label>
+
+                              {/* Automatic Payment Status */}
+                              <div className="flex items-center justify-between gap-3 rounded-xl bg-gray-50 border border-gray-100 p-3">
+                                <span className="text-xs font-black text-gray-600">
+                                  Payment Status
+                                </span>
+                                <BudgetPaymentBadge item={item} />
+                              </div>
+
                               <button
                                 type="button"
                                 onClick={() => saveBudgetItems(item)}
@@ -10063,7 +10033,7 @@ Chathu Wedding Planners
                           }
                           className="p-3 rounded-xl border border-fuchsia-100 text-sm"
                         />
-                        
+
                         <input
                           type="number"
                           min="0"
@@ -10117,7 +10087,6 @@ Chathu Wedding Planners
                           </span>
                           <BudgetPaymentBadge item={newBudgetItem} />
                         </div>
-
 
                         <textarea
                           rows={3}
