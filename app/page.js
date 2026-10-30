@@ -1948,6 +1948,7 @@ export default function Dashboard() {
         { width: 24 },
         { width: 24 },
         { width: 24 },
+        { width: 24 }, // Pending Amount
         { width: 20 },
         { width: 20 },
       ];
@@ -1983,20 +1984,20 @@ export default function Dashboard() {
         };
       };
 
-      merged("A1:I2", "CHATHU WEDDING PLANNERS - WEDDING BUDGET PLANNER");
+      merged("A1:J2", "CHATHU WEDDING PLANNERS - WEDDING BUDGET PLANNER");
 
       sheet.getRow(1).height = 26;
       sheet.getRow(2).height = 24;
 
       merged(
-        "A3:I3",
+        "A3:J3",
         `Couple: ${selectedBudgetWedding.couple_name || "-"}`,
         "F7EAF8",
         "702477",
       );
 
       merged(
-        "A4:I4",
+        "A4:J4",
         `Date: ${selectedBudgetWedding.wedding_date || "-"}   |   Venue: ${selectedBudgetWedding.hotel || "-"}`,
         "FFFFFF",
         "273043",
@@ -2012,6 +2013,7 @@ export default function Dashboard() {
         "Estimated Amount (LKR)",
         "Actual Amount (LKR)",
         "Paid So Far (LKR)",
+        "Pending Amount (LKR)",
         "Due Date",
         "Payment Status",
       ];
@@ -2059,7 +2061,16 @@ export default function Dashboard() {
           item.actual_amount === "" || item.actual_amount == null
             ? null
             : Number(item.actual_amount),
+
           Number(item.paid_amount) || 0,
+          {
+            formula: `MAX(F${index + 7}-G${index + 7},0)`,
+            result: Math.max(
+              0,
+              (Number(item.actual_amount) || 0) -
+                (Number(item.paid_amount) || 0),
+            ),
+          },
           item.due_date ? String(item.due_date).slice(0, 10) : "",
           getBudgetPaymentStatus(item),
         ];
@@ -2094,7 +2105,7 @@ export default function Dashboard() {
           };
         });
 
-        [5, 6, 7].forEach((column) => {
+        [5, 6, 7, 8].forEach((column) => {
           row.getCell(column).numFmt = "#,##0.00";
         });
       });
@@ -2129,7 +2140,21 @@ export default function Dashboard() {
         ),
       };
 
-      [6, 7].forEach((column) => {
+      sheet.getCell(`H${totalRow}`).value = {
+        formula: `SUM(H7:H${totalRow - 2})`,
+        result: budgetItems.reduce(
+          (sum, item) =>
+            sum +
+            Math.max(
+              0,
+              (Number(item.actual_amount) || 0) -
+                (Number(item.paid_amount) || 0),
+            ),
+          0,
+        ),
+      };
+
+      [6, 7, 8].forEach((column) => {
         sheet.getCell(totalRow, column).numFmt = "#,##0.00";
         sheet.getCell(totalRow, column).font = {
           bold: true,
@@ -2146,7 +2171,7 @@ export default function Dashboard() {
 
       sheet.autoFilter = {
         from: "A6",
-        to: `I${totalRow - 2}`,
+        to: `J${totalRow - 2}`,
       };
 
       const buffer = await workbook.xlsx.writeBuffer();
@@ -9676,6 +9701,7 @@ Chathu Wedding Planners
                               "Estimated Amount (LKR)",
                               "Actual Amount (LKR)",
                               "Paid So Far (LKR)",
+                              "Pending Amount (LKR)",
                               "Due Date",
                               "Payment Status",
                               "Actions",
@@ -9803,6 +9829,21 @@ Chathu Wedding Planners
                                   }
                                   className="w-full min-w-[120px] p-2.5 rounded-xl border border-fuchsia-100 text-xs"
                                 />
+                              </td>
+
+                              {/* PENDING AMOUNT - AUTO CALCULATED */}
+                              <td className="p-2">
+                                <div className="w-full min-w-[130px] p-2.5 rounded-xl border border-rose-100 bg-rose-50 text-rose-700 text-xs font-black">
+                                  Rs.{" "}
+                                  {Math.max(
+                                    0,
+                                    (Number(item.actual_amount) || 0) -
+                                      (Number(item.paid_amount) || 0),
+                                  ).toLocaleString("en-LK", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })}
+                                </div>
                               </td>
 
                               {/* PAYMENT DUE DATE */}
@@ -9997,6 +10038,24 @@ Chathu Wedding Planners
                                   className="w-full p-3 rounded-xl border border-fuchsia-100 text-sm"
                                 />
                               </label>
+
+                              {/* Pending Amount - Auto Calculated */}
+                              <div className="rounded-xl border border-rose-100 bg-rose-50 p-3">
+                                <span className="block text-xs font-black text-rose-600 mb-1">
+                                  Pending Amount (LKR)
+                                </span>
+                                <p className="text-lg font-black text-rose-700">
+                                  Rs.{" "}
+                                  {Math.max(
+                                    0,
+                                    (Number(item.actual_amount) || 0) -
+                                      (Number(item.paid_amount) || 0),
+                                  ).toLocaleString("en-LK", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })}
+                                </p>
+                              </div>
 
                               {/* Payment Due Date */}
                               <label className="block">
