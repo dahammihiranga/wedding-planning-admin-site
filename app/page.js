@@ -8141,7 +8141,19 @@ Chathu Wedding Planners
                                     }`}
                                   >
                                     <td className="p-4 text-center text-gray-400 font-bold">
-                                      {index + 1}
+                                      <div className="flex items-center justify-center gap-1.5">
+                                        <span>{index + 1}</span>
+
+                                        {item.status === "Confirmed" && (
+                                          <span
+                                            className="text-emerald-600 text-base font-black"
+                                            title="Confirmed"
+                                            aria-label="Confirmed"
+                                          >
+                                            ✓
+                                          </span>
+                                        )}
+                                      </div>
                                     </td>
 
                                     <td className="p-3">
@@ -8663,9 +8675,21 @@ Chathu Wedding Planners
                               className="w-full flex items-center gap-3 p-4 text-left active:bg-fuchsia-50 transition"
                             >
                               {/* ITEM NUMBER */}
-                              <span className="w-8 h-8 shrink-0 rounded-full bg-fuchsia-100 text-fuchsia-700 flex items-center justify-center text-xs font-black">
-                                {index + 1}
-                              </span>
+                              <div className="shrink-0 flex items-center gap-1.5">
+                                <span className="w-8 h-8 rounded-full bg-fuchsia-100 text-fuchsia-700 flex items-center justify-center text-xs font-black">
+                                  {index + 1}
+                                </span>
+
+                                {item.status === "Confirmed" && (
+                                  <span
+                                    className="text-emerald-600 text-lg font-black"
+                                    title="Confirmed"
+                                    aria-label="Confirmed"
+                                  >
+                                    ✓
+                                  </span>
+                                )}
+                              </div>
 
                               {/* ITEM NAME + STATUS */}
                               <div className="min-w-0 flex-1">
