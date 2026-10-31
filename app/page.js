@@ -2169,6 +2169,90 @@ export default function Dashboard() {
 
       sheet.getRow(totalRow).height = 32;
 
+      // WEDDING BUDGET SUMMARY
+      const summaryTitleRow = totalRow + 3;
+
+      merged(
+        `A${summaryTitleRow}:J${summaryTitleRow}`,
+        "WEDDING BUDGET SUMMARY",
+      );
+
+      sheet.getRow(summaryTitleRow).height = 34;
+
+      const summaryDetails = [
+        {
+          label: "TOTAL ESTIMATED BUDGET",
+          sourceColumn: "E",
+          result: budgetTotal,
+          color: "F1F5F9",
+          textColor: "334155",
+        },
+        {
+          label: "ACTUAL SPENT TOTAL",
+          sourceColumn: "F",
+          result: budgetActualTotal,
+          color: "FEF3C7",
+          textColor: "92400E",
+        },
+        {
+          label: "PAID SO FAR",
+          sourceColumn: "G",
+          result: budgetPaidTotal,
+          color: "DCFCE7",
+          textColor: "166534",
+        },
+        {
+          label: "STILL TO PAY (PENDING)",
+          sourceColumn: "H",
+          result: budgetPendingTotal,
+          color: "FFE4E6",
+          textColor: "9F1239",
+        },
+      ];
+
+      summaryDetails.forEach((summary, index) => {
+        const rowNumber = summaryTitleRow + index + 1;
+
+        sheet.mergeCells(`A${rowNumber}:D${rowNumber}`);
+        sheet.mergeCells(`E${rowNumber}:G${rowNumber}`);
+        sheet.mergeCells(`H${rowNumber}:J${rowNumber}`);
+
+        const labelCell = sheet.getCell(`A${rowNumber}`);
+        labelCell.value = summary.label;
+
+        const amountCell = sheet.getCell(`H${rowNumber}`);
+        amountCell.value = {
+          formula: `${summary.sourceColumn}${totalRow}`,
+          result: summary.result,
+        };
+        amountCell.numFmt = '"Rs. " #,##0.00';
+        amountCell.alignment = {
+          vertical: "middle",
+          horizontal: "right",
+          indent: 1,
+        };
+
+        [labelCell, amountCell].forEach((cell) => {
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: `FF${summary.color}` },
+          };
+
+          cell.font = {
+            name: "Aptos",
+            bold: true,
+            size: 12,
+            color: { argb: `FF${summary.textColor}` },
+          };
+        });
+
+        sheet.getRow(rowNumber).height = 34;
+      });
+
+      // Include the summary section when printing the Excel sheet
+      sheet.pageSetup.printArea = `A1:J${summaryTitleRow + summaryDetails.length}`;
+
       sheet.autoFilter = {
         from: "A6",
         to: `J${totalRow - 2}`,
